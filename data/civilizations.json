@@ -1,0 +1,81 @@
+{
+  "civilizations": [
+    {
+      "id": "egypt",
+      "name": "Ancient Egypt",
+      "sketchfabScene": "pyramid-giza-scene-id",
+      "youtubeVideoId": "k160CwLl8b4",
+      "overview": "Discover the grandeur of Ancient Egypt, from its towering pyramids to its complex belief in the afterlife. Explore the civilization that built the longest-lasting wonders of the ancient world.",
+      "history": "Ancient Egypt flourished along the Nile River for over 3,000 years, from c. 3100 BCE to 30 BCE. Known for its pharaohs, monumental architecture, hieroglyphic writing, and sophisticated religious beliefs, Egypt developed one of the world's most distinctive and enduring cultures.",
+      "architecture": "Egyptian architecture is characterized by massive stone structures, including pyramids, temples, and tombs. The iconic pyramid shape, monumental colonnades, and elaborate hieroglyphic decoration reflect a civilization deeply focused on eternity and the afterlife.",
+      "dailyLife": "Daily life in Ancient Egypt centered around the Nile River, which provided fertile soil for agriculture. Most people were farmers who depended on the annual flooding. The society was highly stratified, with the pharaoh at the top, followed by nobles, priests, scribes, artisans, and farmers.",
+      "achievements": "Ancient Egyptians made remarkable advances in architecture (pyramids, temples), medicine, mathematics, and astronomy. They developed a 365-day calendar, sophisticated burial practices for preservation of the body (mummification), and monumental art that has survived millennia."
+    },
+    {
+      "id": "rome",
+      "name": "Ancient Rome",
+      "sketchfabScene": "colosseum-scene-id",
+      "youtubeVideoId": "ku-sqAtYpsQ",
+      "overview": "Explore the might of the Roman Empire, its engineering marvels, and its lasting impact on law, language, and governance. From the Roman Forum to the Colosseum, experience the heart of one history's greatest civilizations.",
+      "history": "Rome began as a small settlement in the 8th century BCE and grew into a massive empire spanning Europe, North Africa, and the Middle East. The Roman Republic (509-27 BCE) transitioned to the Empire (27 BCE-476 CE), creating a civilization that shaped Western law, language, and culture for centuries.",
+      "architecture": "Roman architecture perfected the use of the arch, vault, and concrete, enabling massive structures like the Colosseum, aqueducts, and baths. The grid-plan city design, triumphal arches, and domed spaces created lasting architectural forms still used today.",
+      "dailyLife": "Roman daily life featured public baths, forums, and gladiatorial games. The society was hierarchical, with citizens, non-citizens, and slaves. Meals, fashion, and social status were displayed through clothing and housing. The Pax Romana (27 BCE-180 CE) brought peace and prosperity across the empire.",
+      "achievements": "Rome's achievements include engineering (aqueducts, roads, concrete), law (Roman law basis for many modern systems), governance (republican institutions, imperial administration), and infrastructure (bridges, ports, cities) that facilitated trade and communication across vast distances."
+    },
+    {
+      "id": "maya",
+      "name": "Maya Civilization",
+      "sketchfabScene": "maya-temple-scene-id",
+      "youtubeVideoId": "JQawvHXj130",
+      "overview": "Journey into the rainforests of Mesoamerica to explore the Maya civilization's sophisticated calendar, mathematics, and temple architecture. Discover a culture that peaked around 250-900 CE and left behind spectacular cities like Tikal and Palenque.",
+      "history": "The Maya civilization flourished in Mesoamerica (modern-day Mexico, Guatemala, Belize, Honduras) from c. 2000 BCE to 1500 CE. Known for their sophisticated writing system, advanced mathematics (including the concept of zero), and precise calendar systems, Maya city-states peaked during the Classic period (250-900 CE).",
+      "architecture": "Maya architecture features stepped pyramids, corbel arches, and elaborate stone carvings. Cities were often integrated with the natural landscape, with acropolises, ball courts, and observatories aligned astronomically. The iconic temple-pyramids served as both ceremonial centers and royal tombs.",
+      "dailyLife": "Maya society was organized into city-states with a divine king at the center. Agriculture (maize, beans, squash) supported the population. Art, music, and ball games were central to cultural life. The society had a complex hierarchy with nobles, priests, artisans, and farmers.",
+      "achievements": "The Maya made breakthroughs in astronomy (predicting eclipses, tracking Venus), mathematics (base-20 system with zero), writing (logosyllabic script), and calendar systems (Long Count, Tzolk'in, Haab). Their city planning and hydraulic engineering supported large populations in challenging environments."
+    },
+    {
+      "id": "khorfakkan",
+      "name": "Khor Fakkan Portuguese Fort",
+      "sketchfabScene": "khor-fakkan-fort-scene-id",
+      "youtubeVideoId": "placeholder-uae-fort",
+      "overview": "Explore the Khor Fakkan Portuguese Fort, a historic coastal fortress on the UAE's east coast. This well-preserved fort offers insights into the strategic importance of the Arabian Gulf trade routes and the region's colonial history.",
+      "history": "The Khor Fakkan Portuguese Fort dates back to the 16th century during Portuguese colonial influence in the region. Strategically positioned on the eastern coast of the UAE, the fort controlled maritime trade routes through the Gulf of Oman and protected the valuable harbor of Khor Fakkan. The fort later came under local Emirates control.",
+      "architecture": "The fort features typical Portuguese military architecture of the period: thick coral stone walls, defensive towers, and a compact courtyard design. Built from local coral rock and limestone, the structure incorporated both European fortification techniques and regional building materials and methods.",
+      "dailyLife": "The fort housed a garrison of Portuguese soldiers and local troops. Its position allowed control over the harbor and surrounding trade. The compact design included quarters, storage, and defensive positions, reflecting the strategic, rather than residential, purpose of the structure.",
+      "achievements": "The fort's preservation provides valuable insights into 16th-century Portuguese colonial architecture in the Arabian Gulf. Its strategic location highlights the importance of Khor Fakkan as a maritime waypoint and the region's role in Indian Ocean trade networks during the early modern period."
+    },
+    {
+      "id": "petra",
+      "name": "Petra",
+      "sketchfabScene": "petna-rose-red-scene-id",
+      "youtubeVideoId": "Q8l0jZ2q8d4",
+      "overview": "Discover the Rose-Red City of Petra, the ancient Nabatean trading hub carved into dramatic desert cliffs. This UNESCO World Heritage Site showcases incredible rock-cut architecture and advanced water management systems.",
+      "history": "Petra was the capital of the Nabatean Kingdom, flourishing from the 4th century BCE to the 1st century CE. Strategically located between Arabia, Egypt, and the Levant, Petra controlled crucial trade routes for frankincense, myrrh, and spices. The city's sophisticated water collection system allowed it to thrive in the desert environment.",
+      "architecture": "Petra's architecture is renowned for its rock-cut facades, most famously the Treasury (Al-Khazneh). The Nabateans mastered the art of carving elaborate temples, tombs, and theaters directly into sandstone cliffs. The city also featured free-standing structures, courtyards, and an advanced system of channels and cisterns for water management.",
+      "dailyLife": "Petra's inhabitants, the Nabateans, were skilled traders and desert dwellers. The city's layout accommodated caravans, with accommodations for travelers and animals. Water was carefully managed and distributed through an extensive network of channels, ensuring survival in the arid environment. Social life centered around the city's temples, tombs, and public spaces.",
+      "achievements": "The Nabateans' extraordinary water management system allowed Petra to support a population of up to 30,000 in the desert. Their rock-cut architectural techniques created structures that have survived millennia of erosion. The city's strategic position made it a wealthy trading hub connecting East and West."
+    },
+    {
+      "id": "al-jazirat-al-hamra",
+      "name": "Al-Jazirat Al-Hamra Courtyard Complex",
+      "sketchfabScene": "al-jazirat-al-hamra-courtyard-scene-id",
+      "youtubeVideoId": "placeholder-uae-history",
+      "overview": "Step into the Al-Jazirat Al-Hamra courtyard complex, a historic pearl diving village on the coast of Ras Al Khaimah, UAE. Experience the traditional Arabian Gulf architecture and the communal life of this historic settlement.",
+      "history": "Al-Jazirat Al-Hamra was a historic pearl diving and trading village dating back several centuries. The name 'Al-Jazirat Al-Hamra' means 'the Red Island' in Arabic, referring to the reddish hue of the soil and buildings. The village was inhabited until the mid-20th century and represents traditional Arabian Gulf coastal life and architecture.",
+      "architecture": "The courtyard complex features traditional Arabian Gulf architecture: coral stone walls, wind towers (barajeel) for natural cooling, internal courtyards for family privacy, and traditional wooden doors and windows. Buildings are constructed from local coral rock, plaster, and palm fronds, designed for the hot desert climate with sea breezes.",
+      "dailyLife": "Life in Al-Jazirat Al-Hamra centered around pearl diving, fishing, and trade. The courtyard design provided communal family space while maintaining privacy. Traditional Gulf clothing, food, and social customs defined daily life. The seasonal pattern followed the pearl diving season and trade winds.",
+      "achievements": "The courtyard complex showcases sophisticated traditional environmental design: wind towers for passive cooling, courtyard layouts for temperature regulation, and coral stone construction for durability in the coastal environment. The settlement's water collection and management systems sustained the community in an arid region."
+    },
+    {
+      "id": "dhayah-fort",
+      "name": "Dhayah Fort at Ras-Al Khaima, UAE",
+      "sketchfabScene": "dhayah-fort-rak-scene-id",
+      "youtubeVideoId": "placeholder-rak-fort",
+      "overview": "Visit Dhayah Fort, the hilltop fortress of Ras Al Khaimah that played a pivotal role in defending the region. This is the only remaining hilltop fort in the UAE, offering panoramic views and insights into regional military history.",
+      "history": "Dhayah Fort was built in the 18th century and served as the last stronghold of the ruling Al Qasimi family during conflicts with British forces in the early 19th century. The fort's strategic hilltop position overlooking the palm groves and coastline made it a crucial defensive position. After prolonged siege, the fort fell in 1819, but it remains a symbol of regional resistance.",
+      "architecture": "Dhayah Fort features traditional Emirati fortification: thick adobe and mud brick walls, a compact rectangular design, and strategic placement on a hill for defensive advantage. The fort includes watchtowers, defensive openings, and interior spaces for garrison accommodation. Its elevation provides both visibility and protection.",
+      "dailyLife": "The fort housed the Al Qasimi rulers and their garrison. Life within the fort walls included military organization, food storage, and defense preparations. The surrounding palm groves provided date palms and crops, supporting the fort's inhabitants. The hilltop location offered cooling breezes and visibility of approaching ships or forces.",
+      "achievements": "Dhayah Fort's preservation as the UAE's only remaining hilltop fort makes it unique among regional fortifications. Its strategic design demonstrates traditional Arabian Gulf military architecture adapted to the local terrain. The fort stands as a cultural landmark representing the Al Qasimi heritage and the history of the Emirates."
+    }
+  ]
+}
