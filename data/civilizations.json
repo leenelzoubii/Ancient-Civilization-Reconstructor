@@ -1,10 +1,22 @@
 {
   "civilizations": [
     {
+      "id": "taj-mahal",
+      "name": "Taj Mahal",
+      "tags": ["mogul", "agra", "marble", "mausoleum"],
+      "sketchfabScene": "taj-mahal-agraup-d02e8cdef15946408be6613fc5d1f0ff",
+      "youtubeVideoId": "_bMyBoaHg5w",
+      "overview": "Discover the Taj Mahal, the iconic Mughal mausoleum in Agra, India. Built by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal, this white marble masterpiece is renowned for its breathtaking symmetry, intricate pietra dura inlay work, and gardens designed in the charbagh pattern.",
+      "history": "The Taj Mahal was commissioned in 1632 by the Mughal Emperor Shah Jahan to house the tomb of his wife Mumtaz Mahal. Construction took approximately 22 years, involving thousands of artisans and craftsmen. The complex was completed in 1653 and stands as a testament to Mughal architecture and Persian-inspired garden design.",
+      "architecture": "The Taj Mahal features a symmetrical white marble structure with an iwan (arch-shaped doorway), dome, and minarets. The complex includes a large ivory-white marble tomb, mosque, guest house, and extensive gardens bounded by a wall on three sides. The pietra dura inlay work features semi-precious stones arranged into floral and geometric patterns.",
+      "dailyLife": "The Taj Mahal complex was part of a vibrant 17th-century Mughal empire complex. The gardens were designed as a charbagh (four-part garden) symbolizing the four rivers of Paradise. The mosque and guest house within the complex served religious and hospitality functions for visitors and devotees.",
+      "achievements": "The Taj Mahal is a UNESCO World Heritage Site and one of the New Seven Wonders of the World. Its architectural innovations include the use of translucent marble that seems to change color with the light, complex symmetry achieving visual perfection, and advanced water supply systems for the gardens. The monument represents the pinnacle of Mughal artistic achievement."
+    },
+    {
       "id": "egypt",
-      "name": "Ancient Egypt",
-      "sketchfabScene": "pyramid-giza-scene-id",
-      "youtubeVideoId": "k160CwLl8b4",
+      "tags": ["pyramids", "pharaohs", "nile", "mummification"],
+      "sketchfabScene": "egyptian-temple-7fa018bd45d84aea8b1fb6efe2f072ce",
+      "youtubeVideoId": "8_Tbv7anqXk",
       "overview": "Discover the grandeur of Ancient Egypt, from its towering pyramids to its complex belief in the afterlife. Explore the civilization that built the longest-lasting wonders of the ancient world.",
       "history": "Ancient Egypt flourished along the Nile River for over 3,000 years, from c. 3100 BCE to 30 BCE. Known for its pharaohs, monumental architecture, hieroglyphic writing, and sophisticated religious beliefs, Egypt developed one of the world's most distinctive and enduring cultures.",
       "architecture": "Egyptian architecture is characterized by massive stone structures, including pyramids, temples, and tombs. The iconic pyramid shape, monumental colonnades, and elaborate hieroglyphic decoration reflect a civilization deeply focused on eternity and the afterlife.",
@@ -14,8 +26,9 @@
     {
       "id": "rome",
       "name": "Ancient Rome",
-      "sketchfabScene": "colosseum-scene-id",
-      "youtubeVideoId": "ku-sqAtYpsQ",
+      "tags": ["colosseum", "roman-law", "engineering", "empire"],
+      "sketchfabScene": "massive-scale-model-of-ancient-rome-2f9cb1fbc2eb470686eb8ba596b059cb",
+      "youtubeVideoId": "b9bcohqsTGk",
       "overview": "Explore the might of the Roman Empire, its engineering marvels, and its lasting impact on law, language, and governance. From the Roman Forum to the Colosseum, experience the heart of one history's greatest civilizations.",
       "history": "Rome began as a small settlement in the 8th century BCE and grew into a massive empire spanning Europe, North Africa, and the Middle East. The Roman Republic (509-27 BCE) transitioned to the Empire (27 BCE-476 CE), creating a civilization that shaped Western law, language, and culture for centuries.",
       "architecture": "Roman architecture perfected the use of the arch, vault, and concrete, enabling massive structures like the Colosseum, aqueducts, and baths. The grid-plan city design, triumphal arches, and domed spaces created lasting architectural forms still used today.",
@@ -25,8 +38,9 @@
     {
       "id": "maya",
       "name": "Maya Civilization",
-      "sketchfabScene": "maya-temple-scene-id",
-      "youtubeVideoId": "JQawvHXj130",
+      "tags": ["calendar", "mathematics", "rainforest", "temple"],
+      "sketchfabScene": "aztec-maya-inca-tikal-pyramid-temple-bf792c335e28495fb841410f627ef069",
+      "youtubeVideoId": "NcHu3yppxzo",
       "overview": "Journey into the rainforests of Mesoamerica to explore the Maya civilization's sophisticated calendar, mathematics, and temple architecture. Discover a culture that peaked around 250-900 CE and left behind spectacular cities like Tikal and Palenque.",
       "history": "The Maya civilization flourished in Mesoamerica (modern-day Mexico, Guatemala, Belize, Honduras) from c. 2000 BCE to 1500 CE. Known for their sophisticated writing system, advanced mathematics (including the concept of zero), and precise calendar systems, Maya city-states peaked during the Classic period (250-900 CE).",
       "architecture": "Maya architecture features stepped pyramids, corbel arches, and elaborate stone carvings. Cities were often integrated with the natural landscape, with acropolises, ball courts, and observatories aligned astronomically. The iconic temple-pyramids served as both ceremonial centers and royal tombs.",
@@ -36,6 +50,7 @@
     {
       "id": "khorfakkan",
       "name": "Khor Fakkan Portuguese Fort",
+      "tags": ["fort", "trade", "coastal", "16th-century"],
       "sketchfabScene": "khor-fakkan-fort-scene-id",
       "youtubeVideoId": "placeholder-uae-fort",
       "overview": "Explore the Khor Fakkan Portuguese Fort, a historic coastal fortress on the UAE's east coast. This well-preserved fort offers insights into the strategic importance of the Arabian Gulf trade routes and the region's colonial history.",
@@ -47,8 +62,9 @@
     {
       "id": "petra",
       "name": "Petra",
-      "sketchfabScene": "petna-rose-red-scene-id",
-      "youtubeVideoId": "Q8l0jZ2q8d4",
+      "tags": ["rock-cut", "nabatean", "desert", "water-system"],
+      "sketchfabScene": "al-khazneh-the-treasury-petra-39ef0f6c82224860ad49039d2534046d",
+      "youtubeVideoId": "hslTalJr1JQ",
       "overview": "Discover the Rose-Red City of Petra, the ancient Nabatean trading hub carved into dramatic desert cliffs. This UNESCO World Heritage Site showcases incredible rock-cut architecture and advanced water management systems.",
       "history": "Petra was the capital of the Nabatean Kingdom, flourishing from the 4th century BCE to the 1st century CE. Strategically located between Arabia, Egypt, and the Levant, Petra controlled crucial trade routes for frankincense, myrrh, and spices. The city's sophisticated water collection system allowed it to thrive in the desert environment.",
       "architecture": "Petra's architecture is renowned for its rock-cut facades, most famously the Treasury (Al-Khazneh). The Nabateans mastered the art of carving elaborate temples, tombs, and theaters directly into sandstone cliffs. The city also featured free-standing structures, courtyards, and an advanced system of channels and cisterns for water management.",
@@ -58,6 +74,7 @@
     {
       "id": "al-jazirat-al-hamra",
       "name": "Al-Jazirat Al-Hamra Courtyard Complex",
+      "tags": ["pearl-diving", "wind-towers", "courtyard", "coastal"],
       "sketchfabScene": "al-jazirat-al-hamra-courtyard-scene-id",
       "youtubeVideoId": "placeholder-uae-history",
       "overview": "Step into the Al-Jazirat Al-Hamra courtyard complex, a historic pearl diving village on the coast of Ras Al Khaimah, UAE. Experience the traditional Arabian Gulf architecture and the communal life of this historic settlement.",
@@ -69,6 +86,7 @@
     {
       "id": "dhayah-fort",
       "name": "Dhayah Fort at Ras-Al Khaima, UAE",
+      "tags": ["hilltop", "al-qasimi", "defense", "uae-heritage"],
       "sketchfabScene": "dhayah-fort-rak-scene-id",
       "youtubeVideoId": "placeholder-rak-fort",
       "overview": "Visit Dhayah Fort, the hilltop fortress of Ras Al Khaimah that played a pivotal role in defending the region. This is the only remaining hilltop fort in the UAE, offering panoramic views and insights into regional military history.",
