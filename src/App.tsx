@@ -2,6 +2,8 @@ import { useState } from 'react'
 import civilizations from '../data/civilizations.json'
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
+import CustomCursor from './components/CustomCursor'
+import AnimatedSection from './components/AnimatedSection'
 
 const TAG_COLORS: Record<string, string> = {
   primary: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
@@ -228,53 +230,60 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
       <HeroSection onExplore={() => document.getElementById('civilizations')?.scrollIntoView({ behavior: 'smooth' })} />
 
       <section id="civilizations" className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-        <div className="text-center mb-12">
-          <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Choose Your Journey</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Select a Civilization
-          </h2>
-          <p className="text-gray-500 max-w-xl mx-auto">Click any civilization to expand details, or click "View Full Details" to explore the full reconstruction page.</p>
-        </div>
+        <AnimatedSection>
+          <div className="text-center mb-12">
+            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Choose Your Journey</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Select a Civilization
+            </h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Click any civilization to expand details, or click "View Full Details" to explore the full reconstruction page.</p>
+          </div>
+        </AnimatedSection>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {civilizations.civilizations.map((civ, index) => (
-            <CivilizationCard
-              key={civ.id}
-              civ={civ}
-              index={index}
-              onClick={() => onSelectCiv(civ.id)}
-            />
+            <AnimatedSection key={civ.id} delay={index * 80}>
+              <CivilizationCard
+                civ={civ}
+                index={index}
+                onClick={() => onSelectCiv(civ.id)}
+              />
+            </AnimatedSection>
           ))}
         </div>
       </section>
 
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">How It Works</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Three Steps to the Past
-            </h2>
-          </div>
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">How It Works</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Three Steps to the Past
+              </h2>
+            </div>
+          </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { step: '01', title: 'Choose', desc: 'Select from 8 ancient civilizations spanning continents and millennia — from the pyramids of Egypt to the forts of the UAE.', color: 'from-amber-500 to-orange-600' },
               { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read detailed tabs covering history, architecture, daily life, and achievements.', color: 'from-orange-500 to-red-600' },
               { step: '03', title: 'Reconstruct', desc: 'Use AI to restore broken artifacts — upload a photo of a damaged item and watch AI bring it back to its original glory.', color: 'from-teal-500 to-cyan-600' },
             ].map((item, i) => (
-              <div key={item.step} className="animate-fade-in-up group" style={{ animationDelay: `${i * 0.15}s` }}>
-                <div className="p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-500 h-full">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <span className="text-white font-black text-lg">{item.step}</span>
+              <AnimatedSection key={item.step} delay={i * 150}>
+                <div className="group h-full">
+                  <div className="p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-500 h-full hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <span className="text-white font-black text-lg">{item.step}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-gray-400 leading-relaxed text-sm">{item.desc}</p>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                  <p className="text-gray-400 leading-relaxed text-sm">{item.desc}</p>
                 </div>
-              </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
@@ -282,13 +291,15 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
 
       <section className="py-20 px-4 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Explore the World</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Civilizations by Region
-            </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">From the deserts of Jordan to the coasts of the UAE, our collection spans the globe.</p>
-          </div>
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Explore the World</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Civilizations by Region
+              </h2>
+              <p className="text-gray-500 max-w-xl mx-auto">From the deserts of Jordan to the coasts of the UAE, our collection spans the globe.</p>
+            </div>
+          </AnimatedSection>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { region: 'South Asia', civilizations: ['Taj Mahal'], icon: '🕌', color: 'bg-rose-500/10 border-rose-500/20' },
@@ -299,13 +310,15 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
               { region: 'UAE - East Coast', civilizations: ['Khor Fakkan Portuguese Fort'], icon: '🏰', color: 'bg-teal-500/10 border-teal-500/20' },
               { region: 'UAE - Ras Al Khaimah', civilizations: ['Al-Jazirat Al-Hamra', 'Dhayah Fort'], icon: '🏠', color: 'bg-violet-500/10 border-violet-500/20' },
             ].map((r, i) => (
-              <div key={r.region} className={`animate-fade-in-up p-5 rounded-2xl border ${r.color} hover:scale-105 transition-transform duration-300`} style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="text-3xl mb-3">{r.icon}</div>
-                <h3 className="text-white font-bold text-sm mb-2">{r.region}</h3>
-                {r.civilizations.map(c => (
-                  <p key={c} className="text-gray-400 text-xs">{c}</p>
-                ))}
-              </div>
+              <AnimatedSection key={r.region} delay={i * 80} animation="scale-in">
+                <div className={`p-5 rounded-2xl border ${r.color} hover:scale-105 transition-transform duration-300 hover:shadow-lg`}>
+                  <div className="text-3xl mb-3">{r.icon}</div>
+                  <h3 className="text-white font-bold text-sm mb-2">{r.region}</h3>
+                  {r.civilizations.map(c => (
+                    <p key={c} className="text-gray-400 text-xs">{c}</p>
+                  ))}
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
@@ -317,7 +330,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="animate-fade-in-up">
+            <AnimatedSection animation="slide-left">
               <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">3D Photogrammetry</p>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 See History in Three Dimensions
@@ -329,98 +342,112 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                 Rotate, zoom, and explore every angle. See the texture of carved stone, the wear of centuries, and the architectural details that photographs alone can't capture.
               </p>
               <div className="flex flex-wrap gap-4">
-                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10">
+                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:border-amber-500/30 transition-colors">
                   <span className="text-2xl font-black text-amber-400">187K+</span>
                   <span className="text-gray-500 text-xs ml-2">triangles per model</span>
                 </div>
-                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10">
+                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:border-amber-500/30 transition-colors">
                   <span className="text-2xl font-black text-amber-400">4K</span>
                   <span className="text-gray-500 text-xs ml-2">texture resolution</span>
                 </div>
               </div>
-            </div>
-            <div className="animate-fade-in-up rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] p-2" style={{ animationDelay: '0.2s' }}>
-              <div className="aspect-video rounded-xl overflow-hidden">
-                <iframe
-                  src="https://sketchfab.com/models/d02e8cdef15946408be6613fc5d1f0ff/embed?autostart=0"
-                  style={{ width: '100%', height: '100%', border: 'none' }}
-                  allow="autoplay; fullscreen; xr-spatial-tracking"
-                  title="Taj Mahal 3D Model"
-                />
+            </AnimatedSection>
+            <AnimatedSection animation="slide-right" delay={200}>
+              <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] p-2 hover:border-amber-500/20 transition-colors">
+                <div className="aspect-video rounded-xl overflow-hidden">
+                  <iframe
+                    src="https://sketchfab.com/models/d02e8cdef15946408be6613fc5d1f0ff/embed?autostart=0"
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                    title="Taj Mahal 3D Model"
+                  />
+                </div>
+                <p className="text-center text-gray-500 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
               </div>
-              <p className="text-center text-gray-500 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       <section className="py-20 px-4 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">AI-Powered</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Artifact Restoration
-            </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Upload a broken artifact and watch AI restore it to its original condition.</p>
-          </div>
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">AI-Powered</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Artifact Restoration
+              </h2>
+              <p className="text-gray-500 max-w-xl mx-auto">Upload a broken artifact and watch AI restore it to its original condition.</p>
+            </div>
+          </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="animate-fade-in-up p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02]">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+            <AnimatedSection animation="slide-left" delay={100}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-white">Auto Restore</h3>
                 </div>
-                <h3 className="text-lg font-bold text-white">Auto Restore</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Simply upload a photo of any damaged artifact — cracked pottery, broken sculptures, eroded inscriptions — and our AI will generate a restored version in seconds.
+                </p>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Simply upload a photo of any damaged artifact — cracked pottery, broken sculptures, eroded inscriptions — and our AI will generate a restored version in seconds.
-              </p>
-            </div>
-            <div className="animate-fade-in-up p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02]" style={{ animationDelay: '0.1s' }}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+            </AnimatedSection>
+            <AnimatedSection animation="slide-right" delay={200}>
+              <div className="p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-teal-500/20 hover:shadow-xl hover:shadow-teal-500/5 transition-all duration-500 h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-white">Manual Mask</h3>
                 </div>
-                <h3 className="text-lg font-bold text-white">Manual Mask</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  For precise control, paint over the damaged areas yourself. The AI will only restore the parts you mark, preserving the rest of the artifact exactly as it is.
+                </p>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                For precise control, paint over the damaged areas yourself. The AI will only restore the parts you mark, preserving the rest of the artifact exactly as it is.
-              </p>
+            </AnimatedSection>
+          </div>
+          <AnimatedSection>
+            <div className="text-center mt-10">
+              <button
+                onClick={() => onNavigate('restore')}
+                className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-xl text-lg hover:from-amber-400 hover:to-orange-500 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 cursor-pointer"
+              >
+                Try AI Restorer
+              </button>
             </div>
-          </div>
-          <div className="text-center mt-10">
-            <button
-              onClick={() => onNavigate('restore')}
-              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-xl text-lg hover:from-amber-400 hover:to-orange-500 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 cursor-pointer"
-            >
-              Try AI Restorer
-            </button>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
 
       <section className="py-20 px-4 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Why It Matters</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Preserving Heritage for Future Generations
-            </h2>
-          </div>
+          <AnimatedSection>
+            <div className="text-center mb-16">
+              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Why It Matters</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Preserving Heritage for Future Generations
+              </h2>
+            </div>
+          </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { stat: '5,000+', label: 'Years of History', desc: 'Spanning from Bronze Age forts to 17th-century mosques' },
               { stat: '8', label: 'Civilizations', desc: 'Covering 4 continents and diverse cultures' },
               { stat: '100%', label: 'Free Access', desc: 'Open to students, researchers, and curious minds worldwide' },
             ].map((item, i) => (
-              <div key={item.label} className="animate-fade-in-up text-center p-8 rounded-2xl border border-white/10 bg-white/[0.03]" style={{ animationDelay: `${i * 0.15}s` }}>
-                <p className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-2">{item.stat}</p>
-                <p className="text-white font-bold mb-2">{item.label}</p>
-                <p className="text-gray-500 text-sm">{item.desc}</p>
-              </div>
+              <AnimatedSection key={item.label} delay={i * 150} animation="scale-in">
+                <div className="text-center p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
+                  <p className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-2">{item.stat}</p>
+                  <p className="text-white font-bold mb-2">{item.label}</p>
+                  <p className="text-gray-500 text-sm">{item.desc}</p>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
@@ -431,43 +458,49 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
           <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
         </div>
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <div className="animate-fade-in-up">
+          <AnimatedSection>
             <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">About the Creators</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
               Built with Passion for History
             </h2>
-          </div>
-          <div className="animate-fade-in-up space-y-6" style={{ animationDelay: '0.15s' }}>
-            <p className="text-gray-400 leading-relaxed">
-              The Ancient Civilization Reconstructor was created as an educational project to make cultural heritage accessible to everyone. By combining modern web technologies with 3D scanning, AI, and historical research, we aim to bring the past to life in ways that textbooks cannot.
-            </p>
-            <p className="text-gray-400 leading-relaxed">
-              Our team believes that understanding ancient civilizations — their architecture, daily lives, and achievements — helps us appreciate the diversity and ingenuity of human culture across time and geography.
-            </p>
-          </div>
-          <div className="animate-fade-in-up mt-10 p-8 rounded-2xl border border-white/10 bg-white/[0.03]" style={{ animationDelay: '0.3s' }}>
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+          </AnimatedSection>
+          <AnimatedSection delay={150}>
+            <div className="space-y-6">
+              <p className="text-gray-400 leading-relaxed">
+                The Ancient Civilization Reconstructor was created as an educational project to make cultural heritage accessible to everyone. By combining modern web technologies with 3D scanning, AI, and historical research, we aim to bring the past to life in ways that textbooks cannot.
+              </p>
+              <p className="text-gray-400 leading-relaxed">
+                Our team believes that understanding ancient civilizations — their architecture, daily lives, and achievements — helps us appreciate the diversity and ingenuity of human culture across time and geography.
+              </p>
+            </div>
+          </AnimatedSection>
+          <AnimatedSection delay={300}>
+            <div className="mt-10 p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-amber-500/20 transition-colors">
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-white font-bold text-lg mb-1">The Project Team</p>
+              <p className="text-gray-500 text-sm mb-4">Developers, Researchers & History Enthusiasts</p>
+              <p className="text-gray-400 text-sm leading-relaxed max-w-lg mx-auto">
+                This project is a labor of love — combining skills in web development, data science, and historical research to create an interactive learning platform. Every civilization page is carefully researched using academic sources, museum archives, and on-the-ground heritage documentation.
+              </p>
+              <div className="flex justify-center gap-4 mt-6">
+                <a href="https://github.com/leenelzoubii/Ancient-Civilization-Reconstructor" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:border-amber-500/30 transition-all text-sm flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                  View on GitHub
+                </a>
               </div>
             </div>
-            <p className="text-white font-bold text-lg mb-1">The Project Team</p>
-            <p className="text-gray-500 text-sm mb-4">Developers, Researchers & History Enthusiasts</p>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-lg mx-auto">
-              This project is a labor of love — combining skills in web development, data science, and historical research to create an interactive learning platform. Every civilization page is carefully researched using academic sources, museum archives, and on-the-ground heritage documentation.
+          </AnimatedSection>
+          <AnimatedSection delay={400}>
+            <p className="text-gray-600 text-xs mt-8">
+              This is an educational and research project. All content is used for non-commercial purposes. 3D models are property of their respective creators on Sketchfab.
             </p>
-            <div className="flex justify-center gap-4 mt-6">
-              <a href="https://github.com/leenelzoubii/Ancient-Civilization-Reconstructor" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                View on GitHub
-              </a>
-            </div>
-          </div>
-          <p className="text-gray-600 text-xs mt-8">
-            This is an educational and research project. All content is used for non-commercial purposes. 3D models are property of their respective creators on Sketchfab.
-          </p>
+          </AnimatedSection>
         </div>
       </section>
 
@@ -617,6 +650,7 @@ export default function App() {
 
   return (
     <>
+      <CustomCursor />
       <NavBar page={page} onNavigate={(p) => {
         if (p === 'home') handleBack()
         else if (p === 'restore') { setPage('restore'); window.scrollTo(0, 0) }
