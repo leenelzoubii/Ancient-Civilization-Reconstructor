@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import civilizations from '../data/civilizations.json'
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
-import CustomCursor from './components/CustomCursor'
 import AnimatedSection from './components/AnimatedSection'
 
 const TAG_COLORS: Record<string, string> = {
@@ -659,9 +658,62 @@ export default function App() {
     setSelectedCiv(null)
   }
 
+  const cursorDot = useRef<HTMLDivElement>(null)
+  const cursorRing = useRef<HTMLDivElement>(null)
+  const cursorGlow = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const dot = cursorDot.current
+    const ring = cursorRing.current
+    const glow = cursorGlow.current
+    if (!dot || !ring || !glow) return
+
+    let mx = -200, my = -200
+    let rx = -200, ry = -200
+    let gx = -200, gy = -200
+    let raf: number
+
+    const move = (e: MouseEvent) => {
+      mx = e.clientX
+      my = e.clientY
+      dot.style.left = mx + 'px'
+      dot.style.top = my + 'px'
+      dot.style.opacity = '1'
+      ring.style.opacity = '1'
+      glow.style.opacity = '1'
+    }
+    const leave = () => { dot.style.opacity = '0'; ring.style.opacity = '0'; glow.style.opacity = '0' }
+    const enter = () => { dot.style.opacity = '1'; ring.style.opacity = '1'; glow.style.opacity = '1' }
+
+    const tick = () => {
+      rx += (mx - rx) * 0.12
+      ry += (my - ry) * 0.12
+      gx += (mx - gx) * 0.06
+      gy += (my - gy) * 0.06
+      ring.style.left = rx + 'px'
+      ring.style.top = ry + 'px'
+      glow.style.left = gx + 'px'
+      glow.style.top = gy + 'px'
+      raf = requestAnimationFrame(tick)
+    }
+
+    window.addEventListener('mousemove', move)
+    document.addEventListener('mouseleave', leave)
+    document.addEventListener('mouseenter', enter)
+    raf = requestAnimationFrame(tick)
+    return () => {
+      window.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseleave', leave)
+      document.removeEventListener('mouseenter', enter)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
     <>
-      <CustomCursor />
+      <div ref={cursorDot} style={{ position:'fixed', top:-100, left:-100, width:8, height:8, borderRadius:'50%', background:'linear-gradient(135deg,#d4af37,#e56b4f)', boxShadow:'0 0 12px rgba(212,175,55,0.8), 0 0 24px rgba(212,175,55,0.4)', pointerEvents:'none', zIndex:2147483647, transform:'translate(-50%,-50%)', opacity:0 }} />
+      <div ref={cursorRing} style={{ position:'fixed', top:-100, left:-100, width:40, height:40, borderRadius:'50%', border:'1.5px solid rgba(212,175,55,0.5)', boxShadow:'0 0 15px rgba(212,175,55,0.15)', pointerEvents:'none', zIndex:2147483646, transform:'translate(-50%,-50%)', opacity:0 }} />
+      <div ref={cursorGlow} style={{ position:'fixed', top:-100, left:-100, width:100, height:100, borderRadius:'50%', background:'radial-gradient(circle,rgba(212,175,55,0.12) 0%,rgba(229,107,79,0.06) 40%,transparent 70%)', pointerEvents:'none', zIndex:2147483645, transform:'translate(-50%,-50%)', opacity:0 }} />
       <NavBar page={page} onNavigate={(p) => {
         if (p === 'home') handleBack()
         else if (p === 'restore') { setPage('restore'); window.scrollTo(0, 0) }
