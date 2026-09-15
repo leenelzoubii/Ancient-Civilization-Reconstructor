@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import civilizations from '../data/civilizations.json'
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
+import VisualScene from './components/VisualScene'
 import AnimatedSection from './components/AnimatedSection'
 
 const TAG_COLORS: Record<string, string> = {
@@ -125,139 +126,13 @@ function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => voi
   )
 }
 
-function HeroSection({ onExplore }: { onExplore: () => void }) {
-  return (
-    <header className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#0f0f0f] z-10" />
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl" />
-      </div>
-      <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
-        <div className="animate-fade-in-up">
-          <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-4">Explore the Past</p>
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black mb-4 leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>
-            <span className="text-white">Ancient</span>
-            <br />
-            <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-clip-text text-transparent">Civilizations</span>
-          </h1>
-          <p className="text-xl sm:text-2xl text-gray-300 font-light mt-2 mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Reconstructor
-          </p>
-        </div>
-        <div className="animate-fade-in-up mt-6" style={{ animationDelay: '0.2s' }}>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-            Reconstruct historical environments and discover the wonders of the past through 3D models, videos, and immersive content.
-          </p>
-          <button
-            onClick={onExplore}
-            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-xl text-lg hover:from-amber-400 hover:to-orange-500 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 cursor-pointer"
-          >
-            Start Exploring
-          </button>
-        </div>
-        <div className="animate-fade-in-up mt-12 flex justify-center gap-8 text-sm text-gray-500" style={{ animationDelay: '0.4s' }}>
-          <span>8 Civilizations</span>
-          <span>3D Models</span>
-          <span>Historical Videos</span>
-          <span>Interactive Content</span>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-function CivilizationCard({ civ, index, onClick }: { civ: typeof civilizations.civilizations[0]; index: number; onClick: () => void }) {
-  const [expanded, setExpanded] = useState(false)
-  const tags = TAG_MAPS[civ.id] || []
-
-  return (
-    <div
-      className="animate-fade-in-up rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.03] hover:border-amber-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5 overflow-hidden"
-      style={{ animationDelay: `${index * 0.08}s` }}
-    >
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-5 cursor-pointer flex items-start gap-4 group"
-      >
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-amber-500/30 group-hover:to-orange-500/30 transition-all">
-          <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors truncate">{civ.name}</h3>
-          <p className="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">{civ.id.replace(/-/g, ' ')}</p>
-        </div>
-        <svg
-          className={`w-5 h-5 text-gray-500 transition-transform duration-300 flex-shrink-0 mt-1 ${expanded ? 'rotate-180' : ''}`}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      <div className={`transition-all duration-500 ease-in-out ${expanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
-        <div className="px-5 pb-5 space-y-4 border-t border-white/5 pt-4">
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag, i) => (
-              <span key={i} className={`px-3 py-1 rounded-full text-xs font-medium ${TAG_COLORS[tag.color]}`}>
-                {tag.label}
-              </span>
-            ))}
-          </div>
-          <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">{civ.overview}</p>
-          <button
-            onClick={(e) => { e.stopPropagation(); onClick() }}
-            className="w-full py-3 px-4 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-amber-500/20 hover:border-amber-500/40 cursor-pointer"
-          >
-            View Full Details
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => void; onNavigate: (p: Page) => void }) {
   return (
     <div className="min-h-screen bg-[#0f0f0f]">
-      <HeroSection onExplore={() => document.getElementById('civilizations')?.scrollIntoView({ behavior: 'smooth' })} />
+      <VisualScene onSelectCiv={onSelectCiv} />
 
-      <section id="civilizations" className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-        <AnimatedSection>
-          <div className="text-center mb-12">
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Choose Your Journey</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Select a Civilization
-            </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Click any civilization to expand details, or click "View Full Details" to explore the full reconstruction page.</p>
-          </div>
-        </AnimatedSection>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {civilizations.civilizations.map((civ, index) => (
-            <AnimatedSection key={civ.id} delay={index * 80}>
-              <CivilizationCard
-                civ={civ}
-                index={index}
-                onClick={() => onSelectCiv(civ.id)}
-              />
-            </AnimatedSection>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="py-20 px-4 border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-16">
               <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">How It Works</p>
@@ -288,42 +163,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
         </div>
       </section>
 
-      <section className="py-20 px-4 border-t border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <AnimatedSection>
-            <div className="text-center mb-16">
-              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Explore the World</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Civilizations by Region
-              </h2>
-              <p className="text-gray-500 max-w-xl mx-auto">From the deserts of Jordan to the coasts of the UAE, our collection spans the globe.</p>
-            </div>
-          </AnimatedSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { region: 'South Asia', civilizations: ['Taj Mahal'], icon: '🕌', color: 'bg-rose-500/10 border-rose-500/20' },
-              { region: 'North Africa', civilizations: ['Ancient Egypt'], icon: '🏺', color: 'bg-amber-500/10 border-amber-500/20' },
-              { region: 'Europe', civilizations: ['Ancient Rome'], icon: '⚔️', color: 'bg-sky-500/10 border-sky-500/20' },
-              { region: 'Mesoamerica', civilizations: ['Maya Civilization'], icon: '🌿', color: 'bg-emerald-500/10 border-emerald-500/20' },
-              { region: 'Middle East', civilizations: ['Petra'], icon: '🏜️', color: 'bg-orange-500/10 border-orange-500/20' },
-              { region: 'UAE - East Coast', civilizations: ['Khor Fakkan Portuguese Fort'], icon: '🏰', color: 'bg-teal-500/10 border-teal-500/20' },
-              { region: 'UAE - Ras Al Khaimah', civilizations: ['Al-Jazirat Al-Hamra', 'Dhayah Fort'], icon: '🏠', color: 'bg-violet-500/10 border-violet-500/20' },
-            ].map((r, i) => (
-              <AnimatedSection key={r.region} delay={i * 80} animation="scale-in">
-                <div className={`p-5 rounded-2xl border ${r.color} hover:scale-105 transition-transform duration-300 hover:shadow-lg`}>
-                  <div className="text-3xl mb-3">{r.icon}</div>
-                  <h3 className="text-white font-bold text-sm mb-2">{r.region}</h3>
-                  {r.civilizations.map(c => (
-                    <p key={c} className="text-gray-400 text-xs">{c}</p>
-                  ))}
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 relative overflow-hidden">
+      <section className="py-20 px-4 border-t border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
         </div>
