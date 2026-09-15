@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import civilizations from '../data/civilizations.json'
+import ArtifactRestorer from './pages/ArtifactRestorer'
 
 const TAG_COLORS: Record<string, string> = {
   primary: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
@@ -70,7 +71,7 @@ const TAB_LABELS: Record<Tab, string> = {
   achievements: 'Achievements',
 }
 
-type Page = 'home' | 'detail'
+type Page = 'home' | 'detail' | 'restore'
 
 function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => void }) {
   return (
@@ -104,8 +105,11 @@ function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => voi
           >
             Civilizations
           </button>
-          <button className="text-sm font-medium text-gray-400 hover:text-white transition-colors cursor-pointer">
-            About
+          <button
+            onClick={() => onNavigate('restore')}
+            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'restore' ? 'text-amber-400' : 'text-gray-400 hover:text-white'}`}
+          >
+            AI Restorer
           </button>
         </div>
       </div>
@@ -383,9 +387,13 @@ export default function App() {
 
   return (
     <>
-      <NavBar page={page} onNavigate={(p) => { if (p === 'home') handleBack() }} />
+      <NavBar page={page} onNavigate={(p) => {
+        if (p === 'home') handleBack()
+        else if (p === 'restore') { setPage('restore'); window.scrollTo(0, 0) }
+      }} />
       {page === 'home' && <HomePage onSelectCiv={handleSelectCiv} />}
       {page === 'detail' && selectedCiv && <DetailPage civId={selectedCiv} onBack={handleBack} />}
+      {page === 'restore' && <ArtifactRestorer />}
     </>
   )
 }
