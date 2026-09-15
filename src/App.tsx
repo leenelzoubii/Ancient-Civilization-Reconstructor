@@ -290,21 +290,30 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           <div className="animate-scale-in rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
-            <div className="p-3 border-b border-white/5 flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <span className="text-xs text-gray-500 ml-2">3D Model - Sketchfab</span>
+            <div className="p-3 border-b border-white/5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                <span className="text-xs text-gray-500 ml-2">3D Model - Sketchfab</span>
+              </div>
+              <a
+                href={`https://sketchfab.com/models/${civ.sketchfabScene}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-amber-400 hover:text-amber-300 underline"
+              >
+                Open on Sketchfab ↗
+              </a>
             </div>
-            <iframe
-              src={`https://sketchfab.com/models/${civ.sketchfabScene}/embed?autostart=1`}
-              width="100%"
-              height="450"
-              allow="autoplay; fullscreen; xr-spatial-tracking"
-              frameBorder="0"
-              className="w-full"
-              title={`${civ.name} 3D Model`}
-            />
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '75%' }}>
+              <iframe
+                src={`https://sketchfab.com/models/${civ.sketchfabScene}/embed?autostart=0`}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                allow="autoplay; fullscreen; xr-spatial-tracking"
+                title={`${civ.name} 3D Model`}
+              />
+            </div>
           </div>
 
           <div className="animate-scale-in rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]" style={{ animationDelay: '0.1s' }}>
@@ -314,16 +323,15 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
               <span className="text-xs text-gray-500 ml-2">YouTube Video</span>
             </div>
-            <iframe
-              width="100%"
-              height="450"
-              src={`https://www.youtube.com/embed/${civ.youtubeVideoId}?rel=0`}
-              title={`${civ.name} Video`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              frameBorder="0"
-              className="w-full"
-            />
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${civ.youtubeVideoId}?rel=0`}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                title={`${civ.name} Video`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
         </div>
 
