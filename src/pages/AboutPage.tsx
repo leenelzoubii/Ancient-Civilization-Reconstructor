@@ -75,13 +75,12 @@ export default function AboutPage() {
 
           <section className="animate-fade-in-up rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8" style={{ animationDelay: '0.25s' }}>
             <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>Meet the Team</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[
-                { name: 'Mahrah Ahmed Hassan Saeed Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
-                { name: 'Afraa Mohammed Alawi', initials: 'AM', gradient: 'from-rose-500 to-pink-600' },
-                { name: 'Hadi Al Hamed', initials: 'HH', gradient: 'from-teal-500 to-cyan-600' },
-                { name: 'Hajar Hashim Mohamed Sharif Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
-                { name: 'Meera Abdulhakeem Saleh Khamis Almashjari', initials: 'MK', gradient: 'from-emerald-500 to-green-600' },
+                { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
+                { name: 'Afraa Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
+                { name: 'Hajar Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
+                { name: 'Meera Almashjari', initials: 'MM', gradient: 'from-emerald-500 to-green-600' },
               ].map((member) => (
                 <div key={member.name} className="group flex flex-col items-center gap-3">
                   <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300`}>

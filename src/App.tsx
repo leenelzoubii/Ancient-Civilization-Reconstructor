@@ -472,13 +472,12 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-12">
               {[
-                { name: 'Mahrah Ahmed Hassan Saeed Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
-                { name: 'Afraa Mohammed Alawi', initials: 'AM', gradient: 'from-rose-500 to-pink-600' },
-                { name: 'Hadi Al Hamed', initials: 'HH', gradient: 'from-teal-500 to-cyan-600' },
-                { name: 'Hajar Hashim Mohamed Sharif Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
-                { name: 'Meera Abdulhakeem Saleh Khamis Almashjari', initials: 'MK', gradient: 'from-emerald-500 to-green-600' },
+                { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
+                { name: 'Afraa Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
+                { name: 'Hajar Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
+                { name: 'Meera Almashjari', initials: 'MM', gradient: 'from-emerald-500 to-green-600' },
               ].map((member, i) => (
                 <div key={member.name} className="group flex flex-col items-center gap-3">
                   <div
