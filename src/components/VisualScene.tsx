@@ -41,45 +41,56 @@ function Sun() {
   )
 }
 
-function Camel() {
+function Camel({ x, y }: { x: number; y: number }) {
   return (
-    <div className="absolute bottom-[22%] right-[18%] z-20 animate-float" style={{ animationDuration: '4s' }}>
-      <svg width="180" height="140" viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div
+      className="absolute z-30 animate-float"
+      style={{
+        left: `${x}%`,
+        bottom: `${y}%`,
+        animationDuration: '5s',
+        animationDelay: `${(x % 7) * 0.5}s`,
+        pointerEvents: 'none',
+      }}
+    >
+      <svg width="140" height="130" viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
         {/* Body */}
-        <ellipse cx="95" cy="80" rx="48" ry="28" fill="#8B6914" />
-        <ellipse cx="95" cy="78" rx="44" ry="24" fill="#A0791A" />
+        <ellipse cx="70" cy="65" rx="34" ry="20" fill="#8B6914" />
+        <ellipse cx="70" cy="63" rx="30" ry="16" fill="#A0791A" />
         {/* Hump */}
-        <ellipse cx="80" cy="58" rx="20" ry="16" fill="#8B6914" />
-        <ellipse cx="80" cy="56" rx="17" ry="13" fill="#A0791A" />
-        <ellipse cx="80" cy="54" rx="12" ry="9" fill="#B8922A" />
+        <ellipse cx="50" cy="48" rx="12" ry="10" fill="#8B6914" />
+        <ellipse cx="50" cy="46" rx="9" ry="7" fill="#A0791A" />
+        <ellipse cx="50" cy="44" rx="6" ry="5" fill="#B8922A" />
         {/* Neck */}
-        <path d="M138 68 Q145 40 148 20 Q150 14 146 12 Q142 10 140 16 L135 55" fill="#8B6914" />
-        <path d="M140 62 Q146 38 148 22 Q149 16 145 15 L138 55" fill="#A0791A" />
+        <path d="M102 48 Q115 30 120 20 Q122 14 118 12 Q114 10 112 16 L108 55" fill="#8B6914" />
+        <path d="M105 45 Q112 26 116 18 Q117 14 113 13 L108 55" fill="#A0791A" />
         {/* Head */}
-        <ellipse cx="148" cy="12" rx="14" ry="9" fill="#8B6914" transform="rotate(-15 148 12)" />
-        <ellipse cx="149" cy="11" rx="12" ry="7" fill="#A0791A" transform="rotate(-15 149 11)" />
+        <ellipse cx="118" cy="10" rx="11" ry="7" fill="#8B6914" transform="rotate(-12 118 10)" />
+        <ellipse cx="119" cy="9" rx="9" ry="5" fill="#A0791A" transform="rotate(-12 119 9)" />
         {/* Eye */}
-        <circle cx="154" cy="8" r="2" fill="#2D1B00" />
-        <circle cx="154.5" cy="7.5" r="0.7" fill="white" />
+        <circle cx="124" cy="6" r="1.5" fill="#2D1B00" />
+        <circle cx="124.5" cy="5.5" r="0.5" fill="white" />
         {/* Mouth */}
-        <path d="M157 13 Q160 14 159 16" stroke="#5C3A00" strokeWidth="1" fill="none" />
+        <path d="M132 8 Q135 9 134 11" stroke="#5C3A00" strokeWidth="1" fill="none" />
         {/* Front legs */}
-        <line x1="120" y1="100" x2="125" y2="132" stroke="#7A5C10" strokeWidth="6" strokeLinecap="round" />
-        <line x1="115" y1="102" x2="118" y2="132" stroke="#7A5C10" strokeWidth="6" strokeLinecap="round" />
+        <line x1="80" y1="80" x2="85" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
+        <line x1="75" y1="82" x2="78" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
         {/* Back legs */}
-        <line x1="72" y1="100" x2="70" y2="132" stroke="#7A5C10" strokeWidth="6" strokeLinecap="round" />
-        <line x1="65" y1="98" x2="62" y2="132" stroke="#7A5C10" strokeWidth="6" strokeLinecap="round" />
+        <line x1="45" y1="80" x2="43" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
+        <line x1="38" y1="78" x2="35" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
         {/* Hooves */}
-        <ellipse cx="125" cy="134" rx="4" ry="2" fill="#3D2B00" />
-        <ellipse cx="118" cy="134" rx="4" ry="2" fill="#3D2B00" />
-        <ellipse cx="70" cy="134" rx="4" ry="2" fill="#3D2B00" />
-        <ellipse cx="62" cy="134" rx="4" ry="2" fill="#3D2B00" />
+        <ellipse cx="85" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
+        <ellipse cx="78" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
+        <ellipse cx="43" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
+        <ellipse cx="35" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
+        {/* Shadow */}
+        <ellipse cx="70" cy="122" rx="40" ry="5" fill="#7A5C10" opacity="0.2" />
         {/* Tail */}
-        <path d="M48 75 Q35 72 30 78 Q28 82 32 84" stroke="#7A5C10" strokeWidth="2" fill="none" />
-        <ellipse cx="31" cy="84" rx="4" ry="6" fill="#7A5C10" />
+        <path d="M20 50 Q10 45 8 50 Q10 55 20 55" stroke="#7A5C10" strokeWidth="2" fill="none" />
+        <ellipse cx="21" cy="55" rx="3" ry="5" fill="#7A5C10" />
         {/* Saddle cloth */}
-        <path d="M68 52 Q80 48 100 50 Q110 52 115 58 L110 65 Q95 60 75 60 Z" fill="#C85A30" opacity="0.7" />
-        <path d="M72 54 Q82 50 98 51 Q108 53 112 57" stroke="#E8A020" strokeWidth="1" fill="none" />
+        <path d="M40 36 Q52 32 72 34 Q82 36 87 44 L82 51 Q67 46 47 46 Z" fill="#C85A30" opacity="0.7" />
+        <path d="M44 38 Q54 34 68 35 Q78 37 82 41" stroke="#E8A020" strokeWidth="1" fill="none" />
       </svg>
     </div>
   )
@@ -293,9 +304,6 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
           <Sun />
 
-          {/* Camel */}
-          <Camel />
-
           {/* Desert ground */}
           <div className="absolute bottom-0 left-0 right-0 h-[35%]" style={{
             background: 'linear-gradient(180deg, #d4a54a 0%, #c4903a 30%, #b8812e 60%, #a06c20 100%)'
@@ -319,6 +327,16 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
               ))}
             </div>
           </div>
+
+          {/* Camels on the sand — rendered AFTER ground so they're on top */}
+          <Camel x={5} y={24} />
+          <Camel x={18} y={27} />
+          <Camel x={32} y={25} />
+          <Camel x={48} y={28} />
+          <Camel x={62} y={26} />
+          <Camel x={75} y={29} />
+          <Camel x={85} y={24} />
+          <Camel x={93} y={30} />
 
           {/* UAE Site Icons */}
           <div className="absolute bottom-[12%] sm:bottom-[15%] left-0 right-0 z-30">

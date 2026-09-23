@@ -1,6 +1,8 @@
+import { InferenceClient } from '@huggingface/inference'
+
 const HF_TOKEN = import.meta.env.VITE_HF_TOKEN
-const MODEL_ID = 'stabilityai/stable-diffusion-2-inpainting'
-const API_URL = `https://api-inference.huggingface.co/models/${MODEL_ID}`
+
+const client = new InferenceClient(HF_TOKEN)
 
 const RESTORE_PROMPT =
   'Restore this broken artifact to its original pristine condition. ' +
@@ -8,54 +10,70 @@ const RESTORE_PROMPT =
   'Preserve the original colors, textures, and details. ' +
   'Make it look like it was newly crafted.'
 
+function base64ToBlob(base64: string, type = 'image/png'): Blob {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return new Blob([bytes], { type })
+}
+
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = reader.result as string
+      resolve(result.split(',')[1])
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  })
+}
+
 export async function restoreWithMask(
   imageBase64: string,
   maskBase64: string
 ): Promise<Blob> {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${HF_TOKEN}`,
-      'Content-Type': 'application/json',
+  const imageBlob = base64ToBlob(imageBase64)
+  const maskBlob = base64ToBlob(maskBase64)
+
+  const result = await client.imageToImage({
+    model: 'black-forest-labs/FLUX.1-Kontext-dev',
+    inputs: imageBlob,
+    parameters: {
+      prompt: RESTORE_PROMPT,
+      mask: maskBlob,
     },
-    body: JSON.stringify({
-      inputs: {
-        image: imageBase64,
-        mask_image: maskBase64,
-        prompt: RESTORE_PROMPT,
-        negative_prompt: 'blurry, low quality, distorted, deformed',
-        num_inference_steps: 30,
-        guidance_scale: 7.5,
-      },
-    }),
   })
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(
-      (error as { error?: string }).error ||
-        `API error ${response.status}: ${response.statusText}`
-    )
-  }
-
-  return response.blob()
+  return result
 }
 
-export async function restoreAutomatic(
-  imageBase64: string
-): Promise<Blob> {
-  const mask = createFullWhiteMask()
-  return restoreWithMask(imageBase64, mask)
+export async function restoreAutomatic(imageBase64: string): Promise<Blob> {
+  const imageBlob = base64ToBlob(imageBase64)
+
+  const result = await client.imageToImage({
+    model: 'black-forest-labs/FLUX.1-Kontext-dev',
+    inputs: imageBlob,
+    parameters: {
+      prompt: RESTORE_PROMPT,
+    },
+  })
+
+  return result
 }
 
-function createFullWhiteMask(): string {
-  const canvas = document.createElement('canvas')
-  canvas.width = 512
-  canvas.height = 512
-  const ctx = canvas.getContext('2d')!
-  ctx.fillStyle = 'white'
-  ctx.fillRect(0, 0, 512, 512)
-  return canvas.toDataURL('image/png').split(',')[1]
+export async function restoreTextToImage(description: string): Promise<Blob> {
+  const result = await client.textToImage({
+    model: 'stabilityai/stable-diffusion-3-medium-diffusers',
+    inputs: `${RESTORE_PROMPT} ${description}`,
+    parameters: {
+      negative_prompt: 'blurry, low quality, distorted, deformed, damaged, cracked',
+      num_inference_steps: 30,
+      guidance_scale: 7.5,
+    },
+  })
+
+  return result
 }
 
 export function fileToBase64(file: File): Promise<string> {
@@ -63,8 +81,7 @@ export function fileToBase64(file: File): Promise<string> {
     const reader = new FileReader()
     reader.onload = () => {
       const result = reader.result as string
-      const base64 = result.split(',')[1]
-      resolve(base64)
+      resolve(result.split(',')[1])
     }
     reader.onerror = reject
     reader.readAsDataURL(file)
