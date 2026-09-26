@@ -124,13 +124,23 @@ export default function ArtifactRestorer() {
     if (mode === 'auto') return ''
     const canvas = canvasRef.current
     if (!canvas) return ''
+    const ctx = canvas.getContext('2d')!
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+    let painted = false
+    for (let i = 3; i < pixels.length; i += 4) {
+      if (pixels[i] > 0) {
+        painted = true
+        break
+      }
+    }
+    if (!painted) return ''
     const tempCanvas = document.createElement('canvas')
-    tempCanvas.width = 512
-    tempCanvas.height = 512
-    const ctx = tempCanvas.getContext('2d')!
-    ctx.fillStyle = 'black'
-    ctx.fillRect(0, 0, 512, 512)
-    ctx.drawImage(canvas, 0, 0, 512, 512)
+    tempCanvas.width = canvas.width
+    tempCanvas.height = canvas.height
+    const tctx = tempCanvas.getContext('2d')!
+    tctx.fillStyle = 'black'
+    tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
+    tctx.drawImage(canvas, 0, 0)
     return tempCanvas.toDataURL('image/png').split(',')[1]
   }, [mode])
 
@@ -436,7 +446,7 @@ export default function ArtifactRestorer() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                     />
                   </svg>
-                  Restoring... This may take 10-30 seconds
+                  Restoring...
                 </>
               ) : (
                 <>
@@ -476,12 +486,11 @@ export default function ArtifactRestorer() {
                   </svg>
                   <div className="text-sm text-gray-400">
                     <p className="font-medium text-amber-400 mb-1">
-                      AI is working its magic...
+                      Enhancing your artifact...
                     </p>
                     <p>
-                      The model is analyzing your image and generating the restored
-                      version. This usually takes 10-30 seconds on the free tier. Please
-                      don't close this page.
+                      Sharpening details, reducing noise, and enriching colors to
+                      bring the artifact back to life.
                     </p>
                   </div>
                 </div>

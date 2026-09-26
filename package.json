@@ -18,7 +18,6 @@
     "vite": "^8.2.2"
   },
   "dependencies": {
-    "@huggingface/inference": "^4.13.30",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.3"
