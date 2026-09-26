@@ -337,6 +337,10 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           <Camel x={75} y={29} />
           <Camel x={85} y={24} />
           <Camel x={93} y={30} />
+          <Camel x={22} y={20} />
+          <Camel x={70} y={18} />
+          <Camel x={40} y={22} />
+          <Camel x={80} y={25} />
 
           {/* UAE Site Icons */}
           <div className="absolute bottom-[12%] sm:bottom-[15%] left-0 right-0 z-30">
