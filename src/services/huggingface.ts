@@ -1,7 +1,7 @@
-const HF_TOKEN = import.meta.env.VITE_HF_TOKEN
+import { InferenceClient } from '@huggingface/inference'
 
-const MODEL_ID = 'stabilityai/stable-diffusion-2-inpainting'
-const API_URL = `https://api-inference.huggingface.co/models/${MODEL_ID}`
+const HF_TOKEN = import.meta.env.VITE_HF_TOKEN
+const client = new InferenceClient(HF_TOKEN)
 
 const RESTORE_PROMPT =
   'Restore this broken artifact to its original pristine condition. ' +
@@ -9,60 +9,57 @@ const RESTORE_PROMPT =
   'Preserve the original colors, textures, and details. ' +
   'Make it look like it was newly crafted.'
 
-function base64ToBlob(base64: string, type = 'image/png'): Blob {
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-  return new Blob([bytes], { type })
-}
-
-async function callInpainting(
-  imageBase64: string,
-  maskBase64: string
-): Promise<Blob> {
-  const form = new FormData()
-  form.append('inputs', base64ToBlob(imageBase64), 'image.png')
-  form.append('mask', base64ToBlob(maskBase64), 'mask.png')
-  form.append('prompt', RESTORE_PROMPT)
-  form.append('negative_prompt', 'blurry, low quality, distorted, deformed, cracked, broken, damaged')
-  form.append('num_inference_steps', '30')
-  form.append('guidance_scale', '7.5')
-
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${HF_TOKEN}`,
-    },
-    body: form,
-  })
-
-  if (!response.ok) {
-    const text = await response.text()
-    let msg = `API error ${response.status}`
-    try {
-      const json = JSON.parse(text)
-      if (json.error) msg = json.error
-    } catch {
-      if (text) msg = text.substring(0, 300)
-    }
-    throw new Error(msg)
-  }
-
-  return response.blob()
-}
+const NEGATIVE_PROMPT =
+  'blurry, low quality, distorted, deformed, cracked, broken, damaged'
 
 export async function restoreWithMask(
   imageBase64: string,
   maskBase64: string
 ): Promise<Blob> {
-  return callInpainting(imageBase64, maskBase64)
+  const image = base64ToBlob(imageBase64)
+  const mask = base64ToBlob(maskBase64)
+
+  const result = await client.imageToImage({
+    model: 'black-forest-labs/FLUX.1-Kontext-dev',
+    inputs: image,
+    parameters: {
+      prompt: RESTORE_PROMPT,
+      mask: mask,
+      negative_prompt: NEGATIVE_PROMPT,
+      num_inference_steps: 30,
+      guidance_scale: 7.5,
+    },
+  })
+
+  return result
 }
 
 export async function restoreAutomatic(
   imageBase64: string
 ): Promise<Blob> {
-  const mask = createFullWhiteMask()
-  return callInpainting(imageBase64, mask)
+  const image = base64ToBlob(imageBase64)
+  const mask = base64ToBlob(createFullWhiteMask())
+
+  const result = await client.imageToImage({
+    model: 'black-forest-labs/FLUX.1-Kontext-dev',
+    inputs: image,
+    parameters: {
+      prompt: RESTORE_PROMPT,
+      mask: mask,
+      negative_prompt: NEGATIVE_PROMPT,
+      num_inference_steps: 30,
+      guidance_scale: 7.5,
+    },
+  })
+
+  return result
+}
+
+function base64ToBlob(base64: string, type = 'image/png'): Blob {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return new Blob([bytes], { type })
 }
 
 function createFullWhiteMask(): string {
