@@ -96,6 +96,52 @@ function Camel({ x, y }: { x: number; y: number }) {
   )
 }
 
+function PalmTree({ x, size = 1 }: { x: number; size?: number }) {
+  return (
+    <div
+      className="absolute z-10"
+      style={{ left: `${x}%`, bottom: '30%', pointerEvents: 'none' }}
+    >
+      <svg
+        width={80 * size}
+        height={140 * size}
+        viewBox="0 0 80 140"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Trunk */}
+        <path d="M38 140 Q36 110 37 85 Q38 65 40 50" stroke="#8B6514" strokeWidth="7" strokeLinecap="round" fill="none" />
+        <path d="M39 140 Q37 110 38 85 Q39 65 41 50" stroke="#A0791A" strokeWidth="4" strokeLinecap="round" fill="none" />
+        {/* Trunk rings */}
+        <line x1="36" y1="120" x2="42" y2="120" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
+        <line x1="36" y1="105" x2="42" y2="105" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
+        <line x1="37" y1="90" x2="43" y2="90" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
+        <line x1="37" y1="75" x2="43" y2="75" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
+        <line x1="38" y1="60" x2="44" y2="60" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
+        {/* Palm fronds */}
+        <path d="M40 50 Q25 35 5 30" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q28 38 8 40" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q55 35 75 30" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q52 38 72 40" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q30 30 20 15" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q50 30 60 15" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M40 50 Q38 28 40 10" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
+        {/* Frond leaves (small branches) */}
+        <path d="M15 32 Q12 28 8 32" stroke="#2D7A2D" strokeWidth="2" fill="none" />
+        <path d="M65 32 Q68 28 72 32" stroke="#2D7A2D" strokeWidth="2" fill="none" />
+        <path d="M30 18 Q26 14 24 18" stroke="#3A8F3A" strokeWidth="2" fill="none" />
+        <path d="M50 18 Q54 14 56 18" stroke="#3A8F3A" strokeWidth="2" fill="none" />
+        {/* Coconuts */}
+        <circle cx="36" cy="52" r="4" fill="#5C4033" />
+        <circle cx="44" cy="53" r="3.5" fill="#6B4E3D" />
+        <circle cx="40" cy="56" r="3.5" fill="#5C4033" />
+        {/* Ground shadow */}
+        <ellipse cx="40" cy="138" rx="18" ry="4" fill="#7A5C10" opacity="0.2" />
+      </svg>
+    </div>
+  )
+}
+
 function UAEIcon({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button
@@ -341,6 +387,13 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           <Camel x={70} y={18} />
           <Camel x={40} y={22} />
           <Camel x={80} y={25} />
+
+          {/* Palm trees along the horizon */}
+          <PalmTree x={8} size={1.1} />
+          <PalmTree x={28} size={0.85} />
+          <PalmTree x={55} size={1.2} />
+          <PalmTree x={78} size={0.9} />
+          <PalmTree x={95} size={1} />
 
           {/* UAE Site Icons */}
           <div className="absolute bottom-[12%] sm:bottom-[15%] left-0 right-0 z-30">

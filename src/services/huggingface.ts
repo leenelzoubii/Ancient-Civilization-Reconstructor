@@ -9,44 +9,60 @@ const RESTORE_PROMPT =
   'Preserve the original colors, textures, and details. ' +
   'Make it look like it was newly crafted.'
 
-export async function restoreWithMask(
+function base64ToBlob(base64: string, type = 'image/png'): Blob {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return new Blob([bytes], { type })
+}
+
+async function callInpainting(
   imageBase64: string,
   maskBase64: string
 ): Promise<Blob> {
+  const form = new FormData()
+  form.append('inputs', base64ToBlob(imageBase64), 'image.png')
+  form.append('mask', base64ToBlob(maskBase64), 'mask.png')
+  form.append('prompt', RESTORE_PROMPT)
+  form.append('negative_prompt', 'blurry, low quality, distorted, deformed, cracked, broken, damaged')
+  form.append('num_inference_steps', '30')
+  form.append('guidance_scale', '7.5')
+
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${HF_TOKEN}`,
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      inputs: {
-        image: imageBase64,
-        mask_image: maskBase64,
-        prompt: RESTORE_PROMPT,
-        negative_prompt: 'blurry, low quality, distorted, deformed',
-        num_inference_steps: 30,
-        guidance_scale: 7.5,
-      },
-    }),
+    body: form,
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(
-      (error as { error?: string }).error ||
-        `API error ${response.status}: ${response.statusText}`
-    )
+    const text = await response.text()
+    let msg = `API error ${response.status}`
+    try {
+      const json = JSON.parse(text)
+      if (json.error) msg = json.error
+    } catch {
+      if (text) msg = text.substring(0, 300)
+    }
+    throw new Error(msg)
   }
 
   return response.blob()
+}
+
+export async function restoreWithMask(
+  imageBase64: string,
+  maskBase64: string
+): Promise<Blob> {
+  return callInpainting(imageBase64, maskBase64)
 }
 
 export async function restoreAutomatic(
   imageBase64: string
 ): Promise<Blob> {
   const mask = createFullWhiteMask()
-  return restoreWithMask(imageBase64, mask)
+  return callInpainting(imageBase64, mask)
 }
 
 function createFullWhiteMask(): string {
