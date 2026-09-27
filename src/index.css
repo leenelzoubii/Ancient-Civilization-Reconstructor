@@ -7,14 +7,85 @@
   --color-accent-teal: #008489;
   --font-family-display: 'Playfair Display', serif;
   --font-family-body: 'Inter', sans-serif;
+
+  /* Semantic theme colors — resolved from --c-* vars per theme */
+  --color-app: var(--c-app);
+  --color-panel: var(--c-panel);
+  --color-panel-2: var(--c-panel-2);
+  --color-line: var(--c-line);
+  --color-line-soft: var(--c-line-soft);
+  --color-line-2: var(--c-line-2);
+  --color-nav: var(--c-nav);
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-ink-3: var(--c-ink-3);
+  --color-ink-4: var(--c-ink-4);
+  --color-accent: var(--c-accent);
+  --color-accent-2: var(--c-accent-2);
+  --color-cool: var(--c-cool);
+  --color-cool-2: var(--c-cool-2);
+  --color-forest: var(--c-forest);
+  --color-rose: var(--c-rose);
+}
+
+/* ── Dark theme (default) ─────────────────────────────── */
+:root {
+  --c-app: #0f0f0f;
+  --c-panel: #171717;
+  --c-panel-2: #212121;
+  --c-line: rgba(255, 255, 255, 0.1);
+  --c-line-soft: rgba(255, 255, 255, 0.05);
+  --c-line-2: rgba(255, 255, 255, 0.2);
+  --c-nav: rgba(0, 0, 0, 0.8);
+  --c-ink: #f4f4f4;
+  --c-ink-2: #9ca3af;
+  --c-ink-3: #6b7280;
+  --c-ink-4: #4b5563;
+  --c-accent: #fbbf24;
+  --c-accent-2: #fb923c;
+  --c-cool: #2dd4bf;
+  --c-cool-2: #38bdf8;
+  --c-forest: #34d399;
+  --c-rose: #fb7185;
+  /* Hero + transition backgrounds (VisualScene) */
+  --c-hero-a: #0a0a0a;
+  --c-hero-b: #141414;
+  --c-transition-b: #1a1206;
+  color-scheme: dark;
+}
+
+/* ── Light theme ──────────────────────────────────────── */
+[data-theme="light"] {
+  --c-app: #faf9f6;
+  --c-panel: #ffffff;
+  --c-panel-2: #f1eee7;
+  --c-line: #e2ddd3;
+  --c-line-soft: #ece8df;
+  --c-line-2: #d3ccc0;
+  --c-nav: rgba(250, 249, 246, 0.88);
+  --c-ink: #1c1917;
+  --c-ink-2: #57534e;
+  --c-ink-3: #736c63;
+  --c-ink-4: #8a8279;
+  --c-accent: #b45309;
+  --c-accent-2: #c2410c;
+  --c-cool: #0f766e;
+  --c-cool-2: #0369a1;
+  --c-forest: #047857;
+  --c-rose: #be123c;
+  --c-hero-a: #f2efe8;
+  --c-hero-b: #f8f6f1;
+  --c-transition-b: #f6ead0;
+  color-scheme: light;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  background: #0f0f0f;
-  color: #f4f4f4;
+  background: var(--c-app);
+  color: var(--c-ink);
+  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   cursor: none;
 }
@@ -111,10 +182,33 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
+  background: var(--c-line-soft);
 }
 
 ::-webkit-scrollbar-thumb {
   background: rgba(212, 175, 55, 0.4);
   border-radius: 3px;
+}
+
+/* ── Themed scene backgrounds (VisualScene) ───────────── */
+.hero-bg {
+  background: linear-gradient(180deg, var(--c-hero-a) 0%, var(--c-hero-b) 55%, var(--c-app) 100%);
+}
+
+.transition-bg {
+  background: linear-gradient(180deg, var(--c-app) 0%, var(--c-transition-b) 55%, #d4a54a 100%);
+}
+
+/* Smooth theme cross-fade for surfaces */
+.bg-panel,
+.bg-panel-2,
+.bg-app,
+.bg-nav {
+  transition: background-color 0.3s ease;
+}
+
+.border-line,
+.border-line-soft,
+.border-line-2 {
+  transition: border-color 0.3s ease;
 }

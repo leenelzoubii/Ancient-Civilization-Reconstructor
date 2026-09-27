@@ -1,21 +1,18 @@
-# Ancient Civilization Reconstructor
+# ACR — Ancient Civilization Reconstructor
 
-A Next.js 16 web application exploring ancient civilizations with 3D reconstructions, YouTube videos, and SSE streaming.
-
-## Live Demo
-
-**Frontend**: http://localhost:5173  
-**Backend API**: http://localhost:8000
+A Vite + React + TypeScript web application exploring 8 ancient civilizations with interactive 3D photogrammetry models, YouTube videos, structured historical content, flashcard quizzes, and AI-powered artifact restoration.
 
 ## Features
 
-- **7 Civilizations**: Ancient Egypt, Ancient Rome, Maya, Khor Fakkan Portuguese Fort, Petra, Al-Jazirat Al-Hamra, Dhayah Fort
-- **SSE Streaming**: Real-time civilization data stream via FastAPI
-- **3D/Visual Reconstruction**: Sketchfab embeds for each civilization
-- **YouTube Integration**: Historical videos per civilization
-- **Tabbed Content System**: Overview/History/Architecture/Daily Life/Achievements
-- **Smooth Animations**: CSS keyframe animations (fade-in, float, pulse-glow)
-- **Responsive Design**: Works mobile, tablet, desktop
+- **8 Civilizations**: Ancient Egypt, Ancient Rome, Maya, Taj Mahal, Petra, Khor Fakkan Portuguese Fort, Al-Jazirat Al-Hamra, Dhayah Fort
+- **Light / Dark Mode**: Theme toggle with CSS-variable-driven colors, persisted in `localStorage`
+- **3D Photogrammetry**: Sketchfab embeds for each civilization
+- **YouTube Integration**: Historical video per civilization
+- **Tabbed Content**: Overview, History, Architecture, Culture, Economy, Society & Daily Life, Achievements
+- **Flashcard Quizzes**: 4 questions per civilization with show-answer, navigation, and score tracking
+- **AI Artifact Restorer**: Upload a damaged artifact photo — restores it via Pollinations FLUX image editing, with a local Canvas enhancement fallback
+- **Smooth Animations**: CSS keyframe animations (fade-in, float, drift, pulse-glow)
+- **Responsive Design**: Mobile, tablet, desktop
 
 ## Civilizations
 
@@ -24,45 +21,59 @@ A Next.js 16 web application exploring ancient civilizations with 3D reconstruct
 | egypt | Ancient Egypt |
 | rome | Ancient Rome |
 | maya | Maya Civilization |
-| khorfakkan | Khor Fakkan Portuguese Fort |
+| taj-mahal | Taj Mahal |
 | petra | Petra |
-| al-jazirat-al-hamra | Al-Jazirat Al-Hamra Courtyard |
+| khorfakkan | Khor Fakkan Portuguese Fort |
+| al-jazirat-al-hamra | Al-Jazirat Al-Hamra Courtyard Complex |
 | dhayah-fort | Dhayah Fort |
 
 ## Architecture
 
 ```
-Ancient Civilization Reconstructor/
-├── app/              # Next.js 16 App Router
-│   ├── page.tsx      # Home page
-│   └── civilization/[civId]/page.tsx  # Reconstruction view
-├── components/       # React components
-│   ├── CivilizationGrid.tsx
-│   ├── ReconstructionView.tsx
-│   └── SSECivilizationsStream.tsx
-├── data/             # JSON data
-│   └── civilizations.json
-├── css/              # Custom animations
-│   └── animations.css
-├── components/       # React components
-└── server/           # FastAPI backend
-    └── main.py       # SSE endpoints
+tourism-app-next/
+├── index.html            # Entry HTML (title, fonts, no-flash theme script)
+├── public/
+│   └── favicon.svg       # ACR logo
+├── data/
+│   ├── civilizations.json  # Structured content per civilization
+│   └── quizzes.json        # Flashcard questions per civilization
+├── src/
+│   ├── App.tsx           # Routing, NavBar, Home, Detail pages, theme state
+│   ├── index.css         # Tailwind + light/dark theme variables
+│   ├── components/
+│   │   ├── VisualScene.tsx      # Global + UAE desert homepage scenes
+│   │   ├── AnimatedSection.tsx  # Scroll-reveal wrapper
+│   │   └── CustomCursor.tsx
+│   ├── pages/
+│   │   ├── ArtifactRestorer.tsx # AI restoration UI
+│   │   └── AboutPage.tsx
+│   └── services/
+│       └── huggingface.ts # Pollinations AI restore + Canvas fallback
+└── vite.config.ts
 ```
 
 ## Running
 
 ```bash
-# Frontend (Next.js)
-cd tourism-app-next
-npm run dev     # http://localhost:5173
-
-# Backend (FastAPI with SSE)
-cd tourism-app-backend
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+npm install
+npm run dev      # http://localhost:5176
+npm run build    # typecheck + production build
 ```
 
-## SSE Endpoints
+## Environment
 
-- `GET /sse/civilizations` - Stream civilization data
-- `POST /sse/artifact-reconstruct` - Artifact reconstruction progress
-- `GET /health` - Health check
+`.env` (not committed):
+
+```
+VITE_POLLINATIONS_KEY=sk_...   # Pollinations API key for AI restoration
+```
+
+## Git Workflow
+
+- Work on feature branches (`feature/<name>`), then merge into `main` after testing
+- Commit often with descriptive messages; push to GitHub regularly
+
+## Deployment
+
+- **Frontend**: Vercel
+- **Backend**: Render (FastAPI SSE service at `tourism-app-backend`, optional)

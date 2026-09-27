@@ -220,19 +220,19 @@ export default function ArtifactRestorer() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] pt-20 pb-16 px-4">
+    <div className="min-h-screen bg-app pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10 animate-fade-in-up">
-          <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">
+          <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">
             AI-Powered
           </p>
           <h1
-            className="text-4xl sm:text-5xl font-black text-white mb-3"
+            className="text-4xl sm:text-5xl font-black text-ink mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Artifact Restorer
           </h1>
-          <p className="text-gray-400 max-w-xl mx-auto">
+          <p className="text-ink-2 max-w-xl mx-auto">
             Upload a photo of a broken or damaged artifact and AI will generate what
             it looked like in its original, undamaged state.
           </p>
@@ -251,11 +251,11 @@ export default function ArtifactRestorer() {
                 onClick={() => fileInputRef.current?.click()}
                 onDrop={handleDrop}
                 onDragOver={e => e.preventDefault()}
-                className="group p-10 rounded-2xl border-2 border-dashed border-white/20 hover:border-amber-500/50 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 cursor-pointer text-center"
+                className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-amber-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
                   <svg
-                    className="w-8 h-8 text-amber-400"
+                    className="w-8 h-8 text-accent"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -268,20 +268,20 @@ export default function ArtifactRestorer() {
                     />
                   </svg>
                 </div>
-                <p className="text-white font-semibold mb-1">Upload Image</p>
-                <p className="text-gray-500 text-sm">
+                <p className="text-ink font-semibold mb-1">Upload Image</p>
+                <p className="text-ink-3 text-sm">
                   Drag & drop or click to browse
                 </p>
-                <p className="text-gray-600 text-xs mt-2">PNG or JPEG</p>
+                <p className="text-ink-4 text-xs mt-2">PNG or JPEG</p>
               </button>
 
               <button
                 onClick={startCamera}
-                className="group p-10 rounded-2xl border-2 border-dashed border-white/20 hover:border-teal-500/50 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 cursor-pointer text-center"
+                className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-teal-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-teal-500/10 flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
                   <svg
-                    className="w-8 h-8 text-teal-400"
+                    className="w-8 h-8 text-cool"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -300,9 +300,9 @@ export default function ArtifactRestorer() {
                     />
                   </svg>
                 </div>
-                <p className="text-white font-semibold mb-1">Take Photo</p>
-                <p className="text-gray-500 text-sm">Use your device camera</p>
-                <p className="text-gray-600 text-xs mt-2">Rear camera recommended</p>
+                <p className="text-ink font-semibold mb-1">Take Photo</p>
+                <p className="text-ink-3 text-sm">Use your device camera</p>
+                <p className="text-ink-4 text-xs mt-2">Rear camera recommended</p>
               </button>
             </div>
 
@@ -331,7 +331,7 @@ export default function ArtifactRestorer() {
                   </button>
                   <button
                     onClick={stopCamera}
-                    className="px-8 py-3 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
+                    className="px-8 py-3 bg-panel-2 text-ink font-medium rounded-xl hover:bg-panel-2 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -345,13 +345,13 @@ export default function ArtifactRestorer() {
           <div className="animate-fade-in-up">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-400">Mode:</span>
+                <span className="text-sm text-ink-2">Mode:</span>
                 <button
                   onClick={() => setMode('auto')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                     mode === 'auto'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
+                      ? 'bg-amber-500/20 text-accent border border-amber-500/30'
+                      : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel-2'
                   }`}
                 >
                   Auto Restore
@@ -360,8 +360,8 @@ export default function ArtifactRestorer() {
                   onClick={() => setMode('manual')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                     mode === 'manual'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
+                      ? 'bg-amber-500/20 text-accent border border-amber-500/30'
+                      : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel-2'
                   }`}
                 >
                   Manual Mask
@@ -369,16 +369,16 @@ export default function ArtifactRestorer() {
               </div>
               <button
                 onClick={handleReset}
-                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer"
               >
                 Start Over
               </button>
             </div>
 
             {mode === 'manual' && (
-              <div className="mb-4 p-4 rounded-xl bg-white/[0.03] border border-white/10">
+              <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-400">Brush size:</span>
+                  <span className="text-sm text-ink-2">Brush size:</span>
                   <input
                     type="range"
                     min="5"
@@ -387,18 +387,18 @@ export default function ArtifactRestorer() {
                     onChange={e => setBrushSize(Number(e.target.value))}
                     className="flex-1 accent-amber-500"
                   />
-                  <span className="text-sm text-amber-400 w-8 text-right">
+                  <span className="text-sm text-accent w-8 text-right">
                     {brushSize}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-ink-3 mt-2">
                   Paint over the damaged areas (cracks, chips, missing pieces). White
                   overlay shows where AI will restore.
                 </p>
               </div>
             )}
 
-            <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] mb-6">
+            <div className="relative rounded-2xl overflow-hidden border border-line bg-panel mb-6">
               <img
                 ref={imageRef}
                 src={originalImage}
@@ -477,7 +477,7 @@ export default function ArtifactRestorer() {
               <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                 <div className="flex items-start gap-3">
                   <svg
-                    className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0"
+                    className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -489,8 +489,8 @@ export default function ArtifactRestorer() {
                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <div className="text-sm text-gray-400">
-                    <p className="font-medium text-amber-400 mb-1">
+                  <div className="text-sm text-ink-2">
+                    <p className="font-medium text-accent mb-1">
                       AI is restoring your artifact...
                     </p>
                     <p>
@@ -510,14 +510,14 @@ export default function ArtifactRestorer() {
           <div className="animate-fade-in-up">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-xl font-bold text-ink">
                   Restoration Complete
                 </h2>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                     engine === 'ai'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                      : 'bg-teal-500/10 text-teal-400 border-teal-500/30'
+                      ? 'bg-amber-500/10 text-accent border-amber-500/30'
+                      : 'bg-teal-500/10 text-cool border-teal-500/30'
                   }`}
                 >
                   {engine === 'ai'
@@ -527,15 +527,15 @@ export default function ArtifactRestorer() {
               </div>
               <button
                 onClick={handleReset}
-                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer"
               >
                 Restore Another
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
-                <div className="p-3 border-b border-white/5 text-xs text-gray-500 font-medium">
+              <div className="rounded-2xl overflow-hidden border border-line bg-panel">
+                <div className="p-3 border-b border-line-soft text-xs text-ink-3 font-medium">
                   Original (Damaged)
                 </div>
                 <img
@@ -544,8 +544,8 @@ export default function ArtifactRestorer() {
                   className="w-full max-h-[400px] object-contain"
                 />
               </div>
-              <div className="rounded-2xl overflow-hidden border border-amber-500/20 bg-white/[0.03]">
-                <div className="p-3 border-b border-amber-500/10 text-xs text-amber-400 font-medium">
+              <div className="rounded-2xl overflow-hidden border border-amber-500/20 bg-panel">
+                <div className="p-3 border-b border-amber-500/10 text-xs text-accent font-medium">
                   Restored
                 </div>
                 <img
@@ -578,7 +578,7 @@ export default function ArtifactRestorer() {
               </button>
               <button
                 onClick={handleReset}
-                className="px-6 py-3 bg-white/5 text-white font-medium rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer"
+                className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-xl border border-line hover:bg-panel-2 transition-all cursor-pointer"
               >
                 Restore Another Artifact
               </button>
@@ -587,9 +587,9 @@ export default function ArtifactRestorer() {
         )}
       </div>
 
-      <footer className="border-t border-white/5 py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 text-sm">
-          <p>Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+      <footer className="border-t border-line-soft py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
+          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>

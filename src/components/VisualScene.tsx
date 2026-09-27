@@ -151,7 +151,7 @@ function UAEIcon({ icon, label, onClick }: { icon: React.ReactNode; label: strin
       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center group-hover:from-amber-500/30 group-hover:to-orange-500/30 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all duration-300">
         {icon}
       </div>
-      <span className="text-white/80 text-xs sm:text-sm font-medium group-hover:text-amber-300 transition-colors text-center leading-tight max-w-[90px]">{label}</span>
+      <span className="text-ink/80 text-xs sm:text-sm font-medium group-hover:text-amber-300 transition-colors text-center leading-tight max-w-[90px]">{label}</span>
     </button>
   )
 }
@@ -162,7 +162,7 @@ function GlobalCivSymbol({ children, label, color }: { children: React.ReactNode
       <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${color} flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:shadow-xl`}>
         {children}
       </div>
-      <span className="text-gray-300 text-xs sm:text-sm font-medium group-hover:text-white transition-colors text-center">{label}</span>
+      <span className="text-ink-2 text-xs sm:text-sm font-medium group-hover:text-ink transition-colors text-center">{label}</span>
     </div>
   )
 }
@@ -191,7 +191,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
     <div ref={sectionRef}>
       {/* ═══════════ SECTION 1: GLOBAL CIVILIZATIONS ═══════════ */}
       <section className="relative py-24 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#111] to-[#0f0f0f]" />
+        <div className="absolute inset-0 hero-bg" />
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-10 left-[10%] w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-[10%] w-80 h-80 bg-rose-500/5 rounded-full blur-3xl" />
@@ -200,11 +200,11 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16 animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.8s ease forwards' }}>
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Our World, Our Heritage</p>
-            <h2 className="text-3xl sm:text-5xl font-black text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">Our World, Our Heritage</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
               Global Civilizations
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg">
+            <p className="text-ink-2 max-w-2xl mx-auto text-base sm:text-lg">
               From the banks of the Nile to the jungles of Mesoamerica, humanity has built extraordinary civilizations. Explore their wonders.
             </p>
           </div>
@@ -213,7 +213,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 mb-16">
             <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.1s forwards' }}>
               <GlobalCivSymbol label="Ancient Egypt" color="bg-gradient-to-br from-amber-500/15 to-yellow-500/10 border border-amber-500/20 hover:border-amber-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-amber-400" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-accent" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <polygon points="24,4 4,40 44,40" />
                   <line x1="24" y1="4" x2="24" y2="40" opacity="0.3" />
                   <line x1="14" y1="40" x2="34" y2="40" />
@@ -224,7 +224,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
             <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.2s forwards' }}>
               <GlobalCivSymbol label="Ancient Rome" color="bg-gradient-to-br from-sky-500/15 to-blue-500/10 border border-sky-500/20 hover:border-sky-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-sky-400" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-cool-2" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <rect x="6" y="16" width="36" height="24" rx="2" />
                   <path d="M6 16 L24 6 L42 16" />
                   <line x1="12" y1="16" x2="12" y2="40" />
@@ -238,7 +238,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
             <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.3s forwards' }}>
               <GlobalCivSymbol label="Maya Civilization" color="bg-gradient-to-br from-emerald-500/15 to-green-500/10 border border-emerald-500/20 hover:border-emerald-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-forest" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <rect x="12" y="36" width="24" height="4" />
                   <rect x="15" y="30" width="18" height="6" />
                   <rect x="18" y="24" width="12" height="6" />
@@ -253,7 +253,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
             <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.4s forwards' }}>
               <GlobalCivSymbol label="Taj Mahal" color="bg-gradient-to-br from-rose-500/15 to-pink-500/10 border border-rose-500/20 hover:border-rose-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-rose-400" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-rose" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <rect x="10" y="28" width="28" height="12" rx="1" />
                   <path d="M14 28 Q24 8 34 28" />
                   <circle cx="24" cy="18" r="2" />
@@ -268,7 +268,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
             <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.5s forwards' }}>
               <GlobalCivSymbol label="Petra" color="bg-gradient-to-br from-orange-500/15 to-red-500/10 border border-orange-500/20 hover:border-orange-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-orange-400" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-accent-2" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M8 44 L8 12 L24 4 L40 12 L40 44" />
                   <path d="M16 44 L16 28 L24 20 L32 28 L32 44" />
                   <circle cx="24" cy="14" r="3" />
@@ -304,8 +304,8 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
                 style={{ opacity: 0, animation: `fade-in-up 0.6s ease ${0.1 + i * 0.1}s forwards` }}
               >
                 <div className="text-2xl mb-2 opacity-60 group-hover:opacity-100 transition-opacity">{civ.icon}</div>
-                <h3 className="text-white font-bold text-base sm:text-lg mb-1 group-hover:text-amber-300 transition-colors">{civ.title}</h3>
-                <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{civ.desc}</p>
+                <h3 className="text-ink font-bold text-base sm:text-lg mb-1 group-hover:text-amber-300 transition-colors">{civ.title}</h3>
+                <p className="text-ink-2 text-xs sm:text-sm leading-relaxed">{civ.desc}</p>
               </button>
             ))}
           </div>
@@ -314,16 +314,16 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
       {/* ═══════════ TRANSITION ═══════════ */}
       <div className="relative h-48 sm:h-64 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f] via-[#1a1206] to-[#d4a54a]" />
+        <div className="absolute inset-0 transition-bg" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center z-10 px-4">
-            <p className="text-amber-300/60 text-xs sm:text-sm tracking-[0.3em] uppercase mb-2">Discover</p>
-            <h3 className="text-2xl sm:text-4xl font-black text-white/90" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-accent/70 text-xs sm:text-sm tracking-[0.3em] uppercase mb-2">Discover</p>
+            <h3 className="text-2xl sm:text-4xl font-black text-ink" style={{ fontFamily: "'Playfair Display', serif" }}>
               The UAE Heritage
             </h3>
             <div className="mt-3 flex items-center justify-center gap-3">
               <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-400/50" />
-              <svg className="w-4 h-4 text-amber-400/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-accent/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
               <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-400/50" />
@@ -455,7 +455,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           </div>
 
           {/* Bottom gradient into page bg */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0f0f0f] to-transparent z-40" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-app to-transparent z-40" />
         </div>
       </section>
     </div>

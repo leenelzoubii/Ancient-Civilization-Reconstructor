@@ -6,10 +6,10 @@ import VisualScene from './components/VisualScene'
 import AnimatedSection from './components/AnimatedSection'
 
 const TAG_COLORS: Record<string, string> = {
-  primary: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-  secondary: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-  accent: 'bg-teal-500/20 text-teal-400 border border-teal-500/30',
-  info: 'bg-sky-500/20 text-sky-400 border border-sky-500/30',
+  primary: 'bg-amber-500/20 text-accent border border-amber-500/30',
+  secondary: 'bg-orange-500/20 text-accent-2 border border-orange-500/30',
+  accent: 'bg-teal-500/20 text-cool border border-teal-500/30',
+  info: 'bg-sky-500/20 text-cool-2 border border-sky-500/30',
 }
 
 const TAG_MAPS: Record<string, { label: string; color: string }[]> = {
@@ -76,24 +76,39 @@ const TAB_LABELS: Record<Tab, string> = {
 
 type Page = 'home' | 'detail' | 'restore' | 'about'
 
-function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => void }) {
+function NavBar({
+  page,
+  onNavigate,
+  theme,
+  onToggleTheme,
+}: {
+  page: Page
+  onNavigate: (p: Page) => void
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
+}) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-nav/90 backdrop-blur-md border-b border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <button onClick={() => onNavigate('home')} className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
+        <button onClick={() => onNavigate('home')} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <span className="text-lg font-bold text-amber-400 hidden sm:block" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Ancient Civ Reconstructor
+          <span className="flex flex-col items-start leading-none">
+            <span className="text-lg font-black text-accent tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
+              ACR
+            </span>
+            <span className="hidden sm:block text-[9px] font-medium tracking-[0.15em] uppercase text-ink-3 mt-0.5">
+              Ancient Civilization Reconstructor
+            </span>
           </span>
         </button>
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavigate('home')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-amber-400' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-accent' : 'text-ink-2 hover:text-ink'}`}
           >
             Home
           </button>
@@ -104,21 +119,37 @@ function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => voi
                 document.getElementById('civilizations')?.scrollIntoView({ behavior: 'smooth' })
               }, 100)
             }}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-gray-400 hover:text-white' : 'text-amber-400'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-ink-2 hover:text-ink' : 'text-accent'}`}
           >
             Civilizations
           </button>
           <button
             onClick={() => onNavigate('restore')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'restore' ? 'text-amber-400' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'restore' ? 'text-accent' : 'text-ink-2 hover:text-ink'}`}
           >
             AI Restorer
           </button>
           <button
             onClick={() => onNavigate('about')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'about' ? 'text-amber-400' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'about' ? 'text-accent' : 'text-ink-2 hover:text-ink'}`}
           >
             About
+          </button>
+          <button
+            onClick={onToggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            className="w-9 h-9 rounded-lg bg-panel-2 border border-line flex items-center justify-center text-accent hover:scale-110 hover:border-accent/40 transition-all cursor-pointer"
+          >
+            {theme === 'dark' ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
@@ -128,15 +159,15 @@ function NavBar({ page, onNavigate }: { page: Page; onNavigate: (p: Page) => voi
 
 function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => void; onNavigate: (p: Page) => void }) {
   return (
-    <div className="min-h-screen bg-[#0f0f0f]">
+    <div className="min-h-screen bg-app">
       <VisualScene onSelectCiv={onSelectCiv} />
 
-      <section className="py-20 px-4 border-t border-white/5">
+      <section className="py-20 px-4 border-t border-line-soft">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">How It Works</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">How It Works</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Three Steps to the Past
               </h2>
             </div>
@@ -149,12 +180,12 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
             ].map((item, i) => (
               <AnimatedSection key={item.step} delay={i * 150}>
                 <div className="group h-full">
-                  <div className="p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-500 h-full hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1">
+                  <div className="p-8 rounded-2xl border border-line bg-panel hover:bg-panel-2 transition-all duration-500 h-full hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1">
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <span className="text-white font-black text-lg">{item.step}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                    <p className="text-gray-400 leading-relaxed text-sm">{item.desc}</p>
+                    <h3 className="text-xl font-bold text-ink mb-3">{item.title}</h3>
+                    <p className="text-ink-2 leading-relaxed text-sm">{item.desc}</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -163,36 +194,36 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
         </div>
       </section>
 
-      <section className="py-20 px-4 border-t border-white/5 relative overflow-hidden">
+      <section className="py-20 px-4 border-t border-line-soft relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <AnimatedSection animation="slide-left">
-              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">3D Photogrammetry</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">3D Photogrammetry</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 See History in Three Dimensions
               </h2>
-              <p className="text-gray-400 leading-relaxed mb-6">
+              <p className="text-ink-2 leading-relaxed mb-6">
                 Our collection features real photogrammetry scans created by archaeologists and heritage organizations. These aren't artistic interpretations — they're precise digital twins of actual historical sites, captured using drones, laser scanning, and thousands of photographs.
               </p>
-              <p className="text-gray-400 leading-relaxed mb-8">
+              <p className="text-ink-2 leading-relaxed mb-8">
                 Rotate, zoom, and explore every angle. See the texture of carved stone, the wear of centuries, and the architectural details that photographs alone can't capture.
               </p>
               <div className="flex flex-wrap gap-4">
-                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:border-amber-500/30 transition-colors">
-                  <span className="text-2xl font-black text-amber-400">187K+</span>
-                  <span className="text-gray-500 text-xs ml-2">triangles per model</span>
+                <div className="px-4 py-2 rounded-xl bg-panel-2 border border-line hover:border-amber-500/30 transition-colors">
+                  <span className="text-2xl font-black text-accent">187K+</span>
+                  <span className="text-ink-3 text-xs ml-2">triangles per model</span>
                 </div>
-                <div className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:border-amber-500/30 transition-colors">
-                  <span className="text-2xl font-black text-amber-400">4K</span>
-                  <span className="text-gray-500 text-xs ml-2">texture resolution</span>
+                <div className="px-4 py-2 rounded-xl bg-panel-2 border border-line hover:border-amber-500/30 transition-colors">
+                  <span className="text-2xl font-black text-accent">4K</span>
+                  <span className="text-ink-3 text-xs ml-2">texture resolution</span>
                 </div>
               </div>
             </AnimatedSection>
             <AnimatedSection animation="slide-right" delay={200}>
-              <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] p-2 hover:border-amber-500/20 transition-colors">
+              <div className="rounded-2xl overflow-hidden border border-line bg-panel p-2 hover:border-amber-500/20 transition-colors">
                 <div className="aspect-video rounded-xl overflow-hidden">
                   <iframe
                     src="https://sketchfab.com/models/d02e8cdef15946408be6613fc5d1f0ff/embed?autostart=0"
@@ -201,51 +232,51 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                     title="Taj Mahal 3D Model"
                   />
                 </div>
-                <p className="text-center text-gray-500 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
+                <p className="text-center text-ink-3 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
               </div>
             </AnimatedSection>
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-4 border-t border-white/5">
+      <section className="py-20 px-4 border-t border-line-soft">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">AI-Powered</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">AI-Powered</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Artifact Restoration
               </h2>
-              <p className="text-gray-500 max-w-xl mx-auto">Upload a broken artifact and watch AI restore it to its original condition.</p>
+              <p className="text-ink-3 max-w-xl mx-auto">Upload a broken artifact and watch AI restore it to its original condition.</p>
             </div>
           </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <AnimatedSection animation="slide-left" delay={100}>
-              <div className="p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
+              <div className="p-8 rounded-2xl border border-line bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Auto Restore</h3>
+                  <h3 className="text-lg font-bold text-ink">Auto Restore</h3>
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-ink-2 text-sm leading-relaxed">
                   Simply upload a photo of any damaged artifact — cracked pottery, broken sculptures, eroded inscriptions — and our AI will generate a restored version in seconds.
                 </p>
               </div>
             </AnimatedSection>
             <AnimatedSection animation="slide-right" delay={200}>
-              <div className="p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-teal-500/20 hover:shadow-xl hover:shadow-teal-500/5 transition-all duration-500 h-full">
+              <div className="p-8 rounded-2xl border border-line bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-teal-500/20 hover:shadow-xl hover:shadow-teal-500/5 transition-all duration-500 h-full">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-cool" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Manual Mask</h3>
+                  <h3 className="text-lg font-bold text-ink">Manual Mask</h3>
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-ink-2 text-sm leading-relaxed">
                   For precise control, paint over the damaged areas yourself. The AI will only restore the parts you mark, preserving the rest of the artifact exactly as it is.
                 </p>
               </div>
@@ -264,12 +295,12 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
         </div>
       </section>
 
-      <section className="py-20 px-4 border-t border-white/5">
+      <section className="py-20 px-4 border-t border-line-soft">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">Why It Matters</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">Why It Matters</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Preserving Heritage for Future Generations
               </h2>
             </div>
@@ -281,10 +312,10 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
               { stat: '100%', label: 'Free Access', desc: 'Open to students, researchers, and curious minds worldwide' },
             ].map((item, i) => (
               <AnimatedSection key={item.label} delay={i * 150} animation="scale-in">
-                <div className="text-center p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
+                <div className="text-center p-8 rounded-2xl border border-line bg-panel hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
                   <p className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-2">{item.stat}</p>
-                  <p className="text-white font-bold mb-2">{item.label}</p>
-                  <p className="text-gray-500 text-sm">{item.desc}</p>
+                  <p className="text-ink font-bold mb-2">{item.label}</p>
+                  <p className="text-ink-3 text-sm">{item.desc}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -292,21 +323,21 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
         </div>
       </section>
 
-      <section className="py-20 px-4 border-t border-white/5 relative overflow-hidden">
+      <section className="py-20 px-4 border-t border-line-soft relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
         </div>
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <AnimatedSection>
-            <p className="text-amber-400 text-sm font-medium tracking-widest uppercase mb-3">About the Creators</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">About the Creators</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
               Built with Passion for History
             </h2>
           </AnimatedSection>
           <AnimatedSection delay={150}>
             <div className="space-y-6 mb-12">
-              <p className="text-gray-400 leading-relaxed max-w-2xl mx-auto">
-                The Ancient Civilization Reconstructor was created as an educational project to make cultural heritage accessible to everyone. By combining modern web technologies with 3D scanning, AI, and historical research, we aim to bring the past to life in ways that textbooks cannot.
+              <p className="text-ink-2 leading-relaxed max-w-2xl mx-auto">
+                ACR (Ancient Civilization Reconstructor) was created as an educational project to make cultural heritage accessible to everyone. By combining modern web technologies with 3D scanning, AI, and historical research, we aim to bring the past to life in ways that textbooks cannot.
               </p>
             </div>
           </AnimatedSection>
@@ -326,19 +357,19 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                   >
                     <span className="text-white font-black text-xl">{member.initials}</span>
                   </div>
-                  <p className="text-white text-sm font-medium leading-tight text-center">{member.name}</p>
+                  <p className="text-ink text-sm font-medium leading-tight text-center">{member.name}</p>
                 </div>
               ))}
             </div>
           </AnimatedSection>
 
           <AnimatedSection delay={300}>
-            <div className="p-8 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-amber-500/20 transition-colors">
-              <p className="text-gray-400 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
+            <div className="p-8 rounded-2xl border border-line bg-panel hover:border-amber-500/20 transition-colors">
+              <p className="text-ink-2 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
                 This project is a labor of love — combining skills in web development, data science, and historical research to create an interactive learning platform. Every civilization page is carefully researched using academic sources, museum archives, and on-the-ground heritage documentation.
               </p>
               <div className="flex justify-center gap-4">
-                <a href="https://github.com/leenelzoubii/Ancient-Civilization-Reconstructor" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:border-amber-500/30 transition-all text-sm flex items-center gap-2">
+                <a href="https://github.com/leenelzoubii/Ancient-Civilization-Reconstructor" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-panel-2 border border-line text-ink-2 hover:text-ink hover:bg-panel-2 hover:border-amber-500/30 transition-all text-sm flex items-center gap-2">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                   View on GitHub
                 </a>
@@ -346,16 +377,16 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
             </div>
           </AnimatedSection>
           <AnimatedSection delay={400}>
-            <p className="text-gray-600 text-xs mt-8">
+            <p className="text-ink-4 text-xs mt-8">
               This is an educational and research project. All content is used for non-commercial purposes. 3D models are property of their respective creators on Sketchfab.
             </p>
           </AnimatedSection>
         </div>
       </section>
 
-      <footer className="border-t border-white/5 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 text-sm">
-          <p>Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+      <footer className="border-t border-line-soft py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
+          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>
@@ -367,7 +398,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const tags = TAG_MAPS[civId] || []
 
-  if (!civ) return <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center text-white">Civilization not found</div>
+  if (!civ) return <div className="min-h-screen bg-app flex items-center justify-center text-ink">Civilization not found</div>
 
   const tabContent: Record<Tab, string> = {
     overview: civ.overview,
@@ -378,11 +409,11 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] pt-16">
+    <div className="min-h-screen bg-app pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-400 hover:text-amber-400 transition-colors mb-8 cursor-pointer group"
+          className="flex items-center gap-2 text-ink-2 hover:text-accent transition-colors mb-8 cursor-pointer group"
         >
           <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -398,26 +429,26 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
               </span>
             ))}
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
             {civ.name}
           </h1>
-          <p className="text-gray-500 text-lg capitalize">{civ.id.replace(/-/g, ' ')}</p>
+          <p className="text-ink-3 text-lg capitalize">{civ.id.replace(/-/g, ' ')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-          <div className="animate-scale-in rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
-            <div className="p-3 border-b border-white/5 flex items-center justify-between">
+          <div className="animate-scale-in rounded-2xl overflow-hidden border border-line bg-panel">
+            <div className="p-3 border-b border-line-soft flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-500/80" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                 <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                <span className="text-xs text-gray-500 ml-2">3D Model - Sketchfab</span>
+                <span className="text-xs text-ink-3 ml-2">3D Model - Sketchfab</span>
               </div>
               <a
                 href={`https://sketchfab.com/models/${civ.sketchfabScene}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-amber-400 hover:text-amber-300 underline"
+                className="text-xs text-accent hover:text-accent underline"
               >
                 Open on Sketchfab ↗
               </a>
@@ -432,12 +463,12 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
             </div>
           </div>
 
-          <div className="animate-scale-in rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]" style={{ animationDelay: '0.1s' }}>
-            <div className="p-3 border-b border-white/5 flex items-center gap-2">
+          <div className="animate-scale-in rounded-2xl overflow-hidden border border-line bg-panel" style={{ animationDelay: '0.1s' }}>
+            <div className="p-3 border-b border-line-soft flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500/80" />
               <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <span className="text-xs text-gray-500 ml-2">YouTube Video</span>
+              <span className="text-xs text-ink-3 ml-2">YouTube Video</span>
             </div>
             <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
               <iframe
@@ -452,30 +483,30 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
         </div>
 
         <div className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex flex-wrap gap-2 mb-0 border-b border-white/10 pb-0">
+          <div className="flex flex-wrap gap-2 mb-0 border-b border-line pb-0">
             {TABS.map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-3 text-sm font-medium rounded-t-xl transition-all duration-300 cursor-pointer ${
                   activeTab === tab
-                    ? 'bg-white/[0.07] text-amber-400 border border-white/10 border-b-transparent -mb-px'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
+                    ? 'bg-panel-2 text-accent border border-line border-b-transparent -mb-px'
+                    : 'text-ink-3 hover:text-ink-2 hover:bg-panel'
                 }`}
               >
                 {TAB_LABELS[tab]}
               </button>
             ))}
           </div>
-          <div className="bg-white/[0.03] border border-white/10 border-t-0 rounded-b-2xl p-6 sm:p-8">
-            <p className="text-gray-300 leading-relaxed text-base">{tabContent[activeTab]}</p>
+          <div className="bg-panel border border-line border-t-0 rounded-b-2xl p-6 sm:p-8">
+            <p className="text-ink-2 leading-relaxed text-base">{tabContent[activeTab]}</p>
           </div>
         </div>
       </div>
 
-      <footer className="border-t border-white/5 py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 text-sm">
-          <p>Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+      <footer className="border-t border-line-soft py-8 mt-12">
+        <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
+          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>
@@ -485,6 +516,16 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
 export default function App() {
   const [page, setPage] = useState<Page>('home')
   const [selectedCiv, setSelectedCiv] = useState<string | null>(null)
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('acr-theme')
+    if (saved === 'light' || saved === 'dark') return saved
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('acr-theme', theme)
+  }, [theme])
 
   const handleSelectCiv = (id: string) => {
     setSelectedCiv(id)
@@ -553,11 +594,16 @@ export default function App() {
       <div ref={cursorDot} style={{ position:'fixed', top:-100, left:-100, width:8, height:8, borderRadius:'50%', background:'linear-gradient(135deg,#d4af37,#e56b4f)', boxShadow:'0 0 12px rgba(212,175,55,0.8), 0 0 24px rgba(212,175,55,0.4)', pointerEvents:'none', zIndex:2147483647, transform:'translate(-50%,-50%)', opacity:0 }} />
       <div ref={cursorRing} style={{ position:'fixed', top:-100, left:-100, width:40, height:40, borderRadius:'50%', border:'1.5px solid rgba(212,175,55,0.5)', boxShadow:'0 0 15px rgba(212,175,55,0.15)', pointerEvents:'none', zIndex:2147483646, transform:'translate(-50%,-50%)', opacity:0 }} />
       <div ref={cursorGlow} style={{ position:'fixed', top:-100, left:-100, width:100, height:100, borderRadius:'50%', background:'radial-gradient(circle,rgba(212,175,55,0.12) 0%,rgba(229,107,79,0.06) 40%,transparent 70%)', pointerEvents:'none', zIndex:2147483645, transform:'translate(-50%,-50%)', opacity:0 }} />
-      <NavBar page={page} onNavigate={(p) => {
-        if (p === 'home') handleBack()
-        else if (p === 'restore') { setPage('restore'); window.scrollTo(0, 0) }
-        else if (p === 'about') { setPage('about'); window.scrollTo(0, 0) }
-      }} />
+      <NavBar
+        page={page}
+        theme={theme}
+        onToggleTheme={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+        onNavigate={(p) => {
+          if (p === 'home') handleBack()
+          else if (p === 'restore') { setPage('restore'); window.scrollTo(0, 0) }
+          else if (p === 'about') { setPage('about'); window.scrollTo(0, 0) }
+        }}
+      />
       {page === 'home' && <HomePage onSelectCiv={handleSelectCiv} onNavigate={(p) => { setPage(p); window.scrollTo(0, 0) }} />}
       {page === 'detail' && selectedCiv && <DetailPage civId={selectedCiv} onBack={handleBack} />}
       {page === 'restore' && <ArtifactRestorer />}
