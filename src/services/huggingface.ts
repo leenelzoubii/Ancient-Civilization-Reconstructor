@@ -1,5 +1,8 @@
 const POLLINATIONS_KEY = import.meta.env.VITE_POLLINATIONS_KEY
 const POLLINATIONS_URL = 'https://gen.pollinations.ai/v1/images/edits'
+const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY
+const GEMINI_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent'
 
 const RESTORE_PROMPT =
   'Please analyze the uploaded image carefully and identify all cracks, ' +
@@ -10,7 +13,11 @@ const RESTORE_PROMPT =
   'broken or damaged. Focus on perfecting details to preserve the original ' +
   'style and quality while eliminating all visual defects.'
 
-export type RestoreResult = { blob: Blob; engine: 'ai' | 'local' }
+export type RestoreResult = {
+  blob: Blob
+  engine: 'ai' | 'local'
+  fallbackReason?: string
+}
 
 export async function restoreWithMask(
   imageBase64: string,
@@ -20,8 +27,12 @@ export async function restoreWithMask(
     const ai = await aiRestore(imageBase64)
     const blended = await blendMasked(imageBase64, ai, maskBase64)
     return { blob: blended, engine: 'ai' }
-  } catch {
-    return { blob: await localProcess(imageBase64, maskBase64), engine: 'local' }
+  } catch (err) {
+    return {
+      blob: await localProcess(imageBase64, maskBase64),
+      engine: 'local',
+      fallbackReason: err instanceof Error ? err.message : String(err),
+    }
   }
 }
 
@@ -30,14 +41,88 @@ export async function restoreAutomatic(
 ): Promise<RestoreResult> {
   try {
     return { blob: await aiRestore(imageBase64), engine: 'ai' }
-  } catch {
-    return { blob: await localProcess(imageBase64, null), engine: 'local' }
+  } catch (err) {
+    return {
+      blob: await localProcess(imageBase64, null),
+      engine: 'local',
+      fallbackReason: err instanceof Error ? err.message : String(err),
+    }
   }
 }
 
 async function aiRestore(imageBase64: string): Promise<Blob> {
-  if (!POLLINATIONS_KEY) throw new Error('No Pollinations key configured')
+  const errors: string[] = []
 
+  if (GEMINI_KEY) {
+    try {
+      return await geminiRestore(imageBase64)
+    } catch (err) {
+      errors.push(`Gemini: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
+  if (POLLINATIONS_KEY) {
+    try {
+      return await pollinationsRestore(imageBase64)
+    } catch (err) {
+      errors.push(`Pollinations: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
+  if (!GEMINI_KEY && !POLLINATIONS_KEY) {
+    throw new Error('No AI provider key configured')
+  }
+  throw new Error(errors.join(' | ') || 'All AI providers failed')
+}
+
+async function geminiRestore(imageBase64: string): Promise<Blob> {
+  const res = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_KEY! },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            { text: RESTORE_PROMPT },
+            { inline_data: { mime_type: 'image/png', data: imageBase64 } },
+          ],
+        },
+      ],
+      generationConfig: { responseModalities: ['IMAGE'] },
+    }),
+  })
+
+  if (!res.ok) {
+    let detail = ''
+    try {
+      const data = await res.json()
+      detail = data?.error?.message || data?.detail || ''
+    } catch {
+      detail = await res.text().catch(() => '')
+    }
+    throw new Error(`Gemini restore failed (${res.status}): ${detail}`)
+  }
+
+  const data = await res.json().catch(() => null)
+  const parts = data?.candidates?.[0]?.content?.parts || []
+  const inline = parts.find(
+    (p: { inlineData?: { data?: string; mimeType?: string }; inline_data?: { data?: string } }) =>
+      p.inlineData?.data || p.inline_data?.data
+  )
+  const b64 = inline?.inlineData?.data || inline?.inline_data?.data
+  if (!b64) {
+    const blockReason =
+      data?.promptFeedback?.blockReason ||
+      data?.candidates?.[0]?.finishReason ||
+      data?.error?.message ||
+      'no image in response'
+    throw new Error(`Gemini returned no image (${blockReason})`)
+  }
+  const mime = inline?.inlineData?.mimeType || 'image/png'
+  return base64ToBlob(b64, mime)
+}
+
+async function pollinationsRestore(imageBase64: string): Promise<Blob> {
   const form = new FormData()
   form.append('image', base64ToBlob(imageBase64), 'artifact.png')
   form.append('prompt', RESTORE_PROMPT)
@@ -45,7 +130,7 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
 
   const res = await fetch(POLLINATIONS_URL, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${POLLINATIONS_KEY}` },
+    headers: { Authorization: `Bearer ${POLLINATIONS_KEY!}` },
     body: form,
   })
 
@@ -57,7 +142,7 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
     } catch {
       detail = await res.text().catch(() => '')
     }
-    throw new Error(`AI restore failed (${res.status}): ${detail}`)
+    throw new Error(`restore failed (${res.status}): ${detail}`)
   }
 
   const data = await res.json().catch(() => null)
@@ -65,7 +150,7 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
   if (!b64) {
     const detail =
       data?.error?.message || data?.detail || 'AI restore returned no image'
-    throw new Error(`AI restore failed: ${detail}`)
+    throw new Error(detail)
   }
   return base64ToBlob(b64, 'image/jpeg')
 }

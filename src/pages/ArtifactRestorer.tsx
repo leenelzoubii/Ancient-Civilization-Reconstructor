@@ -2,7 +2,6 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   restoreAutomatic,
   restoreWithMask,
-  fileToBase64,
   blobToDataUrl,
 } from '../services/huggingface'
 
@@ -16,6 +15,7 @@ export default function ArtifactRestorer() {
   const [originalBase64, setOriginalBase64] = useState<string | null>(null)
   const [restoredImage, setRestoredImage] = useState<string | null>(null)
   const [engine, setEngine] = useState<'ai' | 'local'>('ai')
+  const [fallbackReason, setFallbackReason] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [brushSize, setBrushSize] = useState(30)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -40,18 +40,51 @@ export default function ArtifactRestorer() {
     return () => stopCamera()
   }, [stopCamera])
 
+  const prepareFile = useCallback(async (file: File): Promise<{ dataUrl: string; b64: string }> => {
+    const rawUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader()
+      r.onload = () => resolve(r.result as string)
+      r.onerror = () => reject(new Error('read failed'))
+      r.readAsDataURL(file)
+    })
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image()
+      i.onload = () => resolve(i)
+      i.onerror = () => reject(new Error('decode failed'))
+      i.src = rawUrl
+    })
+    const MAX = 1536
+    let w = img.naturalWidth
+    let h = img.naturalHeight
+    if (w > MAX || h > MAX) {
+      const scale = Math.min(MAX / w, MAX / h)
+      w = Math.round(w * scale)
+      h = Math.round(h * scale)
+    }
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0, w, h)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
+    return { dataUrl, b64: dataUrl.split(',')[1] }
+  }, [])
+
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
       setError('Please upload a PNG or JPEG image.')
       return
     }
     setError(null)
-    const base64 = await fileToBase64(file)
-    const dataUrl = `data:${file.type};base64,${base64}`
-    setOriginalImage(dataUrl)
-    setOriginalBase64(base64)
-    setStep('preview')
-  }, [])
+    try {
+      const { dataUrl, b64 } = await prepareFile(file)
+      setOriginalImage(dataUrl)
+      setOriginalBase64(b64)
+      setStep('preview')
+    } catch {
+      setError('Could not read that image file. Please try another image.')
+    }
+  }, [prepareFile])
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -149,12 +182,14 @@ export default function ArtifactRestorer() {
     if (!originalBase64) return
     setStep('restoring')
     setError(null)
+    setFallbackReason(null)
     try {
       let blob: Blob
       if (mode === 'auto') {
         const result = await restoreAutomatic(originalBase64)
         blob = result.blob
         setEngine(result.engine)
+        setFallbackReason(result.fallbackReason ?? null)
       } else {
         const mask = getMaskBase64()
         if (!mask) {
@@ -165,6 +200,7 @@ export default function ArtifactRestorer() {
         const result = await restoreWithMask(originalBase64, mask)
         blob = result.blob
         setEngine(result.engine)
+        setFallbackReason(result.fallbackReason ?? null)
       }
       const dataUrl = await blobToDataUrl(blob)
       setRestoredImage(dataUrl)
@@ -191,6 +227,7 @@ export default function ArtifactRestorer() {
     setOriginalBase64(null)
     setRestoredImage(null)
     setError(null)
+    setFallbackReason(null)
     stopCamera()
   }, [stopCamera])
 
@@ -532,6 +569,12 @@ export default function ArtifactRestorer() {
                 Restore Another
               </button>
             </div>
+            {engine === 'local' && fallbackReason && (
+              <div className="mb-6 p-3 rounded-xl bg-accent/10 border border-accent/30 text-accent text-xs leading-relaxed animate-fade-in">
+                AI providers were unreachable, so a local enhancement was applied instead.{' '}
+                <span className="opacity-75">({fallbackReason})</span>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="rounded-2xl overflow-hidden border border-line bg-panel">
