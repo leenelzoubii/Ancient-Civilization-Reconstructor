@@ -63,15 +63,40 @@ const TAG_MAPS: Record<string, { label: string; color: string }[]> = {
   ],
 }
 
-const TABS = ['overview', 'history', 'architecture', 'daily-life', 'achievements'] as const
+const TABS = ['overview', 'history', 'culture', 'achievements', 'economy', 'daily-life', 'architecture'] as const
 type Tab = typeof TABS[number]
 
 const TAB_LABELS: Record<Tab, string> = {
   overview: 'Overview',
   history: 'History',
-  architecture: 'Architecture',
-  'daily-life': 'Daily Life',
+  culture: 'Culture',
   achievements: 'Achievements',
+  economy: 'Economy',
+  'daily-life': 'Society & Daily Life',
+  architecture: 'Architecture',
+}
+
+function RichContent({ text }: { text: string }) {
+  const blocks = text.split(/\n\n+/).filter(Boolean)
+  return (
+    <div>
+      {blocks.map((block, i) =>
+        block.startsWith('## ') ? (
+          <h3
+            key={i}
+            className="text-lg font-bold text-accent mt-6 mb-2 first:mt-0"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {block.slice(3)}
+          </h3>
+        ) : (
+          <p key={i} className="text-ink-2 leading-relaxed text-base mb-4 last:mb-0">
+            {block}
+          </p>
+        )
+      )}
+    </div>
+  )
 }
 
 type Page = 'home' | 'detail' | 'restore' | 'about'
@@ -175,7 +200,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { step: '01', title: 'Choose', desc: 'Select from 8 ancient civilizations spanning continents and millennia — from the pyramids of Egypt to the forts of the UAE.', color: 'from-amber-500 to-orange-600' },
-              { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read detailed tabs covering history, architecture, daily life, and achievements.', color: 'from-orange-500 to-red-600' },
+              { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read structured sections covering history, culture, economy, society, and achievements — then test yourself with flashcard quizzes.', color: 'from-orange-500 to-red-600' },
               { step: '03', title: 'Reconstruct', desc: 'Use AI to restore broken artifacts — upload a photo of a damaged item and watch AI bring it back to its original glory.', color: 'from-teal-500 to-cyan-600' },
             ].map((item, i) => (
               <AnimatedSection key={item.step} delay={i * 150}>
@@ -403,9 +428,11 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
   const tabContent: Record<Tab, string> = {
     overview: civ.overview,
     history: civ.history,
-    architecture: civ.architecture,
-    'daily-life': civ.dailyLife,
+    culture: civ.culture,
     achievements: civ.achievements,
+    economy: civ.economy,
+    'daily-life': civ.dailyLife,
+    architecture: civ.architecture,
   }
 
   return (
@@ -499,7 +526,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
             ))}
           </div>
           <div className="bg-panel border border-line border-t-0 rounded-b-2xl p-6 sm:p-8">
-            <p className="text-ink-2 leading-relaxed text-base">{tabContent[activeTab]}</p>
+            <RichContent text={tabContent[activeTab]} />
           </div>
         </div>
       </div>
