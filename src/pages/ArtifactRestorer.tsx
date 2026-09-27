@@ -15,6 +15,7 @@ export default function ArtifactRestorer() {
   const [originalImage, setOriginalImage] = useState<string | null>(null)
   const [originalBase64, setOriginalBase64] = useState<string | null>(null)
   const [restoredImage, setRestoredImage] = useState<string | null>(null)
+  const [engine, setEngine] = useState<'ai' | 'local'>('ai')
   const [error, setError] = useState<string | null>(null)
   const [brushSize, setBrushSize] = useState(30)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -151,7 +152,9 @@ export default function ArtifactRestorer() {
     try {
       let blob: Blob
       if (mode === 'auto') {
-        blob = await restoreAutomatic(originalBase64)
+        const result = await restoreAutomatic(originalBase64)
+        blob = result.blob
+        setEngine(result.engine)
       } else {
         const mask = getMaskBase64()
         if (!mask) {
@@ -159,7 +162,9 @@ export default function ArtifactRestorer() {
           setStep('preview')
           return
         }
-        blob = await restoreWithMask(originalBase64, mask)
+        const result = await restoreWithMask(originalBase64, mask)
+        blob = result.blob
+        setEngine(result.engine)
       }
       const dataUrl = await blobToDataUrl(blob)
       setRestoredImage(dataUrl)
@@ -486,11 +491,13 @@ export default function ArtifactRestorer() {
                   </svg>
                   <div className="text-sm text-gray-400">
                     <p className="font-medium text-amber-400 mb-1">
-                      Enhancing your artifact...
+                      AI is restoring your artifact...
                     </p>
                     <p>
-                      Sharpening details, reducing noise, and enriching colors to
-                      bring the artifact back to life.
+                      The model analyzes cracks, breaks, and visible artifacts,
+                      then repairs them seamlessly while preserving the original
+                      style. This usually takes 5-20 seconds. Please don't close
+                      this page.
                     </p>
                   </div>
                 </div>
@@ -502,9 +509,22 @@ export default function ArtifactRestorer() {
         {step === 'result' && originalImage && restoredImage && (
           <div className="animate-fade-in-up">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">
-                Restoration Complete
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-bold text-white">
+                  Restoration Complete
+                </h2>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                    engine === 'ai'
+                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                      : 'bg-teal-500/10 text-teal-400 border-teal-500/30'
+                  }`}
+                >
+                  {engine === 'ai'
+                    ? 'AI Restored'
+                    : 'Local Enhancement'}
+                </span>
+              </div>
               <button
                 onClick={handleReset}
                 className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer"
