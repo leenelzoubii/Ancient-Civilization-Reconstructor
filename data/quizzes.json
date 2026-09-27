@@ -1,0 +1,52 @@
+{
+  "quizzes": {
+    "egypt": [
+      { "q": "Which river was the lifeline of Ancient Egypt?", "a": "The Nile River" },
+      { "q": "What writing system did Ancient Egypt use?", "a": "Hieroglyphics" },
+      { "q": "What process preserved bodies for the afterlife?", "a": "Mummification" },
+      { "q": "How long did Ancient Egypt flourish along the Nile?", "a": "Over 3,000 years" }
+    ],
+    "rome": [
+      { "q": "What material did Roman engineers perfect for building?", "a": "Concrete" },
+      { "q": "What famous arena hosted gladiatorial games?", "a": "The Colosseum" },
+      { "q": "What empire-wide peace lasted from 27 BCE to 180 CE?", "a": "The Pax Romana" },
+      { "q": "Which language of Rome underlies French, Spanish, and Italian?", "a": "Latin" }
+    ],
+    "maya": [
+      { "q": "Which number concept did Maya mathematics include?", "a": "The concept of zero" },
+      { "q": "Which crop was the staple of the Maya diet?", "a": "Maize (corn)" },
+      { "q": "Which famous Maya city stands in modern Guatemala?", "a": "Tikal" },
+      { "q": "Which calendar counted days from a mythical start date?", "a": "The Long Count calendar" }
+    ],
+    "taj-mahal": [
+      { "q": "Who commissioned the Taj Mahal?", "a": "Emperor Shah Jahan" },
+      { "q": "In whose memory was the Taj Mahal built?", "a": "His wife Mumtaz Mahal" },
+      { "q": "Which four-part garden pattern shapes the grounds?", "a": "The charbagh pattern" },
+      { "q": "In what year was the Taj Mahal complex completed?", "a": "1653" }
+    ],
+    "khorfakkan": [
+      { "q": "Which European power built the Khor Fakkan fort?", "a": "The Portuguese" },
+      { "q": "In which century was the Khor Fakkan fort built?", "a": "The 16th century" },
+      { "q": "What local stone were the fort's walls built from?", "a": "Coral stone and limestone" },
+      { "q": "Which harbor did the fort strategically control?", "a": "The harbor of Khor Fakkan" }
+    ],
+    "petra": [
+      { "q": "Which people built the city of Petra?", "a": "The Nabateans" },
+      { "q": "What is the Treasury's name in Arabic?", "a": "Al-Khazneh" },
+      { "q": "Which scented goods passed through Petra's trade routes?", "a": "Frankincense and myrrh" },
+      { "q": "How many people could Petra's water system support?", "a": "Up to 30,000" }
+    ],
+    "al-jazirat-al-hamra": [
+      { "q": "What does 'Al-Jazirat Al-Hamra' mean in Arabic?", "a": "The Red Island" },
+      { "q": "Which towers caught sea breezes to cool the houses?", "a": "Wind towers (barajeel)" },
+      { "q": "What was the village's main industry?", "a": "Pearl diving" },
+      { "q": "In which emirate is the village located?", "a": "Ras Al Khaimah" }
+    ],
+    "dhayah-fort": [
+      { "q": "In what year did Dhayah Fort fall after a siege?", "a": "1819" },
+      { "q": "Which family last defended Dhayah Fort?", "a": "The Al Qasimi family" },
+      { "q": "What makes Dhayah Fort unique among UAE forts?", "a": "It is the UAE's only remaining hilltop fort" },
+      { "q": "What material were the fort's walls built from?", "a": "Adobe and mud brick" }
+    ]
+  }
+}

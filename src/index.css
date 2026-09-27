@@ -26,6 +26,7 @@
   --color-cool-2: var(--c-cool-2);
   --color-forest: var(--c-forest);
   --color-rose: var(--c-rose);
+  --color-danger: var(--c-danger);
 }
 
 /* ── Dark theme (default) ─────────────────────────────── */
@@ -47,6 +48,7 @@
   --c-cool-2: #38bdf8;
   --c-forest: #34d399;
   --c-rose: #fb7185;
+  --c-danger: #f87171;
   /* Hero + transition backgrounds (VisualScene) */
   --c-hero-a: #0a0a0a;
   --c-hero-b: #141414;
@@ -73,6 +75,7 @@
   --c-cool-2: #0369a1;
   --c-forest: #047857;
   --c-rose: #be123c;
+  --c-danger: #b91c1c;
   --c-hero-a: #f2efe8;
   --c-hero-b: #f8f6f1;
   --c-transition-b: #f6ead0;

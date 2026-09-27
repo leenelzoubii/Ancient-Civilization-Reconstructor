@@ -239,7 +239,7 @@ export default function ArtifactRestorer() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm animate-fade-in">
+          <div className="mb-6 p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm animate-fade-in">
             {error}
           </div>
         )}

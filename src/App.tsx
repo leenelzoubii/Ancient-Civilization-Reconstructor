@@ -4,6 +4,7 @@ import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
 import VisualScene from './components/VisualScene'
 import AnimatedSection from './components/AnimatedSection'
+import Flashcards from './components/Flashcards'
 
 const TAG_COLORS: Record<string, string> = {
   primary: 'bg-amber-500/20 text-accent border border-amber-500/30',
@@ -63,7 +64,7 @@ const TAG_MAPS: Record<string, { label: string; color: string }[]> = {
   ],
 }
 
-const TABS = ['overview', 'history', 'culture', 'achievements', 'economy', 'daily-life', 'architecture'] as const
+const TABS = ['overview', 'history', 'culture', 'achievements', 'economy', 'daily-life', 'architecture', 'flashcards'] as const
 type Tab = typeof TABS[number]
 
 const TAB_LABELS: Record<Tab, string> = {
@@ -74,6 +75,7 @@ const TAB_LABELS: Record<Tab, string> = {
   economy: 'Economy',
   'daily-life': 'Society & Daily Life',
   architecture: 'Architecture',
+  flashcards: 'Flashcards',
 }
 
 function RichContent({ text }: { text: string }) {
@@ -425,7 +427,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
 
   if (!civ) return <div className="min-h-screen bg-app flex items-center justify-center text-ink">Civilization not found</div>
 
-  const tabContent: Record<Tab, string> = {
+  const tabContent: Record<Exclude<Tab, 'flashcards'>, string> = {
     overview: civ.overview,
     history: civ.history,
     culture: civ.culture,
@@ -526,7 +528,11 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
             ))}
           </div>
           <div className="bg-panel border border-line border-t-0 rounded-b-2xl p-6 sm:p-8">
-            <RichContent text={tabContent[activeTab]} />
+            {activeTab === 'flashcards' ? (
+              <Flashcards civId={civId} />
+            ) : (
+              <RichContent text={tabContent[activeTab as Exclude<Tab, 'flashcards'>]} />
+            )}
           </div>
         </div>
       </div>
