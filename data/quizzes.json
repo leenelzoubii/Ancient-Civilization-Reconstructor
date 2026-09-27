@@ -1,52 +1,52 @@
 {
   "quizzes": {
     "egypt": [
-      { "q": "Which river was the lifeline of Ancient Egypt?", "a": "The Nile River" },
-      { "q": "What writing system did Ancient Egypt use?", "a": "Hieroglyphics" },
-      { "q": "What process preserved bodies for the afterlife?", "a": "Mummification" },
-      { "q": "How long did Ancient Egypt flourish along the Nile?", "a": "Over 3,000 years" }
+      { "q": "Which river was the lifeline of Ancient Egypt?", "options": ["The Tigris", "The Nile River", "The Euphrates", "The Indus River"], "a": 1 },
+      { "q": "What writing system did Ancient Egypt use?", "options": ["Cuneiform", "Linear A", "Hieroglyphics", "Sanskrit"], "a": 2 },
+      { "q": "What process preserved bodies for the afterlife?", "options": ["Cremation", "Cranial binding", "Mummification", "Fossilization"], "a": 2 },
+      { "q": "How long did Ancient Egypt flourish along the Nile?", "options": ["About 300 years", "About 1,000 years", "About 800 years", "Over 3,000 years"], "a": 3 }
     ],
     "rome": [
-      { "q": "What material did Roman engineers perfect for building?", "a": "Concrete" },
-      { "q": "What famous arena hosted gladiatorial games?", "a": "The Colosseum" },
-      { "q": "What empire-wide peace lasted from 27 BCE to 180 CE?", "a": "The Pax Romana" },
-      { "q": "Which language of Rome underlies French, Spanish, and Italian?", "a": "Latin" }
+      { "q": "What material did Roman engineers perfect for building?", "options": ["Marble", "Concrete", "Bronze", "Glass"], "a": 1 },
+      { "q": "What famous arena hosted gladiatorial games?", "options": ["The Pantheon", "The Circus Maximus", "The Colosseum", "The Arch of Titus"], "a": 2 },
+      { "q": "What empire-wide peace lasted from 27 BCE to 180 CE?", "options": ["The Pax Romana", "The Pax Mongolica", "The Renaissance", "The Enlightenment"], "a": 0 },
+      { "q": "Which language of Rome underlies French, Spanish, and Italian?", "options": ["Greek", "Etruscan", "Aramaic", "Latin"], "a": 3 }
     ],
     "maya": [
-      { "q": "Which number concept did Maya mathematics include?", "a": "The concept of zero" },
-      { "q": "Which crop was the staple of the Maya diet?", "a": "Maize (corn)" },
-      { "q": "Which famous Maya city stands in modern Guatemala?", "a": "Tikal" },
-      { "q": "Which calendar counted days from a mythical start date?", "a": "The Long Count calendar" }
+      { "q": "Which number concept did Maya mathematics include?", "options": ["Negative numbers", "The concept of zero", "Decimals", "Prime numbers"], "a": 1 },
+      { "q": "Which crop was the staple of the Maya diet?", "options": ["Maize (corn)", "Rice", "Wheat", "Millet"], "a": 0 },
+      { "q": "Which famous Maya city stands in modern Guatemala?", "options": ["Chichen Itza", "Palenque", "Tikal", "Uxmal"], "a": 2 },
+      { "q": "Which calendar counted days from a mythical start date?", "options": ["The Long Count calendar", "The Julian calendar", "The Gregorian calendar", "The Zodiac calendar"], "a": 0 }
     ],
     "taj-mahal": [
-      { "q": "Who commissioned the Taj Mahal?", "a": "Emperor Shah Jahan" },
-      { "q": "In whose memory was the Taj Mahal built?", "a": "His wife Mumtaz Mahal" },
-      { "q": "Which four-part garden pattern shapes the grounds?", "a": "The charbagh pattern" },
-      { "q": "In what year was the Taj Mahal complex completed?", "a": "1653" }
+      { "q": "Who commissioned the Taj Mahal?", "options": ["Akbar the Great", "Emperor Shah Jahan", "Aurangzeb", "Babur"], "a": 1 },
+      { "q": "In whose memory was the Taj Mahal built?", "options": ["His mother", "His daughter", "His wife Mumtaz Mahal", "His general"], "a": 2 },
+      { "q": "Which four-part garden pattern shapes the grounds?", "options": ["The charbagh pattern", "The English landscape style", "The French parterre", "The Japanese karesansui"], "a": 0 },
+      { "q": "In what year was the Taj Mahal complex completed?", "options": ["1632", "1556", "1700", "1653"], "a": 3 }
     ],
     "khorfakkan": [
-      { "q": "Which European power built the Khor Fakkan fort?", "a": "The Portuguese" },
-      { "q": "In which century was the Khor Fakkan fort built?", "a": "The 16th century" },
-      { "q": "What local stone were the fort's walls built from?", "a": "Coral stone and limestone" },
-      { "q": "Which harbor did the fort strategically control?", "a": "The harbor of Khor Fakkan" }
+      { "q": "Which European power built the Khor Fakkan fort?", "options": ["The British", "The Dutch", "The Portuguese", "The Spanish"], "a": 2 },
+      { "q": "In which century was the Khor Fakkan fort built?", "options": ["The 16th century", "The 15th century", "The 18th century", "The 20th century"], "a": 0 },
+      { "q": "What local stone were the fort's walls built from?", "options": ["Granite", "Coral stone and limestone", "Marble", "Volcanic basalt"], "a": 1 },
+      { "q": "Which harbor did the fort strategically control?", "options": ["The harbor of Dubai", "The harbor of Muscat", "The harbor of Doha", "The harbor of Khor Fakkan"], "a": 3 }
     ],
     "petra": [
-      { "q": "Which people built the city of Petra?", "a": "The Nabateans" },
-      { "q": "What is the Treasury's name in Arabic?", "a": "Al-Khazneh" },
-      { "q": "Which scented goods passed through Petra's trade routes?", "a": "Frankincense and myrrh" },
-      { "q": "How many people could Petra's water system support?", "a": "Up to 30,000" }
+      { "q": "Which people built the city of Petra?", "options": ["The Romans", "The Assyrians", "The Nabateans", "The Phoenicians"], "a": 2 },
+      { "q": "What is the Treasury's name in Arabic?", "options": ["Al-Khazneh", "Al-Hamra", "Al-Qasr", "Al-Masjid"], "a": 0 },
+      { "q": "Which scented goods passed through Petra's trade routes?", "options": ["Silk and porcelain", "Tea and spices", "Wool and dyes", "Frankincense and myrrh"], "a": 3 },
+      { "q": "How many people could Petra's water system support?", "options": ["Up to 3,000", "Up to 30,000", "Up to 100,000", "Up to 10,000"], "a": 1 }
     ],
     "al-jazirat-al-hamra": [
-      { "q": "What does 'Al-Jazirat Al-Hamra' mean in Arabic?", "a": "The Red Island" },
-      { "q": "Which towers caught sea breezes to cool the houses?", "a": "Wind towers (barajeel)" },
-      { "q": "What was the village's main industry?", "a": "Pearl diving" },
-      { "q": "In which emirate is the village located?", "a": "Ras Al Khaimah" }
+      { "q": "What does 'Al-Jazirat Al-Hamra' mean in Arabic?", "options": ["The Green Island", "The Red Island", "The Salt Island", "The Long Island"], "a": 1 },
+      { "q": "Which towers caught sea breezes to cool the houses?", "options": ["Watchtowers", "Lighthouse towers", "Wind towers (barajeel)", "Granary towers"], "a": 2 },
+      { "q": "What was the village's main industry?", "options": ["Date farming", "Shipbuilding", "Camel trading", "Pearl diving"], "a": 3 },
+      { "q": "In which emirate is the village located?", "options": ["Ras Al Khaimah", "Dubai", "Sharjah", "Ajman"], "a": 0 }
     ],
     "dhayah-fort": [
-      { "q": "In what year did Dhayah Fort fall after a siege?", "a": "1819" },
-      { "q": "Which family last defended Dhayah Fort?", "a": "The Al Qasimi family" },
-      { "q": "What makes Dhayah Fort unique among UAE forts?", "a": "It is the UAE's only remaining hilltop fort" },
-      { "q": "What material were the fort's walls built from?", "a": "Adobe and mud brick" }
+      { "q": "In what year did Dhayah Fort fall after a siege?", "options": ["1790", "1819", "1897", "1912"], "a": 1 },
+      { "q": "Which family last defended Dhayah Fort?", "options": ["The Al Nahyan family", "The Al Maktoum family", "The Al Qasimi family", "The Al Sharqi family"], "a": 2 },
+      { "q": "What makes Dhayah Fort unique among UAE forts?", "options": ["It is the largest fort", "It was built by the British", "It is entirely underground", "It is the UAE's only remaining hilltop fort"], "a": 3 },
+      { "q": "What material were the fort's walls built from?", "options": ["Adobe and mud brick", "Concrete", "Fired red brick", "Steel-reinforced stone"], "a": 0 }
     ]
   }
 }

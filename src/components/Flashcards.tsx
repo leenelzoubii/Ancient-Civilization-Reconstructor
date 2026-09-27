@@ -1,46 +1,45 @@
 import { useState } from 'react'
 import quizzesData from '../../data/quizzes.json'
 
-type Answer = 'correct' | 'wrong' | null
+type Card = { q: string; options: string[]; a: number }
+type Grade = 'correct' | 'wrong' | null
 
-const quizzes = quizzesData.quizzes as Record<string, { q: string; a: string }[]>
+const quizzes = quizzesData.quizzes as Record<string, Card[]>
+const LETTERS = ['A', 'B', 'C', 'D']
 
 export default function Flashcards({ civId }: { civId: string }) {
   const cards = quizzes[civId] || []
   const [index, setIndex] = useState(0)
-  const [revealed, setRevealed] = useState(false)
-  const [answers, setAnswers] = useState<Answer[]>(() => cards.map(() => null))
+  const [choices, setChoices] = useState<(number | null)[]>(() => cards.map(() => null))
 
   if (!cards.length) {
     return <p className="text-ink-3 text-sm">No quiz available for this civilization.</p>
   }
 
+  const grade = (i: number): Grade =>
+    choices[i] === null ? null : choices[i] === cards[i].a ? 'correct' : 'wrong'
+
   const card = cards[index]
-  const score = answers.filter(a => a === 'correct').length
-  const answeredCount = answers.filter(a => a !== null).length
+  const selected = choices[index]
+  const answered = selected !== null
+  const score = cards.filter((_, i) => grade(i) === 'correct').length
+  const answeredCount = choices.filter(c => c !== null).length
   const done = answeredCount === cards.length
 
-  const mark = (value: 'correct' | 'wrong') => {
-    const next = [...answers]
-    next[index] = value
-    setAnswers(next)
-    if (index < cards.length - 1) {
-      setIndex(index + 1)
-      setRevealed(false)
-    } else {
-      setRevealed(false)
-    }
+  const choose = (optionIndex: number) => {
+    if (answered) return
+    const next = [...choices]
+    next[index] = optionIndex
+    setChoices(next)
   }
 
   const goTo = (i: number) => {
     setIndex(Math.max(0, Math.min(cards.length - 1, i)))
-    setRevealed(false)
   }
 
   const reset = () => {
     setIndex(0)
-    setRevealed(false)
-    setAnswers(cards.map(() => null))
+    setChoices(cards.map(() => null))
   }
 
   if (done) {
@@ -61,7 +60,7 @@ export default function Flashcards({ civId }: { civId: string }) {
           {perfect
             ? 'Perfect score — you know this civilization inside out!'
             : score >= cards.length / 2
-              ? 'Good work — review the missed cards to master them.'
+              ? 'Good work — review the missed answers to master them.'
               : 'Keep exploring the sections above, then try again!'}
         </p>
         <button
@@ -80,22 +79,22 @@ export default function Flashcards({ civId }: { civId: string }) {
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <span className="text-sm text-ink-2">
-            Card <span className="text-accent font-bold">{index + 1}</span> of {cards.length}
+            Question <span className="text-accent font-bold">{index + 1}</span> of {cards.length}
           </span>
           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent/10 text-accent border border-accent/30">
             Score: {score}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          {answers.map((a, i) => (
+          {choices.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
-              aria-label={`Go to card ${i + 1}`}
+              aria-label={`Go to question ${i + 1}`}
               className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                a === 'correct'
+                grade(i) === 'correct'
                   ? 'bg-forest'
-                  : a === 'wrong'
+                  : grade(i) === 'wrong'
                     ? 'bg-danger'
                     : i === index
                       ? 'bg-accent'
@@ -114,20 +113,51 @@ export default function Flashcards({ civId }: { civId: string }) {
         />
       </div>
 
-      {/* Card */}
-      <div className="rounded-2xl border border-line bg-panel p-6 sm:p-8 min-h-[200px] flex flex-col">
-        <p className="text-accent text-xs font-semibold tracking-widest uppercase mb-3">Question</p>
+      {/* Question */}
+      <div className="rounded-2xl border border-line bg-panel p-6 sm:p-8">
+        <p className="text-accent text-xs font-semibold tracking-widest uppercase mb-3">Question {index + 1}</p>
         <p className="text-ink text-lg sm:text-xl font-semibold leading-relaxed mb-6">{card.q}</p>
 
-        {revealed && (
-          <div className="animate-fade-in rounded-xl border border-accent/30 bg-accent/5 p-4 mb-2">
-            <p className="text-accent text-xs font-semibold tracking-widest uppercase mb-2">Answer</p>
-            <p className="text-ink text-base leading-relaxed">{card.a}</p>
-          </div>
-        )}
+        {/* Options */}
+        <div className="flex flex-col gap-3">
+          {card.options.map((opt, i) => {
+            const isCorrect = i === card.a
+            const isChosen = selected === i
+            let cls =
+              'border-line bg-panel-2 text-ink-2 hover:border-accent/40 hover:text-ink'
+            if (answered) {
+              if (isCorrect) cls = 'border-forest/60 bg-forest/10 text-forest'
+              else if (isChosen) cls = 'border-danger/60 bg-danger/10 text-danger'
+              else cls = 'border-line bg-panel-2 text-ink-4 opacity-60'
+            }
+            return (
+              <button
+                key={i}
+                onClick={() => choose(i)}
+                disabled={answered}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
+              >
+                <span
+                  className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold ${
+                    answered && isCorrect
+                      ? 'bg-forest/20 text-forest'
+                      : answered && isChosen
+                        ? 'bg-danger/20 text-danger'
+                        : 'bg-accent/10 text-accent'
+                  }`}
+                >
+                  {LETTERS[i]}
+                </span>
+                <span className="text-sm sm:text-base font-medium">{opt}</span>
+                {answered && isCorrect && <span className="ml-auto text-forest text-sm">✓</span>}
+                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-sm">✗</span>}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Actions */}
+      {/* Navigation */}
       <div className="mt-4 flex flex-wrap items-center gap-3 justify-between">
         <button
           onClick={() => goTo(index - 1)}
@@ -137,37 +167,17 @@ export default function Flashcards({ civId }: { civId: string }) {
           ← Previous
         </button>
 
-        {!revealed ? (
-          <button
-            onClick={() => setRevealed(true)}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
-          >
-            Show Answer
-          </button>
+        {!answered ? (
+          <span className="text-xs text-ink-3">Choose an answer to continue</span>
         ) : (
-          <div className="flex gap-3">
-            <button
-              onClick={() => mark('wrong')}
-              className="px-4 py-2.5 rounded-xl border border-danger/40 bg-danger/10 text-danger text-sm font-semibold hover:bg-danger/20 transition-all cursor-pointer"
-            >
-              Missed it
-            </button>
-            <button
-              onClick={() => mark('correct')}
-              className="px-4 py-2.5 rounded-xl border border-forest/40 bg-forest/10 text-forest text-sm font-semibold hover:bg-forest/20 transition-all cursor-pointer"
-            >
-              Got it ✓
-            </button>
-          </div>
+          <button
+            onClick={() => goTo(index + 1)}
+            disabled={index === cards.length - 1}
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {index === cards.length - 1 ? 'Finish' : 'Next →'}
+          </button>
         )}
-
-        <button
-          onClick={() => goTo(index + 1)}
-          disabled={index === cards.length - 1}
-          className="px-4 py-2.5 rounded-xl border border-line bg-panel text-ink-2 text-sm font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          Next →
-        </button>
       </div>
     </div>
   )
