@@ -60,11 +60,14 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
     throw new Error(`AI restore failed (${res.status}): ${detail}`)
   }
 
-  const blob = await res.blob()
-  if (!blob.type.startsWith('image/')) {
-    throw new Error('AI restore returned a non-image response')
+  const data = await res.json().catch(() => null)
+  const b64 = data?.data?.[0]?.b64_json
+  if (!b64) {
+    const detail =
+      data?.error?.message || data?.detail || 'AI restore returned no image'
+    throw new Error(`AI restore failed: ${detail}`)
   }
-  return blob
+  return base64ToBlob(b64, 'image/jpeg')
 }
 
 async function blendMasked(
