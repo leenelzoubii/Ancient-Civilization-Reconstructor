@@ -482,7 +482,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
                 Open on Sketchfab ↗
               </a>
             </div>
-            <div style={{ position: 'relative', width: '100%', paddingBottom: '75%' }}>
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
               <iframe
                 src={`https://sketchfab.com/models/${civ.sketchfabScene}/embed?autostart=0`}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}

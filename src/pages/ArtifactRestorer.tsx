@@ -559,7 +559,9 @@ export default function ArtifactRestorer() {
                 >
                   {engine === 'ai'
                     ? 'AI Restored'
-                    : 'Local Enhancement'}
+                    : mode === 'manual'
+                      ? 'Local Repair'
+                      : 'Local Enhancement'}
                 </span>
               </div>
               <button

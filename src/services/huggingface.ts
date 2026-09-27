@@ -5,13 +5,15 @@ const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent'
 
 const RESTORE_PROMPT =
-  'Please analyze the uploaded image carefully and identify all cracks, ' +
-  'breaks, or visible artifacts. Restore the image by seamlessly repairing ' +
-  'these imperfections so that the final result looks fully mended, smooth, ' +
-  'and pristine. Remove any signs of damage or disruption in texture and ' +
-  'color, making the image appear natural, flawless, and as if it was never ' +
-  'broken or damaged. Focus on perfecting details to preserve the original ' +
-  'style and quality while eliminating all visual defects.'
+  'You are an expert conservator restoring a photograph of a damaged ancient artifact. ' +
+  'Carefully identify every sign of damage: cracks, chips, scratches, broken edges, missing ' +
+  'fragments, stains, and eroded areas. Repair ALL of it: completely remove every crack, line, ' +
+  'and scratch; reconstruct missing or broken regions by continuing the surrounding material ' +
+  'color, texture, and pattern so the repaired areas blend seamlessly; repair discolored areas. ' +
+  'The final result must show a fully intact, pristine artifact with absolutely no visible trace ' +
+  'of damage, as if it had never been broken. Keep the artifact shape, style, colors, framing, ' +
+  'and background identical to the original — do not add, remove, or invent any objects. ' +
+  'Output only the fully restored image.'
 
 export type RestoreResult = {
   blob: Blob
@@ -247,13 +249,18 @@ async function localProcess(
     mctx.drawImage(mask, 0, 0, w, h)
     const maskData = mctx.getImageData(0, 0, w, h)
 
+    const coverage = new Uint8Array(w * h)
+    for (let p = 0; p < w * h; p++) coverage[p] = maskData.data[p * 4]
+
+    const filled = new Uint8ClampedArray(originalData.data)
+    inpaintMasked(filled, w, h, coverage)
+
     const resultData = rctx.createImageData(w, h)
     for (let i = 0; i < originalData.data.length; i += 4) {
-      const alpha = maskData.data[i] / 255
+      const a = coverage[i / 4] / 255
       for (let c = 0; c < 3; c++) {
         resultData.data[i + c] = Math.round(
-          originalData.data[i + c] * (1 - alpha) +
-            sharpenData.data[i + c] * alpha
+          originalData.data[i + c] * (1 - a) + filled[i + c] * a
         )
       }
       resultData.data[i + 3] = 255
@@ -279,6 +286,105 @@ async function localProcess(
   }
 
   return canvasToBlob(result)
+}
+
+function inpaintMasked(
+  rgba: Uint8ClampedArray,
+  w: number,
+  h: number,
+  coverage: Uint8Array
+) {
+  const THRESH = 100
+  const idx: number[] = []
+  let minX = w - 1
+  let minY = h - 1
+  let maxX = 0
+  let maxY = 0
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (coverage[y * w + x] >= THRESH) {
+        idx.push(y * w + x)
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+  if (!idx.length) return
+
+  const M = 6
+  const bx0 = Math.max(0, minX - M)
+  const by0 = Math.max(0, minY - M)
+  const bx1 = Math.min(w - 1, maxX + M)
+  const by1 = Math.min(h - 1, maxY + M)
+
+  let sr = 0
+  let sg = 0
+  let sb = 0
+  let n = 0
+  for (let y = by0; y <= by1; y++) {
+    for (let x = bx0; x <= bx1; x++) {
+      const p = y * w + x
+      if (coverage[p] < THRESH) {
+        const i = p * 4
+        sr += rgba[i]
+        sg += rgba[i + 1]
+        sb += rgba[i + 2]
+        n++
+      }
+    }
+  }
+  if (!n) return
+  const ir = sr / n
+  const ig = sg / n
+  const ib = sb / n
+  const count = idx.length
+  const xs = new Int32Array(count)
+  const ys = new Int32Array(count)
+  const ps = new Int32Array(count)
+  for (let k = 0; k < count; k++) {
+    const p = idx[k]
+    ps[k] = p
+    xs[k] = p % w
+    ys[k] = (p / w) | 0
+    rgba[p * 4] = ir
+    rgba[p * 4 + 1] = ig
+    rgba[p * 4 + 2] = ib
+  }
+
+  const depth = Math.ceil(Math.max(maxX - minX, maxY - minY) / 2) + M
+  let iters = Math.max(300, Math.min(4000, depth * depth))
+  const budget = 200_000_000
+  if (count * iters > budget) {
+    iters = Math.max(100, Math.floor(budget / count))
+  }
+
+  for (let it = 0; it < iters; it++) {
+    for (let k = 0; k < count; k++) {
+      const p = ps[k]
+      const x = xs[k]
+      const y = ys[k]
+      const a = x > 0 ? p - 1 : p
+      const b = x < w - 1 ? p + 1 : p
+      const c = y > 0 ? p - w : p
+      const d = y < h - 1 ? p + w : p
+      const i = p * 4
+      rgba[i] = (rgba[a * 4] + rgba[b * 4] + rgba[c * 4] + rgba[d * 4]) / 4
+      rgba[i + 1] =
+        (rgba[a * 4 + 1] + rgba[b * 4 + 1] + rgba[c * 4 + 1] + rgba[d * 4 + 1]) / 4
+      rgba[i + 2] =
+        (rgba[a * 4 + 2] + rgba[b * 4 + 2] + rgba[c * 4 + 2] + rgba[d * 4 + 2]) / 4
+    }
+  }
+
+  for (let k = 0; k < count; k++) {
+    const i = ps[k] * 4
+    const grain = (Math.random() * 6 - 3) * (coverage[ps[k]] / 255)
+    rgba[i] += grain
+    rgba[i + 1] += grain
+    rgba[i + 2] += grain
+  }
 }
 
 function enhancePixel(r: number, g: number, b: number) {
