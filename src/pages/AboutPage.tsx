@@ -78,9 +78,9 @@ export default function AboutPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[
                 { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
-                { name: 'Afraa Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
+                { name: 'Afra Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
                 { name: 'Hajar Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
-                { name: 'Meera Almashjari', initials: 'MM', gradient: 'from-emerald-500 to-green-600' },
+                { name: 'Salama Alhadhrami', initials: 'SA', gradient: 'from-emerald-500 to-green-600' },
               ].map((member) => (
                 <div key={member.name} className="group flex flex-col items-center gap-3">
                   <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300`}>

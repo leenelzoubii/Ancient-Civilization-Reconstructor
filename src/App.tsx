@@ -255,7 +255,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                   <iframe
                     src="https://sketchfab.com/models/d02e8cdef15946408be6613fc5d1f0ff/embed?autostart=0"
                     style={{ width: '100%', height: '100%', border: 'none' }}
-                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                    allow="autoplay; fullscreen; vr; xr-spatial-tracking"
                     title="Taj Mahal 3D Model"
                   />
                 </div>
@@ -373,9 +373,9 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-12">
               {[
                 { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
-                { name: 'Afraa Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
+                { name: 'Afra Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
                 { name: 'Hajar Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
-                { name: 'Meera Almashjari', initials: 'MM', gradient: 'from-emerald-500 to-green-600' },
+                { name: 'Salama Alhadhrami', initials: 'SA', gradient: 'from-emerald-500 to-green-600' },
               ].map((member, i) => (
                 <div key={member.name} className="group flex flex-col items-center gap-3">
                   <div
@@ -486,7 +486,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
               <iframe
                 src={`https://sketchfab.com/models/${civ.sketchfabScene}/embed?autostart=0`}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                allow="autoplay; fullscreen; xr-spatial-tracking"
+                allow="autoplay; fullscreen; vr; xr-spatial-tracking"
                 title={`${civ.name} 3D Model`}
               />
             </div>

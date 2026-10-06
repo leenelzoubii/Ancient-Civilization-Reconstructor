@@ -3,6 +3,7 @@ const POLLINATIONS_URL = 'https://gen.pollinations.ai/v1/images/edits'
 const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent'
+const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY
 
 const RESTORE_PROMPT =
   'You are an expert conservator restoring a photograph of a damaged ancient artifact. ' +
@@ -26,7 +27,7 @@ export async function restoreWithMask(
   maskBase64: string
 ): Promise<RestoreResult> {
   try {
-    const ai = await aiRestore(imageBase64)
+    const ai = await aiRestore(imageBase64, maskBase64)
     const blended = await blendMasked(imageBase64, ai, maskBase64)
     return { blob: blended, engine: 'ai' }
   } catch (err) {
@@ -52,7 +53,10 @@ export async function restoreAutomatic(
   }
 }
 
-async function aiRestore(imageBase64: string): Promise<Blob> {
+async function aiRestore(
+  imageBase64: string,
+  maskBase64?: string
+): Promise<Blob> {
   const errors: string[] = []
 
   if (GEMINI_KEY) {
@@ -60,6 +64,14 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
       return await geminiRestore(imageBase64)
     } catch (err) {
       errors.push(`Gemini: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
+  if (OPENAI_KEY) {
+    try {
+      return await openaiRestore(imageBase64, maskBase64)
+    } catch (err) {
+      errors.push(`OpenAI: ${err instanceof Error ? err.message : err}`)
     }
   }
 
@@ -71,10 +83,70 @@ async function aiRestore(imageBase64: string): Promise<Blob> {
     }
   }
 
-  if (!GEMINI_KEY && !POLLINATIONS_KEY) {
+  if (!GEMINI_KEY && !OPENAI_KEY && !POLLINATIONS_KEY) {
     throw new Error('No AI provider key configured')
   }
   throw new Error(errors.join(' | ') || 'All AI providers failed')
+}
+
+async function openaiRestore(
+  imageBase64: string,
+  maskBase64?: string
+): Promise<Blob> {
+  const form = new FormData()
+  form.append('model', 'gpt-image-1')
+  form.append('image', base64ToBlob(imageBase64), 'artifact.png')
+  if (maskBase64) {
+    form.append('mask', await openAiMaskBlob(maskBase64), 'mask.png')
+  }
+  form.append('prompt', RESTORE_PROMPT)
+  form.append('size', 'auto')
+  form.append('quality', 'medium')
+
+  const res = await fetch('https://api.openai.com/v1/images/edits', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${OPENAI_KEY!}` },
+    body: form,
+  })
+
+  if (!res.ok) {
+    let detail = ''
+    try {
+      const data = await res.json()
+      detail = data?.error?.message || data?.detail || ''
+    } catch {
+      detail = await res.text().catch(() => '')
+    }
+    throw new Error(`restore failed (${res.status}): ${detail}`)
+  }
+
+  const data = await res.json().catch(() => null)
+  const b64 = data?.data?.[0]?.b64_json
+  if (!b64) {
+    throw new Error(data?.error?.message || 'returned no image')
+  }
+  return base64ToBlob(b64, 'image/png')
+}
+
+async function openAiMaskBlob(maskBase64: string): Promise<Blob> {
+  const img = await loadImage(`data:image/png;base64,${maskBase64}`)
+  const w = img.naturalWidth || img.width
+  const h = img.naturalHeight || img.height
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0, w, h)
+  const data = ctx.getImageData(0, 0, w, h)
+  for (let i = 0; i < data.data.length; i += 4) {
+    const coverage = data.data[i]
+    data.data[i] = 255
+    data.data[i + 1] = 255
+    data.data[i + 2] = 255
+    data.data[i + 3] = 255 - coverage
+  }
+  ctx.putImageData(data, 0, 0)
+  return canvasToBlob(canvas)
 }
 
 async function geminiRestore(imageBase64: string): Promise<Blob> {
