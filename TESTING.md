@@ -16,6 +16,23 @@
 
 Bundle check: `dist/` contains no `sk-` strings and no old `VITE_` key names.
 
+## Production (live, tourism-app-next.vercel.app — 2026-10-09)
+
+| Check | Result |
+|-------|--------|
+| Site loads | ✅ 200 |
+| `GET /api/restore` | ✅ 405 |
+| Evil `Origin` header | ✅ 403 |
+| Missing `prompt` | ✅ 400 |
+| Real restore (`gpt-image-2.5-sunburst`, Production Secret) | ✅ 200, 1.49 MB `b64_json` PNG |
+| `vision describe` (`gpt-6-luna`) | ✅ 200, accurate caption |
+| `vision judge` (identical pair) | ✅ 200, `repaired:false` |
+
+Note: `vercel dev` runs each function invocation in a fresh module, so the
+in-memory rate limiter only trips on warm instances (i.e. in production); its
+logic is unit-verified above. Upgrade to Upstash/KV if per-instance limits are
+not acceptable.
+
 ## Manual image QA (fill in while testing)
 
 Test 10–15 damaged artifact photos (scratches, cracks, missing pieces, stains),
