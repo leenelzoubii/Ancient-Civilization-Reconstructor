@@ -1,33 +1,100 @@
 // Artifact restoration client service.
 // Talks to the Vercel Functions in /api so the OpenAI key never reaches
-// the browser. Gemini and Pollinations were removed; the only remaining
-// fallback is the local diffusion inpaint when the AI edit fails.
+// the browser. Gemini and Pollinations were removed.
 //
-// Approximate cost (Oct 2026):
-// - image edit ~$0.04-0.05 per medium-quality 1024px image
-//   (gpt-image-2.5-sunburst: $30/M image output tokens, $8/M image input)
-// - gpt-6-luna vision call well under a cent
-//   ($0.10/M input, $0.50/M output; images dominate the token count)
-// Worst case per restore = 2 image edits + 2 vision calls; the image
-// edits dominate the cost.
+// SPEND RULES (a single click maps to at most ONE billable image call):
+// - DEV_MOCK_AI (default true in dev): no network call at all, $0.
+// - Exactly one image edit per restoreWithMask call, never an auto-retry.
+//   A retry happens only when the user clicks "Try again".
+// - An HTTP 200 AI result is ALWAYS shown, even if verification says weak.
+//   Diff/judge only change the badge/note, never replace or hide the image.
+// - Local fill runs ONLY when the AI call itself failed AND the painted area
+//   is under 5% — never over a paid AI result.
+// - Vision judge is opt-in (VITE_VISION_LAYER=true) and only annotates.
+//
+// Approximate cost (Oct 2026 docs, 1024px, rounded up incl. inputs):
+// - image edit low ~$0.02, medium ~$0.03, high ~$0.06
+//   (gpt-image-2.5-sunburst: $30/M image output, $8/M image input;
+//   calculator output-only: low $0.0059, medium $0.0132, high $0.0527)
+// - gpt-6-luna judge call ~$0.001 (well under a cent)
+// Worst case per restore = 1 image edit (+ 1 judge call if opted in).
+
+// $0 testing switch. True in dev builds by default (override with
+// VITE_MOCK_AI=false to hit the real HTTP stack against the mock server).
+export const DEV_MOCK_AI =
+  import.meta.env.VITE_MOCK_AI != null
+    ? import.meta.env.VITE_MOCK_AI === 'true'
+    : import.meta.env.DEV
+
+// Vision judge is opt-in: it costs a (tiny) extra call and must never
+// trigger another image edit — when enabled it only annotates the result.
+const USE_VISION_LAYER = import.meta.env.VITE_VISION_LAYER === 'true'
+
+// Spend caps and thresholds.
+const MAX_PAID_IMAGE_CALLS_PER_RESTORE = 1
+const MIN_MASK_FRACTION = 0.001 // 0.1%: below this, no paid call is made
+export const LARGE_MASK_FRACTION = 0.15 // 15%: warn + require explicit ack
+const LOCAL_FALLBACK_MAX_FRACTION = 0.05 // 5%: local fill only below this
+const MAX_IMAGE_BYTES = 4_000_000
+
+// Conservative per-call estimates in USD (see cost comment above).
+const COST_PER_EDIT_USD: Record<string, number> = {
+  low: 0.02,
+  medium: 0.03,
+  high: 0.06,
+}
+const COST_PER_VISION_USD = 0.001
+// Server default quality in production (api/_lib IMAGE_QUALITY). Used only
+// for the pre-call "about $X" label; the real value comes back in the
+// x-image-quality response header and is used for session accounting.
+const ASSUMED_PROD_QUALITY = 'medium'
+
+export function estimatedEditCostLabel(): string {
+  if (DEV_MOCK_AI) return '$0.00 (mock mode — no OpenAI call)'
+  const cost = COST_PER_EDIT_USD[ASSUMED_PROD_QUALITY] ?? 0.03
+  return `about $${cost.toFixed(2)} (medium quality)`
+}
+
+function costForQuality(quality: string | null): number {
+  if (!quality || quality === 'mock') return 0
+  return COST_PER_EDIT_USD[quality] ?? 0.03
+}
+
+// Running session totals (page lifetime). Displayed on the Restore page.
+let sessionImageCalls = 0
+let sessionVisionCalls = 0
+let sessionSpendUsd = 0
+
+export function getSessionSpend(): {
+  imageCalls: number
+  visionCalls: number
+  estimatedUsd: number
+} {
+  return {
+    imageCalls: sessionImageCalls,
+    visionCalls: sessionVisionCalls,
+    estimatedUsd: sessionSpendUsd,
+  }
+}
+
+export function resetSessionSpend(): void {
+  sessionImageCalls = 0
+  sessionVisionCalls = 0
+  sessionSpendUsd = 0
+}
 
 const DIFF_THRESHOLD = 10 // mean abs diff over 0-255 scale
-const MAX_EDITS = 2
-const MAX_VISION_CALLS = 2
 const MASK_DILATE_PX = 6
 const MASK_FEATHER_PX = 3
 const JUDGE_MAX_SIDE = 768
 
 const EDIT_PROMPT_MASK =
-  'Repair ONLY the transparent masked region of this photo of an ancient ' +
-  'artifact. Remove the cracks, chips or damage there and reconstruct the ' +
-  'surface seamlessly, matching the surrounding material, texture, color and ' +
-  'lighting. Do not change anything outside the masked region. Do not add ' +
-  'new objects or text.'
-
-const RETRY_SUFFIX =
-  ' The previous attempt left damage visible: {remaining_damage}. Be more ' +
-  'aggressive and completely remove every crack and chip.'
+  'This is a photo of an ancient terracotta/stone artifact with thin ' +
+  'cracks. Fill ONLY the transparent masked areas, which follow the ' +
+  'cracks, so the surface looks continuous and undamaged. Match the ' +
+  'surrounding clay/stone color, grain, texture and lighting exactly. ' +
+  'Keep the carved features, shape, colors and background identical. Do ' +
+  'not smooth, blur, flatten or paint over details. Do not add anything new.'
 
 export type JudgeResult = {
   repaired: boolean | null
@@ -39,12 +106,35 @@ export type RestoreResult = {
   blob: Blob | null
   engine: 'ai' | 'local'
   failed: boolean
+  /** AI returned 200 but verification suggests a weak result (still shown). */
+  weak: boolean
   diff: number | null
   judge: JudgeResult | null
+  /** Weak-result note shown alongside the image (never replaces it). */
+  note?: string
   /** Real failure reason (API error text or verification message). */
   error?: string
   /** Why a local repair was applied instead of the AI edit. */
   fallbackReason?: string
+  /** True when the result came from the $0 mock path, not OpenAI. */
+  mock?: boolean
+  /** Billable image calls made by this restore (0 in mock mode). */
+  paidImageCalls?: number
+}
+
+export type MaskAnalysis = {
+  width: number
+  height: number
+  /** Fraction of the DILATED (actually sent) mask at >=128/255. */
+  fraction: number
+  large: boolean
+}
+
+export type MaskPreflight = {
+  analysis: MaskAnalysis
+  painted: Coverage
+  dilated: Coverage
+  feathered: Coverage
 }
 
 type Coverage = { data: Uint8Array; width: number; height: number }
@@ -63,118 +153,269 @@ export async function restoreWithMask(
 ): Promise<RestoreResult> {
   const originalUrl = `data:image/png;base64,${imageBase64}`
 
-  const img = await loadImage(originalUrl)
-  const width = img.naturalWidth || img.width
-  const height = img.naturalHeight || img.height
-
-  const painted = await loadCoverage(maskSource, width, height)
-  if (!painted.data.some(v => v >= 128)) {
+  // Pre-flight: image size (free, local). Never pay for a doomed request.
+  if (base64ByteLength(imageBase64) > MAX_IMAGE_BYTES) {
     return {
       blob: null,
       engine: 'ai',
       failed: true,
+      weak: false,
       diff: null,
       judge: null,
-      error: 'The mask is empty. Paint over the damaged areas first.',
+      error: `Image is larger than ${
+        MAX_IMAGE_BYTES / 1_000_000
+      }MB. Use a smaller photo.`,
     }
   }
 
-  const dilated = dilateCoverage(painted, MASK_DILATE_PX)
-  const feathered = featherCoverage(dilated, MASK_FEATHER_PX)
+  const img = await loadImage(originalUrl)
+  if (!img.naturalWidth || !img.naturalHeight) {
+    throw new Error('Could not read the image. Try another photo.')
+  }
+
+  // Pre-flight: mask presence, PNG/alpha format, dims, coverage (free).
+  let pre: MaskPreflight
+  try {
+    pre = await preflightMask(imageBase64, maskSource)
+  } catch (err) {
+    return {
+      blob: null,
+      engine: 'ai',
+      failed: true,
+      weak: false,
+      diff: null,
+      judge: null,
+      error: err instanceof Error ? err.message : 'Mask check failed.',
+    }
+  }
+  const { analysis, dilated, feathered } = pre
+  logRestore({
+    preflight: {
+      width: analysis.width,
+      height: analysis.height,
+      fraction: Number(analysis.fraction.toFixed(4)),
+      large: analysis.large,
+      mock: DEV_MOCK_AI,
+    },
+  })
+
   const openAiMask = await buildOpenAiMaskBlob(dilated)
 
-  let visionUsed = 0
-  let lastDiff: number | null = null
-  let lastJudge: JudgeResult | null = null
-  let lastError: string | null = null
-
-  for (let attempt = 1; attempt <= MAX_EDITS; attempt++) {
-    const prompt =
-      attempt === 1
-        ? EDIT_PROMPT_MASK
-        : EDIT_PROMPT_MASK + retrySuffix(lastJudge)
-
-    let edited: Blob
-    try {
-      edited = await callRestore(prompt, imageBase64, openAiMask)
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err)
-      break
-    }
-
-    const blended = await blendByCoverage(originalUrl, edited, feathered)
-    lastDiff = await computeDiff(originalUrl, blended, feathered)
-
-    if (visionUsed < MAX_VISION_CALLS) {
-      visionUsed += 1
-      lastJudge = await judgeImages(originalUrl, blended, dilated).catch(
-        () => null
-      )
-    }
-
-    const passed = lastDiff > DIFF_THRESHOLD && lastJudge?.repaired !== false
-    logRestore({ mode: 'manual', attempt, diff: lastDiff, judge: lastJudge, passed })
-    if (passed) {
-      return {
-        blob: blended,
-        engine: 'ai',
-        failed: false,
-        diff: lastDiff,
-        judge: lastJudge,
-      }
+  // $0 path first: local fill stands in for the AI edit so the full
+  // blend → diff → judge → badge flow runs with zero OpenAI calls.
+  if (DEV_MOCK_AI) {
+    logRestore({
+      mockEdit: true,
+      note: 'local fill stands in for the AI edit; nothing billed',
+    })
+    const standIn = await fillMasked(imageBase64, dilated)
+    const blended = await blendByCoverage(originalUrl, standIn, feathered)
+    const diff = await computeDiff(originalUrl, blended, feathered)
+    const judge = USE_VISION_LAYER ? mockJudge() : null
+    return {
+      blob: blended,
+      engine: 'ai',
+      failed: false,
+      weak: false,
+      diff,
+      judge,
+      mock: true,
+      paidImageCalls: 0,
     }
   }
 
-  // AI path failed (API error or verification) — fall back to a local
-  // diffusion inpaint that visibly fills the painted region.
-  const aiReason = lastError ?? verificationFailureReason(lastDiff, lastJudge)
-  const localBlob = await localInpaint(imageBase64, dilated)
-  const localDiff = await computeDiff(originalUrl, localBlob, feathered)
-  logRestore({ mode: 'manual-local', diff: localDiff })
-  if (localDiff > DIFF_THRESHOLD) {
-    return {
-      blob: localBlob,
-      engine: 'local',
-      failed: false,
-      diff: localDiff,
-      judge: null,
-      fallbackReason: `The AI edit did not visibly work, so a local repair was applied instead. (${aiReason})`,
+  // Exactly ONE paid image call per restore. No automatic retry: a retry
+  // happens only when the user clicks "Try again".
+  let edited: Blob
+  let quality: string | null
+  try {
+    const res = await callRestore(EDIT_PROMPT_MASK, imageBase64, openAiMask)
+    edited = res.blob
+    quality = res.quality
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    logRestore({ aiFailed: true, error: message })
+    // Local fill ONLY when the AI call itself failed AND the painted area
+    // is small — never over a paid AI result.
+    if (analysis.fraction < LOCAL_FALLBACK_MAX_FRACTION) {
+      const filled = await fillMasked(imageBase64, dilated)
+      const localBlob = await blendByCoverage(originalUrl, filled, feathered)
+      const localDiff = await computeDiff(originalUrl, localBlob, feathered)
+      logRestore({ fallback: 'local', diff: localDiff, reason: message })
+      return {
+        blob: localBlob,
+        engine: 'local',
+        failed: false,
+        weak: false,
+        diff: localDiff,
+        judge: null,
+        fallbackReason:
+          `AI call failed, so a basic local repair was applied instead. ` +
+          `Real error: ${message}`,
+        paidImageCalls: 0,
+      }
     }
+    return {
+      blob: null,
+      engine: 'ai',
+      failed: true,
+      weak: false,
+      diff: null,
+      judge: null,
+      error: message,
+      paidImageCalls: 0,
+    }
+  }
+
+  // HTTP 200 = billed. Record it — then ALWAYS show the image, even weak.
+  const cost = costForQuality(quality)
+  sessionImageCalls += 1
+  sessionSpendUsd += cost
+  logRestore({ billedImageCall: sessionImageCalls, quality, costUsd: cost })
+
+  const blended = await blendByCoverage(originalUrl, edited, feathered)
+  const diff = await computeDiff(originalUrl, blended, feathered)
+
+  // Opt-in judge only annotates; it can never trigger another edit.
+  let judge: JudgeResult | null = null
+  if (USE_VISION_LAYER) {
+    judge = await judgeImages(originalUrl, blended, dilated).catch(() => null)
+    if (judge) {
+      sessionVisionCalls += 1
+      sessionSpendUsd += COST_PER_VISION_USD
+    }
+  }
+
+  const weak = diff <= DIFF_THRESHOLD || judge?.repaired === false
+  logRestore({
+    shown: 'ai-200',
+    diff,
+    judge,
+    weak,
+    paidImageCalls: MAX_PAID_IMAGE_CALLS_PER_RESTORE,
+  })
+  return {
+    blob: blended,
+    engine: 'ai',
+    failed: false,
+    weak,
+    diff,
+    judge,
+    note: weak ? weakNote(diff, judge) : undefined,
+    paidImageCalls: MAX_PAID_IMAGE_CALLS_PER_RESTORE,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Pre-flight checks (all free and local — run BEFORE any paid call)
+// ---------------------------------------------------------------------------
+
+export async function preflightMask(
+  imageBase64: string,
+  maskSource: string
+): Promise<MaskPreflight> {
+  if (!maskSource.startsWith('data:image/png;base64,')) {
+    throw new Error('Mask must be a PNG data URL. Repaint the damage and try again.')
+  }
+  const img = await loadImage(`data:image/png;base64,${imageBase64}`)
+  const width = img.naturalWidth || img.width
+  const height = img.naturalHeight || img.height
+  // Verify the PNG bytes directly: real signature, exact dims, alpha channel
+  // (transparent = edit, opaque = keep). Catches corrupt/inverted masks.
+  const header = parsePngHeader(
+    base64ToBytes(maskSource.slice('data:image/png;base64,'.length))
+  )
+  if (!header) {
+    throw new Error('Mask is not a valid PNG. Repaint the damage and try again.')
+  }
+  if (header.width !== width || header.height !== height) {
+    throw new Error(
+      `Mask dimensions (${header.width}x${header.height}) do not match the ` +
+        `image (${width}x${height}). Start over and repaint.`
+    )
+  }
+  if (header.colorType !== 4 && header.colorType !== 6) {
+    throw new Error(
+      'Mask PNG must have an alpha channel (transparent = edit, opaque = keep).'
+    )
+  }
+
+  const painted = await loadCoverage(maskSource, width, height)
+  const dilated = dilateCoverage(painted, MASK_DILATE_PX)
+  const feathered = featherCoverage(dilated, MASK_FEATHER_PX)
+
+  let covered = 0
+  for (let p = 0; p < dilated.data.length; p++) {
+    if (dilated.data[p] >= 128) covered++
+  }
+  const fraction = covered / dilated.data.length
+  if (fraction <= MIN_MASK_FRACTION) {
+    throw new Error(
+      `Painted area too small (${(fraction * 100).toFixed(2)}% of the image, ` +
+        `minimum 0.1%). Paint over the damage first — tiny marks are not ` +
+        `worth a paid call.`
+    )
   }
 
   return {
-    blob: null,
-    engine: 'ai',
-    failed: true,
-    diff: lastDiff,
-    judge: lastJudge,
-    error: aiReason,
+    analysis: {
+      width,
+      height,
+      fraction,
+      large: fraction > LARGE_MASK_FRACTION,
+    },
+    painted,
+    dilated,
+    feathered,
   }
 }
 
-function retrySuffix(judge: JudgeResult | null): string {
+function weakNote(diff: number, judge: JudgeResult | null): string {
+  let note = 'The AI result may be weak, please inspect.'
   const remaining = judge?.remaining_damage?.trim()
-  return RETRY_SUFFIX.replace(
-    '{remaining_damage}',
-    remaining && remaining.toLowerCase() !== 'none' && remaining !== ''
-      ? remaining
-      : 'damage still visible'
-  )
+  if (judge?.repaired === false && remaining) {
+    note += ` Judge: ${remaining}`
+  } else {
+    note += ` (change ${diff.toFixed(1)}/255).`
+  }
+  return note
 }
 
-function verificationFailureReason(
-  diff: number | null,
-  judge: JudgeResult | null
-): string {
-  if (judge?.repaired === false && judge.remaining_damage) {
-    return `The AI reported remaining damage: ${judge.remaining_damage}`
+function mockJudge(): JudgeResult {
+  logRestore({ mockJudge: true })
+  return {
+    repaired: true,
+    unchanged_elsewhere: true,
+    remaining_damage: 'none (mock)',
   }
-  if (diff !== null) {
-    return `No visible change was detected in the result (diff ${diff.toFixed(
-      1
-    )}/255, threshold ${DIFF_THRESHOLD}).`
-  }
-  return 'Restoration failed.'
+}
+
+function base64ByteLength(base64: string): number {
+  const pad = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0
+  return Math.floor((base64.length * 3) / 4) - pad
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes
+}
+
+// Same minimal PNG header check as the server (api/_lib readPngInfo).
+function parsePngHeader(
+  bytes: Uint8Array
+): { width: number; height: number; colorType: number } | null {
+  if (bytes.length < 33) return null
+  const sig = [137, 80, 78, 71, 13, 10, 26, 10]
+  for (let i = 0; i < 8; i++) if (bytes[i] !== sig[i]) return null
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  if (view.getUint32(8) !== 13) return null
+  if (view.getUint32(12) !== 0x49484452) return null // 'IHDR'
+  const width = view.getUint32(16)
+  const height = view.getUint32(20)
+  if (!width || !height) return null
+  return { width, height, colorType: bytes[25] }
 }
 
 // ---------------------------------------------------------------------------
@@ -185,14 +426,21 @@ async function callRestore(
   prompt: string,
   imageBase64: string,
   mask: Blob | null
-): Promise<Blob> {
+): Promise<{ blob: Blob; quality: string | null }> {
+  // Hard safety net: in mock mode this function must never run. The mock
+  // branch in restoreWithMask returns before reaching here.
+  if (DEV_MOCK_AI) {
+    throw new Error('Blocked: mock mode is on (DEV_MOCK_AI). No paid call was made.')
+  }
   const form = new FormData()
   form.append('prompt', prompt)
   form.append('image', base64ToBlob(imageBase64, 'image/png'), 'image.png')
   if (mask) form.append('mask', mask, 'mask.png')
 
   const res = await fetch('/api/restore', { method: 'POST', body: form })
+  const quality = res.headers.get('x-image-quality')
   const text = await res.text()
+  logRestore({ restoreStatus: res.status, quality })
 
   if (!res.ok) {
     throw new Error(extractError(text, res.status))
@@ -206,7 +454,7 @@ async function callRestore(
   }
   const b64 = data.data?.[0]?.b64_json
   if (!b64) throw new Error(extractError(text, res.status))
-  return base64ToBlob(b64, 'image/png')
+  return { blob: base64ToBlob(b64, 'image/png'), quality }
 }
 
 function extractError(text: string, status: number): string {
@@ -250,6 +498,9 @@ async function judgeImages(
   afterBlob: Blob,
   crop: Coverage | null
 ): Promise<JudgeResult | null> {
+  // Mock short-circuit so no code path can spend on vision in mock mode.
+  if (DEV_MOCK_AI) return mockJudge()
+
   const afterUrl = await blobToDataUrl(afterBlob)
 
   let beforeImage = beforeUrl
@@ -606,9 +857,13 @@ async function fitDataUrl(sourceUrl: string, maxSide: number): Promise<string> {
 // Local diffusion inpaint (Manual Mask fallback only)
 // ---------------------------------------------------------------------------
 
-async function localInpaint(
+// Local fill used ONLY as a $0 stand-in for the mock path and as a last
+// resort when the AI call itself failed on a small painted area. Returns the
+// full canvas with the masked region filled; the caller composites it with
+// the feathered coverage.
+async function fillMasked(
   imageBase64: string,
-  coverage: Coverage
+  hardCoverage: Coverage
 ): Promise<Blob> {
   const img = await loadImage(`data:image/png;base64,${imageBase64}`)
   const w = img.naturalWidth || img.width
@@ -619,26 +874,115 @@ async function localInpaint(
   canvas.height = h
   const ctx = canvas.getContext('2d')!
   ctx.drawImage(img, 0, 0, w, h)
-  const originalData = ctx.getImageData(0, 0, w, h)
+  const imageData = ctx.getImageData(0, 0, w, h)
 
-  const filled = new Uint8ClampedArray(originalData.data)
-  inpaintMasked(filled, w, h, coverage.data)
+  seedFromNearest(imageData.data, w, h, hardCoverage.data)
+  diffuseMasked(imageData.data, w, h, hardCoverage.data)
 
-  const result = ctx.createImageData(w, h)
-  for (let i = 0; i < originalData.data.length; i += 4) {
-    const a = coverage.data[i / 4] / 255
-    for (let c = 0; c < 3; c++) {
-      result.data[i + c] = Math.round(
-        originalData.data[i + c] * (1 - a) + filled[i + c] * a
-      )
-    }
-    result.data[i + 3] = 255
-  }
-  ctx.putImageData(result, 0, 0)
+  ctx.putImageData(imageData, 0, 0)
   return canvasToBlob(canvas)
 }
 
-function inpaintMasked(
+// Fill every masked pixel with the NEAREST unmasked pixel's color
+// (multi-source BFS), so the fill carries real nearby texture — clay grain,
+// carved edges, background noise — instead of a single flat mean color.
+// Unmasked pixels are untouched. Copies are exact, so transitive copies
+// still equal the nearest original source pixel.
+function seedFromNearest(
+  rgba: Uint8ClampedArray,
+  w: number,
+  h: number,
+  coverage: Uint8Array
+) {
+  const THRESH = 100
+  const dist = new Int32Array(w * h).fill(-1)
+  const qx = new Int32Array(w * h)
+  const qy = new Int32Array(w * h)
+  let head = 0
+  let tail = 0
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const p = y * w + x
+      if (coverage[p] < THRESH) {
+        dist[p] = 0
+        qx[tail] = x
+        qy[tail] = y
+        tail++
+      }
+    }
+  }
+  if (tail === 0) return // fully masked: nothing to sample from
+
+  while (head < tail) {
+    const x = qx[head]
+    const y = qy[head]
+    head++
+    const p = y * w + x
+    const si = p * 4
+    const nd = dist[p] + 1
+    // Left
+    if (x > 0) {
+      const np = p - 1
+      if (dist[np] === -1) {
+        dist[np] = nd
+        const di = np * 4
+        rgba[di] = rgba[si]
+        rgba[di + 1] = rgba[si + 1]
+        rgba[di + 2] = rgba[si + 2]
+        qx[tail] = x - 1
+        qy[tail] = y
+        tail++
+      }
+    }
+    // Right
+    if (x < w - 1) {
+      const np = p + 1
+      if (dist[np] === -1) {
+        dist[np] = nd
+        const di = np * 4
+        rgba[di] = rgba[si]
+        rgba[di + 1] = rgba[si + 1]
+        rgba[di + 2] = rgba[si + 2]
+        qx[tail] = x + 1
+        qy[tail] = y
+        tail++
+      }
+    }
+    // Up
+    if (y > 0) {
+      const np = p - w
+      if (dist[np] === -1) {
+        dist[np] = nd
+        const di = np * 4
+        rgba[di] = rgba[si]
+        rgba[di + 1] = rgba[si + 1]
+        rgba[di + 2] = rgba[si + 2]
+        qx[tail] = x
+        qy[tail] = y - 1
+        tail++
+      }
+    }
+    // Down
+    if (y < h - 1) {
+      const np = p + w
+      if (dist[np] === -1) {
+        dist[np] = nd
+        const di = np * 4
+        rgba[di] = rgba[si]
+        rgba[di + 1] = rgba[si + 1]
+        rgba[di + 2] = rgba[si + 2]
+        qx[tail] = x
+        qy[tail] = y + 1
+        tail++
+      }
+    }
+  }
+}
+
+// A few neighbor-averaging passes to soften seams between copied regions.
+// Deliberately light: heavy diffusion would flatten the sampled texture
+// back into a smear.
+function diffuseMasked(
   rgba: Uint8ClampedArray,
   w: number,
   h: number,
@@ -646,75 +990,17 @@ function inpaintMasked(
 ) {
   const THRESH = 100
   const idx: number[] = []
-  let minX = w - 1
-  let minY = h - 1
-  let maxX = 0
-  let maxY = 0
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      if (coverage[y * w + x] >= THRESH) {
-        idx.push(y * w + x)
-        if (x < minX) minX = x
-        if (x > maxX) maxX = x
-        if (y < minY) minY = y
-        if (y > maxY) maxY = y
-      }
-    }
+  for (let p = 0; p < w * h; p++) {
+    if (coverage[p] >= THRESH) idx.push(p)
   }
   if (!idx.length) return
 
-  const M = 6
-  const bx0 = Math.max(0, minX - M)
-  const by0 = Math.max(0, minY - M)
-  const bx1 = Math.min(w - 1, maxX + M)
-  const by1 = Math.min(h - 1, maxY + M)
-
-  let sr = 0
-  let sg = 0
-  let sb = 0
-  let n = 0
-  for (let y = by0; y <= by1; y++) {
-    for (let x = bx0; x <= bx1; x++) {
-      const p = y * w + x
-      if (coverage[p] < THRESH) {
-        const i = p * 4
-        sr += rgba[i]
-        sg += rgba[i + 1]
-        sb += rgba[i + 2]
-        n++
-      }
-    }
-  }
-  if (!n) return
-  const ir = sr / n
-  const ig = sg / n
-  const ib = sb / n
-  const count = idx.length
-  const xs = new Int32Array(count)
-  const ys = new Int32Array(count)
-  const ps = new Int32Array(count)
-  for (let k = 0; k < count; k++) {
-    const p = idx[k]
-    ps[k] = p
-    xs[k] = p % w
-    ys[k] = (p / w) | 0
-    rgba[p * 4] = ir
-    rgba[p * 4 + 1] = ig
-    rgba[p * 4 + 2] = ib
-  }
-
-  const depth = Math.ceil(Math.max(maxX - minX, maxY - minY) / 2) + M
-  let iters = Math.max(300, Math.min(4000, depth * depth))
-  const budget = 200_000_000
-  if (count * iters > budget) {
-    iters = Math.max(100, Math.floor(budget / count))
-  }
-
-  for (let it = 0; it < iters; it++) {
-    for (let k = 0; k < count; k++) {
-      const p = ps[k]
-      const x = xs[k]
-      const y = ys[k]
+  const PASSES = 6
+  for (let it = 0; it < PASSES; it++) {
+    for (let k = 0; k < idx.length; k++) {
+      const p = idx[k]
+      const x = p % w
+      const y = (p / w) | 0
       const a = x > 0 ? p - 1 : p
       const b = x < w - 1 ? p + 1 : p
       const c = y > 0 ? p - w : p
@@ -726,14 +1012,6 @@ function inpaintMasked(
       rgba[i + 2] =
         (rgba[a * 4 + 2] + rgba[b * 4 + 2] + rgba[c * 4 + 2] + rgba[d * 4 + 2]) / 4
     }
-  }
-
-  for (let k = 0; k < count; k++) {
-    const i = ps[k] * 4
-    const grain = (Math.random() * 6 - 3) * (coverage[ps[k]] / 255)
-    rgba[i] += grain
-    rgba[i + 1] += grain
-    rgba[i + 2] += grain
   }
 }
 

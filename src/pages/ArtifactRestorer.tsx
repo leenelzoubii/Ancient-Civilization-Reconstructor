@@ -1,5 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { restoreWithMask, blobToDataUrl } from '../services/restoreService'
+import {
+  DEV_MOCK_AI,
+  LARGE_MASK_FRACTION,
+  estimatedEditCostLabel,
+  getSessionSpend,
+  preflightMask,
+  resetSessionSpend,
+  restoreWithMask,
+  blobToDataUrl,
+} from '../services/restoreService'
 import type { RestoreResult } from '../services/restoreService'
 
 type Step = 'upload' | 'preview' | 'restoring' | 'result'
@@ -11,8 +20,21 @@ export default function ArtifactRestorer() {
   const [restoredImage, setRestoredImage] = useState<string | null>(null)
   const [result, setResult] = useState<RestoreResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [brushSize, setBrushSize] = useState(30)
+  const [brushSize, setBrushSize] = useState(10)
   const [isDrawing, setIsDrawing] = useState(false)
+  // Spend-safe restore flow: pre-flight + explicit confirmation before the
+  // single paid call. One click can never produce two billable calls.
+  const [confirming, setConfirming] = useState<{
+    large: boolean
+    fraction: number
+  } | null>(null)
+  const [largeAck, setLargeAck] = useState(false)
+  const [pendingMask, setPendingMask] = useState<string | null>(null)
+  const [lastFraction, setLastFraction] = useState(0)
+  const [spend, setSpend] = useState(getSessionSpend)
+  // Ref guard (not state): blocks double-clicks that land before React
+  // re-renders the disabled button.
+  const inFlightRef = useRef(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
@@ -207,28 +229,131 @@ export default function ArtifactRestorer() {
     return null
   }, [])
 
+  // Step 1: free pre-flight + paid-call confirmation. Makes NO API call.
   const handleRestore = useCallback(async () => {
     if (!originalBase64) return
+    if (inFlightRef.current) return
+    setError(null)
+    const mask = getMaskDataUrl()
+    if (!mask) {
+      setError('Please paint over the damaged areas first.')
+      return
+    }
+    try {
+      const pre = await preflightMask(originalBase64, mask)
+      setPendingMask(mask)
+      setLastFraction(pre.analysis.fraction)
+      setLargeAck(false)
+      setConfirming({
+        large: pre.analysis.fraction > LARGE_MASK_FRACTION,
+        fraction: pre.analysis.fraction,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Mask check failed.')
+    }
+  }, [originalBase64, getMaskDataUrl])
+
+  // Step 2: the single paid call (or $0 mock). Runs only from Continue /
+  // Try again — never automatically, never twice per click.
+  const doRestore = useCallback(async () => {
+    if (!originalBase64 || !pendingMask) return
+    if (inFlightRef.current) return
+    inFlightRef.current = true
+    setConfirming(null)
     setStep('restoring')
     setError(null)
     try {
-      const mask = getMaskDataUrl()
-      if (!mask) {
-        setError('Please paint over the damaged areas first.')
-        setStep('preview')
-        return
-      }
-      const res = await restoreWithMask(originalBase64, mask)
+      const res = await restoreWithMask(originalBase64, pendingMask)
       setResult(res)
       setRestoredImage(res.blob ? await blobToDataUrl(res.blob) : null)
+      setSpend(getSessionSpend())
       setStep('result')
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Restoration failed. Please try again.'
       )
       setStep('preview')
+    } finally {
+      inFlightRef.current = false
     }
-  }, [originalBase64, getMaskDataUrl])
+  }, [originalBase64, pendingMask])
+
+  // User-initiated retry: the ONLY way a second paid call happens.
+  const tryAgain = useCallback(() => {
+    if (inFlightRef.current) return
+    setError(null)
+    setLargeAck(false)
+    setConfirming({
+      large: lastFraction > LARGE_MASK_FRACTION,
+      fraction: lastFraction,
+    })
+  }, [lastFraction])
+
+  const resetSpend = useCallback(() => {
+    resetSessionSpend()
+    setSpend(getSessionSpend())
+  }, [])
+
+  // Dev only: download the exact PNG bytes (image + mask) for inspection.
+  const downloadDebug = useCallback(() => {
+    const mask = getMaskDataUrl()
+    const files: { url: string; name: string }[] = []
+    if (originalImage) files.push({ url: originalImage, name: 'debug-image.png' })
+    if (mask) files.push({ url: mask, name: 'debug-mask.png' })
+    files.forEach(f => {
+      const a = document.createElement('a')
+      a.href = f.url
+      a.download = f.name
+      a.click()
+    })
+  }, [originalImage, getMaskDataUrl])
+
+  const renderConfirmPanel = () => {
+    if (!confirming) return null
+    return (
+      <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 animate-fade-in">
+        <p className="text-sm text-ink font-medium mb-1">
+          {DEV_MOCK_AI
+            ? 'This run is free (mock mode — no OpenAI call). Continue?'
+            : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
+        </p>
+        <p className="text-xs text-ink-3 mb-3">
+          Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
+        </p>
+        {confirming.large && (
+          <div className="mb-3">
+            <p className="text-xs text-accent mb-2">
+              Large painted area. Results may look invented and this uses paid credit.
+            </p>
+            <label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={largeAck}
+                onChange={e => setLargeAck(e.target.checked)}
+                className="w-4 h-4 accent-amber-500"
+              />
+              I understand — restore anyway
+            </label>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button
+            onClick={doRestore}
+            disabled={confirming.large && !largeAck}
+            className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold rounded-xl hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Continue
+          </button>
+          <button
+            onClick={() => setConfirming(null)}
+            className="px-6 py-2.5 bg-panel-2 text-ink text-sm font-medium rounded-xl border border-line hover:bg-panel-2 transition-all cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const handleDownload = useCallback(() => {
     if (!restoredImage) return
@@ -245,6 +370,9 @@ export default function ArtifactRestorer() {
     setRestoredImage(null)
     setResult(null)
     setError(null)
+    setConfirming(null)
+    setPendingMask(null)
+    setLargeAck(false)
     maskRef.current = null
     paintedRef.current = false
     stopCamera()
@@ -424,7 +552,7 @@ export default function ArtifactRestorer() {
             </div>
 
             <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
-              Paint over the cracks and missing areas for the best result.
+              Paint thinly along the cracks, not over the whole face.
             </p>
 
             <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
@@ -432,7 +560,7 @@ export default function ArtifactRestorer() {
                 <span className="text-sm text-ink-2">Brush size:</span>
                 <input
                   type="range"
-                  min="5"
+                  min="2"
                   max="80"
                   value={brushSize}
                   onChange={e => setBrushSize(Number(e.target.value))}
@@ -471,6 +599,37 @@ export default function ArtifactRestorer() {
                   draw(e)
                 }}
               />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              {DEV_MOCK_AI && (
+                <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-teal-500/10 text-cool border-teal-500/30">
+                  Mock mode — $0, no OpenAI calls
+                </span>
+              )}
+              <span className="text-xs text-ink-3">
+                Session spend ≈ $
+                {spend.estimatedUsd < 0.01
+                  ? spend.estimatedUsd.toFixed(3)
+                  : spend.estimatedUsd.toFixed(2)}{' '}
+                · {spend.imageCalls} image / {spend.visionCalls} vision
+              </span>
+              {(spend.imageCalls > 0 || spend.visionCalls > 0) && (
+                <button
+                  onClick={resetSpend}
+                  className="text-xs text-ink-3 hover:text-ink underline cursor-pointer"
+                >
+                  reset
+                </button>
+              )}
+              {import.meta.env.DEV && (
+                <button
+                  onClick={downloadDebug}
+                  className="text-xs text-ink-3 hover:text-ink underline cursor-pointer"
+                >
+                  Download debug PNGs
+                </button>
+              )}
             </div>
 
             <button
@@ -521,6 +680,8 @@ export default function ArtifactRestorer() {
               )}
             </button>
 
+            {step !== 'restoring' && renderConfirmPanel()}
+
             {step === 'restoring' && (
               <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                 <div className="flex items-start gap-3">
@@ -561,15 +722,22 @@ export default function ArtifactRestorer() {
                   {result?.failed ? 'Restoration Incomplete' : 'Restoration Complete'}
                 </h2>
                 {result && !result.failed && (
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                      result.engine === 'ai'
-                        ? 'bg-amber-500/10 text-accent border-amber-500/30'
-                        : 'bg-teal-500/10 text-cool border-teal-500/30'
-                    }`}
-                  >
-                    {result.engine === 'ai' ? 'AI Restored' : 'Local Repair'}
-                  </span>
+                  <>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                        result.engine === 'ai'
+                          ? 'bg-amber-500/10 text-accent border-amber-500/30'
+                          : 'bg-teal-500/10 text-cool border-teal-500/30'
+                      }`}
+                    >
+                      {result.engine === 'ai' ? 'AI Restored' : 'Local Repair (basic)'}
+                    </span>
+                    {result.mock && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-teal-500/10 text-cool border-teal-500/30">
+                        Mock
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
               <button
@@ -601,6 +769,14 @@ export default function ArtifactRestorer() {
                 {result.fallbackReason}
               </div>
             )}
+            {!result?.failed &&
+              result?.engine === 'ai' &&
+              result?.weak &&
+              result?.note && (
+                <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-accent text-xs leading-relaxed animate-fade-in">
+                  {result.note}
+                </div>
+              )}
 
             <div
               className={`grid grid-cols-1 ${restoredImage ? 'md:grid-cols-2' : ''} gap-6 mb-8`}
@@ -629,7 +805,17 @@ export default function ArtifactRestorer() {
               )}
             </div>
 
+            {renderConfirmPanel()}
+
             <div className="flex flex-wrap gap-4">
+              {(result?.failed || result?.weak || result?.engine === 'local') && (
+                <button
+                  onClick={tryAgain}
+                  className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-xl border border-line hover:bg-panel-2 transition-all cursor-pointer"
+                >
+                  Try again ({DEV_MOCK_AI ? 'free in mock' : 'uses credit again'})
+                </button>
+              )}
               {!result?.failed && (
                 <button
                   onClick={handleDownload}

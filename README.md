@@ -67,14 +67,30 @@ npm run build    # typecheck + production build
 
 ## Environment
 
-`.env` (not committed) — server-side only, **never** `VITE_`-prefixed:
+`.env` (not committed) — server-side only, **never** `VITE_`-prefixed keys:
 
 ```
 OPENAI_API_KEY=sk-...        # used by /api/* functions (local `vercel dev`)
-# OPENAI_IMAGE_QUALITY=medium  # optional: low | medium | high
+OPENAI_MOCK=true             # dev only: /api/* return canned $0 answers, no OpenAI calls
+# OPENAI_IMAGE_QUALITY=medium  # optional: low | medium | high (dev defaults low, prod medium)
+# MAX_CALLS_PER_DAY=20         # optional daily cap on billed image calls
 ```
 
-In production the same value lives in Vercel → Settings → Environment Variables.
+Client flags (safe `VITE_` toggles, not secrets — set in `.env.local` or shell):
+
+```
+# VITE_MOCK_AI=false    # force the real HTTP stack in dev (still $0 if OPENAI_MOCK=true)
+# VITE_VISION_LAYER=true  # opt in to the judge call (default off; annotates only)
+```
+
+In production the key lives in Vercel → Settings → Environment Variables.
+**Never set `OPENAI_MOCK=true` on Production** (the code also refuses to
+mock when `VERCEL_ENV=production`).
+
+Spend rules: one click = at most one billable image call (no auto-retry;
+"Try again" is the only retry), HTTP 200 results are always shown, and the
+server caps billed image calls per day (`MAX_CALLS_PER_DAY`, in-memory —
+use Upstash/KV for a production-grade guard).
 
 ## Git Workflow
 

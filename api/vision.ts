@@ -1,6 +1,7 @@
 import {
   allowRequest,
   errorResponse,
+  isMockMode,
   MAX_BODY_BYTES,
   requireKey,
   VISION_MODEL,
@@ -39,9 +40,14 @@ export async function POST(request: Request): Promise<Response> {
   const blocked = allowRequest(request)
   if (blocked) return blocked
 
-  const key = requireKey()
-  if (!key) {
-    return errorResponse(500, 'OPENAI_API_KEY is not configured on the server.')
+  const mock = isMockMode()
+
+  let key: string | null = null
+  if (!mock) {
+    key = requireKey()
+    if (!key) {
+      return errorResponse(500, 'OPENAI_API_KEY is not configured on the server.')
+    }
   }
 
   const raw = await request.text().catch(() => '')
@@ -69,6 +75,25 @@ export async function POST(request: Request): Promise<Response> {
   const expected = mode === 'describe' ? 1 : 2
   if (images.length !== expected) {
     return errorResponse(400, `mode "${mode}" requires ${expected} image(s).`)
+  }
+
+  if (mock) {
+    // $0 path: canned answers, no OpenAI call, no key needed.
+    console.log(`[vision] mock ${mode} (no OpenAI call, $0)`)
+    if (mode === 'describe') {
+      return Response.json({
+        mock: true,
+        text: 'Mock damage description: a thin crack runs across the middle (mock, no OpenAI call).',
+      })
+    }
+    return Response.json({
+      mock: true,
+      judge: {
+        repaired: true,
+        unchanged_elsewhere: true,
+        remaining_damage: 'none (mock)',
+      },
+    })
   }
 
   const content = [
