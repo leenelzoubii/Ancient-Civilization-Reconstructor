@@ -8,9 +8,9 @@ A Vite + React + TypeScript web application exploring 8 ancient civilizations wi
 - **Light / Dark Mode**: Theme toggle with CSS-variable-driven colors, persisted in `localStorage`
 - **3D Photogrammetry**: Sketchfab embeds for each civilization
 - **YouTube Integration**: Historical video per civilization
-- **Tabbed Content**: Overview, History, Architecture, Culture, Economy, Society & Daily Life, Achievements
-- **Flashcard Quizzes**: 4 questions per civilization with show-answer, navigation, and score tracking
-- **AI Artifact Restorer**: Upload a damaged artifact photo — restores it via Pollinations FLUX image editing, with a local Canvas enhancement fallback
+- **Tabbed Content**: Overview, History, Architecture, Culture, Economy, Society & Daily Life, Achievements, Flashcards — with Prev/Next buttons to step through every section
+- **Flashcard Quizzes**: 4 multiple-choice questions per civilization with instant right/wrong feedback, question dots, navigation, and score tracking
+- **AI Artifact Restorer**: Paint over damage on an uploaded photo; server-side OpenAI edit (`gpt-image-2.5-sunburst`) rebuilds only the painted area. Spend-safe by design: mock mode for $0 testing, one click = at most one billable call (no auto-retry), cost confirmation before every paid call, HTTP 200 results always shown, daily server-side cap on billed calls
 - **Smooth Animations**: CSS keyframe animations (fade-in, float, drift, pulse-glow)
 - **Responsive Design**: Mobile, tablet, desktop
 
@@ -43,16 +43,18 @@ tourism-app-next/
 │   ├── components/
 │   │   ├── VisualScene.tsx      # Global + UAE desert homepage scenes
 │   │   ├── AnimatedSection.tsx  # Scroll-reveal wrapper
+│   │   ├── Flashcards.tsx       # MCQ quiz UI (larger text, dots, score)
 │   │   └── CustomCursor.tsx
 │   ├── pages/
-│   │   ├── ArtifactRestorer.tsx # AI restoration UI
+│   │   ├── ArtifactRestorer.tsx # Manual-mask restore UI (confirm, spend meter, Try again)
 │   │   └── AboutPage.tsx
 │   └── services/
-│       └── restoreService.ts # Restore flow: /api/restore + local mask in-paint
+│       └── restoreService.ts # Single-call restore flow: pre-flight, mock, blend, verify
 ├── api/
-│   ├── _lib.ts          # Shared guards (rate limit, origin, validation)
+│   ├── _lib.ts          # Shared guards (rate limit, daily budget, mock flag, PNG checks)
 │   ├── restore.ts       # Proxies image edits to OpenAI (key stays server-side)
-│   └── vision.ts        # Damage describe + result judge (gpt-6-luna)
+│   └── vision.ts        # Damage describe + result judge (gpt-6-luna, opt-in)
+├── TESTING.md          # Mock + manual QA checklist, cost figures
 └── vite.config.ts
 ```
 
@@ -101,3 +103,14 @@ use Upstash/KV for a production-grade guard).
 
 - **Frontend**: Vercel (static + `/api` Vercel Functions)
 - **Backend**: none — AI calls go through `/api/*` serverless functions (key stays server-side)
+
+## Credits
+
+ACR was built by:
+
+- Mahrah Alyammahi
+- Afra Al Hamed
+- Hajar Alsaqqaf
+- Salama Alhadhrami
+
+Educational & research project. 3D models are property of their respective creators on Sketchfab.
