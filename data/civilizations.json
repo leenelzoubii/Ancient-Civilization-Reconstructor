@@ -3,7 +3,7 @@
     {
       "id": "taj-mahal",
       "name": "Taj Mahal",
-      "tags": ["mogul", "agra", "marble", "mausoleum"],
+      "tags": ["mughal", "agra", "marble", "mausoleum"],
       "sketchfabScene": "d02e8cdef15946408be6613fc5d1f0ff",
       "youtubeVideoId": "_bMyBoaHg5w",
       "overview": "Discover the Taj Mahal, the iconic Mughal mausoleum in Agra, India. Built by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal, this white marble masterpiece is renowned for its breathtaking symmetry, intricate pietra dura inlay work, and gardens designed in the charbagh pattern.",
@@ -100,7 +100,7 @@
     },
     {
       "id": "dhayah-fort",
-      "name": "Dhayah Fort at Ras-Al Khaima, UAE",
+      "name": "Dhayah Fort at Ras-Al Khaimah, UAE",
       "tags": ["hilltop", "al-qasimi", "defense", "uae-heritage"],
       "sketchfabScene": "5f439f9ec37341f08b7e538434462a66",
       "youtubeVideoId": "-bEzwyuzt_Y",

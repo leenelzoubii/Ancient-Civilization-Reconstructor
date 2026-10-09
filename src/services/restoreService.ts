@@ -165,6 +165,7 @@ export async function restoreWithMask(
       error: `Image is larger than ${
         MAX_IMAGE_BYTES / 1_000_000
       }MB. Use a smaller photo.`,
+      paidImageCalls: 0,
     }
   }
 
@@ -186,6 +187,7 @@ export async function restoreWithMask(
       diff: null,
       judge: null,
       error: err instanceof Error ? err.message : 'Mask check failed.',
+      paidImageCalls: 0,
     }
   }
   const { analysis, dilated, feathered } = pre
@@ -453,7 +455,7 @@ async function callRestore(
     throw new Error(`restore returned invalid JSON (${res.status})`)
   }
   const b64 = data.data?.[0]?.b64_json
-  if (!b64) throw new Error(extractError(text, res.status))
+  if (!b64) throw new Error('restore returned 200 without image data')
   return { blob: base64ToBlob(b64, 'image/png'), quality }
 }
 

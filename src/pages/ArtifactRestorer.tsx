@@ -143,6 +143,8 @@ export default function ArtifactRestorer() {
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
+      // Clear so re-selecting the same file fires onChange again.
+      e.target.value = ''
       if (file) handleFile(file)
     },
     [handleFile]
@@ -373,6 +375,7 @@ export default function ArtifactRestorer() {
     setConfirming(null)
     setPendingMask(null)
     setLargeAck(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
     maskRef.current = null
     paintedRef.current = false
     stopCamera()
@@ -566,8 +569,12 @@ export default function ArtifactRestorer() {
                   onChange={e => setBrushSize(Number(e.target.value))}
                   className="flex-1 accent-amber-500"
                 />
-                <span className="text-sm text-accent w-8 text-right">
-                  {brushSize}
+                <span
+                  aria-live="polite"
+                  title="Brush size in image pixels"
+                  className="text-base font-bold text-accent min-w-12 text-center tabular-nums px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30"
+                >
+                  {brushSize}px
                 </span>
               </div>
               <p className="text-xs text-ink-3 mt-2">

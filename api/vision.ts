@@ -68,7 +68,9 @@ export async function POST(request: Request): Promise<Response> {
   }
   if (
     !Array.isArray(images) ||
-    !images.every(i => typeof i === 'string' && i.startsWith('data:image/'))
+    !images.every(
+      (i: unknown) => typeof i === 'string' && i.startsWith('data:image/')
+    )
   ) {
     return errorResponse(400, 'images must be an array of data URLs.')
   }
@@ -115,7 +117,7 @@ export async function POST(request: Request): Promise<Response> {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      Authorization: `Bearer ${key}`,
+      Authorization: `Bearer ${key ?? ''}`,
     },
     body: JSON.stringify(body),
   })

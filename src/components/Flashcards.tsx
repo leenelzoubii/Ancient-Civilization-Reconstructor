@@ -11,6 +11,9 @@ export default function Flashcards({ civId }: { civId: string }) {
   const cards = quizzes[civId] || []
   const [index, setIndex] = useState(0)
   const [choices, setChoices] = useState<(number | null)[]>(() => cards.map(() => null))
+  // Set when the user presses Finish on the last card: show the score
+  // screen with whatever has been answered so far.
+  const [finished, setFinished] = useState(false)
 
   if (!cards.length) {
     return <p className="text-ink-3 text-base">No quiz available for this civilization.</p>
@@ -40,9 +43,10 @@ export default function Flashcards({ civId }: { civId: string }) {
   const reset = () => {
     setIndex(0)
     setChoices(cards.map(() => null))
+    setFinished(false)
   }
 
-  if (done) {
+  if (done || finished) {
     const perfect = score === cards.length
     return (
       <div className="animate-fade-in text-center py-6">
@@ -169,13 +173,19 @@ export default function Flashcards({ civId }: { civId: string }) {
 
         {!answered ? (
           <span className="text-sm text-ink-3">Choose an answer to continue</span>
+        ) : index === cards.length - 1 ? (
+          <button
+            onClick={() => setFinished(true)}
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
+          >
+            Finish
+          </button>
         ) : (
           <button
             onClick={() => goTo(index + 1)}
-            disabled={index === cards.length - 1}
             className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {index === cards.length - 1 ? 'Finish' : 'Next →'}
+            Next →
           </button>
         )}
       </div>

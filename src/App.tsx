@@ -534,7 +534,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
           </div>
           <div className="bg-panel border border-line border-t-0 rounded-b-2xl p-6 sm:p-8">
             {activeTab === 'flashcards' ? (
-              <Flashcards civId={civId} />
+              <Flashcards key={civId} civId={civId} />
             ) : (
               <RichContent text={tabContent[activeTab as Exclude<Tab, 'flashcards'>]} />
             )}

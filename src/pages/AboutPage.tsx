@@ -65,7 +65,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Technology</h2>
             <div className="space-y-3 text-ink-2 text-sm leading-relaxed">
               <p>
-                This project is built with <span className="text-ink font-medium">React</span>, <span className="text-ink font-medium">Vite</span>, and <span className="text-ink font-medium">Tailwind CSS</span>. It features interactive 3D model embeds from Sketchfab, curated YouTube video content, and an AI-powered artifact restoration tool using the Pollinations FLUX image editing model with a local Canvas enhancement fallback.
+                This project is built with <span className="text-ink font-medium">React</span>, <span className="text-ink font-medium">Vite</span>, and <span className="text-ink font-medium">Tailwind CSS</span>. It features interactive 3D model embeds from Sketchfab, curated YouTube video content, and an AI-powered artifact restoration tool: paint over damage and a server-side OpenAI image edit rebuilds only the painted area, with a basic local repair fallback when the AI call itself fails.
               </p>
               <p>
                 The 3D models are photogrammetry scans created by researchers and heritage organizations including Global Digital Heritage, the American University of Sharjah, and independent creators. These models provide accurate, high-resolution digital preservation of irreplaceable cultural heritage sites.
@@ -97,7 +97,7 @@ export default function AboutPage() {
             <div className="space-y-2 text-ink-2 text-sm">
               <p><span className="text-ink font-medium">3D Models:</span> Sketchfab creators — Global Digital Heritage, Zlatan.Filipovic, HeritageTech, and community contributors</p>
               <p><span className="text-ink font-medium">Video Content:</span> YouTube educational creators and documentary channels</p>
-              <p><span className="text-ink font-medium">AI Restoration:</span> Pollinations AI — FLUX.1 Kontext image editing (with local Canvas fallback)</p>
+              <p><span className="text-ink font-medium">AI Restoration:</span> OpenAI gpt-image-2.5-sunburst edits via serverless API (key stays server-side), gpt-6-luna result check, basic local repair fallback</p>
               <p><span className="text-ink font-medium">Historical Research:</span> UNESCO, national heritage departments, and academic publications</p>
             </div>
           </section>

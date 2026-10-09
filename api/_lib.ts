@@ -3,8 +3,6 @@ export const VISION_MODEL = 'gpt-6-luna'
 
 declare const process: { env: Record<string, string | undefined> }
 
-const VALID_IMAGE_QUALITIES = ['low', 'medium', 'high'] as const
-
 const configuredQuality = process.env.OPENAI_IMAGE_QUALITY
 export const IMAGE_QUALITY =
   configuredQuality === 'low' ||
@@ -91,7 +89,7 @@ export async function readPngInfo(blob: Blob): Promise<PngInfo | null> {
   const bytes = new Uint8Array(await blob.slice(0, 33).arrayBuffer())
   const sig = [137, 80, 78, 71, 13, 10, 26, 10]
   for (let i = 0; i < 8; i++) if (bytes[i] !== sig[i]) return null
-  const view = new DataView(bytes.buffer)
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   if (view.getUint32(8) !== 13) return null
   if (view.getUint32(12) !== 0x49484452) return null // 'IHDR'
   const width = view.getUint32(16)

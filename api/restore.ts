@@ -140,7 +140,7 @@ export async function POST(request: Request): Promise<Response> {
 
   const res = await fetch(OPENAI_EDITS_URL, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${key}` },
+    headers: { Authorization: `Bearer ${key ?? ''}` },
     body: outbound,
   })
 
