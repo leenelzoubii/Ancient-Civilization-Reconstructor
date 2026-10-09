@@ -4,7 +4,7 @@ import {
   MAX_BODY_BYTES,
   requireKey,
   VISION_MODEL,
-} from './_lib'
+} from './_lib.js'
 
 const CHAT_URL = 'https://api.openai.com/v1/chat/completions'
 

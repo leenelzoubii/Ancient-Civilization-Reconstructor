@@ -5,7 +5,7 @@ import {
   IMAGE_QUALITY,
   MAX_BODY_BYTES,
   requireKey,
-} from './_lib'
+} from './_lib.js'
 
 const OPENAI_EDITS_URL = 'https://api.openai.com/v1/images/edits'
 
