@@ -1,7 +1,7 @@
 // Artifact restoration client service.
 // Talks to the Vercel Functions in /api so the OpenAI key never reaches
 // the browser. Gemini and Pollinations were removed; the only remaining
-// fallback is the local diffusion inpaint (Manual Mask mode only).
+// fallback is the local diffusion inpaint when the AI edit fails.
 //
 // Approximate cost (Oct 2026):
 // - image edit ~$0.04-0.05 per medium-quality 1024px image
@@ -11,22 +11,12 @@
 // Worst case per restore = 2 image edits + 2 vision calls; the image
 // edits dominate the cost.
 
-export const USE_VISION_LAYER = true
-
 const DIFF_THRESHOLD = 10 // mean abs diff over 0-255 scale
 const MAX_EDITS = 2
 const MAX_VISION_CALLS = 2
 const MASK_DILATE_PX = 6
 const MASK_FEATHER_PX = 3
 const JUDGE_MAX_SIDE = 768
-
-const EDIT_PROMPT_AUTO =
-  'This is a photo of a damaged ancient artifact. Repair all visible damage: ' +
-  'cracks, chips, scratches, stains, eroded areas and missing fragments, ' +
-  'reconstructing missing parts consistently with the artifact\'s existing ' +
-  'shape, material, texture and style. Keep the artifact\'s shape, colors, ' +
-  'lighting, framing and background identical. Do not add new objects, text ' +
-  'or decoration. Output the fully repaired image.'
 
 const EDIT_PROMPT_MASK =
   'Repair ONLY the transparent masked region of this photo of an ancient ' +
@@ -66,68 +56,6 @@ function logRestore(info: Record<string, unknown>) {
 // ---------------------------------------------------------------------------
 // Public entry points
 // ---------------------------------------------------------------------------
-
-export async function restoreAutomatic(
-  imageBase64: string
-): Promise<RestoreResult> {
-  const originalUrl = `data:image/png;base64,${imageBase64}`
-
-  let visionUsed = 0
-  let description: string | null = null
-  if (USE_VISION_LAYER) {
-    visionUsed += 1
-    description = await describeDamage(originalUrl).catch(() => null)
-  }
-
-  let basePrompt = EDIT_PROMPT_AUTO
-  if (description) {
-    const text = description.trim()
-    basePrompt += ` Specifically repair: ${text.endsWith('.') ? text : `${text}.`}`
-  }
-
-  let lastDiff: number | null = null
-  let lastJudge: JudgeResult | null = null
-  let lastError: string | null = null
-
-  for (let attempt = 1; attempt <= MAX_EDITS; attempt++) {
-    const prompt =
-      attempt === 1 ? basePrompt : basePrompt + retrySuffix(lastJudge)
-
-    let edited: Blob
-    try {
-      edited = await callRestore(prompt, imageBase64, null)
-    } catch (err) {
-      // API-level failure (billing, rate limit, moderation, org check).
-      // Retrying immediately would just burn money, so fail fast with the
-      // real reason and surface it in the UI.
-      lastError = err instanceof Error ? err.message : String(err)
-      break
-    }
-
-    lastDiff = await computeDiff(originalUrl, edited, null)
-
-    if (USE_VISION_LAYER && visionUsed < MAX_VISION_CALLS) {
-      visionUsed += 1
-      lastJudge = await judgeImages(originalUrl, edited, null).catch(() => null)
-    }
-
-    const passed = lastDiff > DIFF_THRESHOLD && lastJudge?.repaired !== false
-    logRestore({ mode: 'auto', attempt, diff: lastDiff, judge: lastJudge, passed })
-    if (passed) {
-      return { blob: edited, engine: 'ai', failed: false, diff: lastDiff, judge: lastJudge }
-    }
-  }
-
-  const reason = lastError ?? verificationFailureReason(lastDiff, lastJudge)
-  return {
-    blob: null,
-    engine: 'ai',
-    failed: true,
-    diff: lastDiff,
-    judge: lastJudge,
-    error: reason,
-  }
-}
 
 export async function restoreWithMask(
   imageBase64: string,
@@ -177,7 +105,7 @@ export async function restoreWithMask(
     const blended = await blendByCoverage(originalUrl, edited, feathered)
     lastDiff = await computeDiff(originalUrl, blended, feathered)
 
-    if (USE_VISION_LAYER && visionUsed < MAX_VISION_CALLS) {
+    if (visionUsed < MAX_VISION_CALLS) {
       visionUsed += 1
       lastJudge = await judgeImages(originalUrl, blended, dilated).catch(
         () => null
@@ -197,8 +125,8 @@ export async function restoreWithMask(
     }
   }
 
-  // AI path failed (API error or verification) — Manual Mask mode keeps a
-  // local diffusion inpaint fallback that visibly fills the painted region.
+  // AI path failed (API error or verification) — fall back to a local
+  // diffusion inpaint that visibly fills the painted region.
   const aiReason = lastError ?? verificationFailureReason(lastDiff, lastJudge)
   const localBlob = await localInpaint(imageBase64, dilated)
   const localDiff = await computeDiff(originalUrl, localBlob, feathered)
@@ -315,15 +243,6 @@ async function postJson(path: string, payload: unknown): Promise<any> {
     throw new Error(message)
   }
   return data
-}
-
-async function describeDamage(originalUrl: string): Promise<string | null> {
-  const data = await postJson('/api/vision', {
-    mode: 'describe',
-    images: [originalUrl],
-  })
-  const text = typeof data?.text === 'string' ? data.text.trim() : ''
-  return text || null
 }
 
 async function judgeImages(

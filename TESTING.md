@@ -36,21 +36,21 @@ not acceptable.
 ## Manual image QA (fill in while testing)
 
 Test 10–15 damaged artifact photos (scratches, cracks, missing pieces, stains),
-each in **Auto Restore (Experimental)** and **Manual Mask** (paint over damage,
-leave some untouched area):
+each painted with the Manual Mask (leave some area untouched):
 
-| Photo | Mode | Visible repair? (pass/fail) | Diff score (dev console `[restore]`) | Judge `repaired` | Badge shown | Notes |
-|-------|------|------------------------------|--------------------------------------|------------------|-------------|-------|
-| | Auto | | | | | |
-| | Manual | | | | | |
+| Photo | Visible repair? (pass/fail) | Diff score (dev console `[restore]`) | Judge `repaired` | Badge shown | Notes |
+|-------|------------------------------|--------------------------------------|------------------|-------------|-------|
+| | | | | | |
 
 **Pass criteria**
 
 - Before/after are visibly different; damage is filled in the painted area.
 - Unpainted regions are untouched (no global restyle).
 - Success → badge `AI Restored` (engine `ai`) or `Local Repair` (engine `local`, amber note explains why).
-- Auto failure → **no** Restored pane, no badge, no download; red box shows the real error.
+- Failure → **no** Restored pane, no badge, no download; red box shows the real error.
 - Failure is honest: never a same-looking image labeled "Restored".
+- Detail pages: Prev/Next buttons at the bottom of the content panel step
+  through all tabs (Overview → … → Flashcards) and scroll back to the tab bar.
 
 ## Expected costs
 

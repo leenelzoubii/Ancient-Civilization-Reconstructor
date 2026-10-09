@@ -13,7 +13,7 @@ export default function Flashcards({ civId }: { civId: string }) {
   const [choices, setChoices] = useState<(number | null)[]>(() => cards.map(() => null))
 
   if (!cards.length) {
-    return <p className="text-ink-3 text-sm">No quiz available for this civilization.</p>
+    return <p className="text-ink-3 text-base">No quiz available for this civilization.</p>
   }
 
   const grade = (i: number): Grade =>
@@ -56,7 +56,7 @@ export default function Flashcards({ civId }: { civId: string }) {
             {score}/{cards.length}
           </span>
         </p>
-        <p className="text-ink-3 text-sm mb-6">
+        <p className="text-ink-3 text-base mb-6">
           {perfect
             ? 'Perfect score — you know this civilization inside out!'
             : score >= cards.length / 2
@@ -78,10 +78,10 @@ export default function Flashcards({ civId }: { civId: string }) {
       {/* Header: progress + score */}
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <span className="text-sm text-ink-2">
+          <span className="text-base text-ink-2">
             Question <span className="text-accent font-bold">{index + 1}</span> of {cards.length}
           </span>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent/10 text-accent border border-accent/30">
+          <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-accent/10 text-accent border border-accent/30">
             Score: {score}
           </span>
         </div>
@@ -115,8 +115,8 @@ export default function Flashcards({ civId }: { civId: string }) {
 
       {/* Question */}
       <div className="rounded-2xl border border-line bg-panel p-6 sm:p-8">
-        <p className="text-accent text-xs font-semibold tracking-widest uppercase mb-3">Question {index + 1}</p>
-        <p className="text-ink text-lg sm:text-xl font-semibold leading-relaxed mb-6">{card.q}</p>
+        <p className="text-accent text-sm font-semibold tracking-widest uppercase mb-3">Question {index + 1}</p>
+        <p className="text-ink text-xl sm:text-2xl font-semibold leading-relaxed mb-6">{card.q}</p>
 
         {/* Options */}
         <div className="flex flex-col gap-3">
@@ -138,7 +138,7 @@ export default function Flashcards({ civId }: { civId: string }) {
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-xl border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
               >
                 <span
-                  className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold ${
+                  className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-bold ${
                     answered && isCorrect
                       ? 'bg-forest/20 text-forest'
                       : answered && isChosen
@@ -148,9 +148,9 @@ export default function Flashcards({ civId }: { civId: string }) {
                 >
                   {LETTERS[i]}
                 </span>
-                <span className="text-sm sm:text-base font-medium">{opt}</span>
-                {answered && isCorrect && <span className="ml-auto text-forest text-sm">✓</span>}
-                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-sm">✗</span>}
+                <span className="text-base sm:text-lg font-medium">{opt}</span>
+                {answered && isCorrect && <span className="ml-auto text-forest text-base">✓</span>}
+                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">✗</span>}
               </button>
             )
           })}
@@ -162,18 +162,18 @@ export default function Flashcards({ civId }: { civId: string }) {
         <button
           onClick={() => goTo(index - 1)}
           disabled={index === 0}
-          className="px-4 py-2.5 rounded-xl border border-line bg-panel text-ink-2 text-sm font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2.5 rounded-xl border border-line bg-panel text-ink-2 text-base font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           ← Previous
         </button>
 
         {!answered ? (
-          <span className="text-xs text-ink-3">Choose an answer to continue</span>
+          <span className="text-sm text-ink-3">Choose an answer to continue</span>
         ) : (
           <button
             onClick={() => goTo(index + 1)}
             disabled={index === cards.length - 1}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {index === cards.length - 1 ? 'Finish' : 'Next →'}
           </button>

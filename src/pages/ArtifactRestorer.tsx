@@ -1,17 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import {
-  restoreAutomatic,
-  restoreWithMask,
-  blobToDataUrl,
-} from '../services/restoreService'
+import { restoreWithMask, blobToDataUrl } from '../services/restoreService'
 import type { RestoreResult } from '../services/restoreService'
 
-type Mode = 'auto' | 'manual'
 type Step = 'upload' | 'preview' | 'restoring' | 'result'
 
 export default function ArtifactRestorer() {
   const [step, setStep] = useState<Step>('upload')
-  const [mode, setMode] = useState<Mode>('manual')
   const [originalImage, setOriginalImage] = useState<string | null>(null)
   const [originalBase64, setOriginalBase64] = useState<string | null>(null)
   const [restoredImage, setRestoredImage] = useState<string | null>(null)
@@ -195,14 +189,13 @@ export default function ArtifactRestorer() {
   }, [])
 
   useEffect(() => {
-    if (step === 'preview' && mode === 'manual') {
+    if (step === 'preview') {
       const timer = setTimeout(initCanvas, 200)
       return () => clearTimeout(timer)
     }
-  }, [step, mode, initCanvas])
+  }, [step, initCanvas])
 
   const getMaskDataUrl = useCallback((): string | null => {
-    if (mode === 'auto') return null
     const mask = maskRef.current
     if (!mask || !paintedRef.current) return null
     // Fast path says painted; confirm pixels actually landed inside the image
@@ -212,25 +205,20 @@ export default function ArtifactRestorer() {
       if (d[i] > 127) return mask.toDataURL('image/png')
     }
     return null
-  }, [mode])
+  }, [])
 
   const handleRestore = useCallback(async () => {
     if (!originalBase64) return
     setStep('restoring')
     setError(null)
     try {
-      let res: RestoreResult
-      if (mode === 'auto') {
-        res = await restoreAutomatic(originalBase64)
-      } else {
-        const mask = getMaskDataUrl()
-        if (!mask) {
-          setError('Please paint over the damaged areas first.')
-          setStep('preview')
-          return
-        }
-        res = await restoreWithMask(originalBase64, mask)
+      const mask = getMaskDataUrl()
+      if (!mask) {
+        setError('Please paint over the damaged areas first.')
+        setStep('preview')
+        return
       }
+      const res = await restoreWithMask(originalBase64, mask)
       setResult(res)
       setRestoredImage(res.blob ? await blobToDataUrl(res.blob) : null)
       setStep('result')
@@ -240,7 +228,7 @@ export default function ArtifactRestorer() {
       )
       setStep('preview')
     }
-  }, [originalBase64, mode, getMaskDataUrl])
+  }, [originalBase64, getMaskDataUrl])
 
   const handleDownload = useCallback(() => {
     if (!restoredImage) return
@@ -264,7 +252,7 @@ export default function ArtifactRestorer() {
 
   const draw = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-      if (!canvasRef.current || mode !== 'manual') return
+      if (!canvasRef.current) return
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')!
       const rect = canvas.getBoundingClientRect()
@@ -299,7 +287,7 @@ export default function ArtifactRestorer() {
         paintedRef.current = true
       }
     },
-    [mode, brushSize]
+    [brushSize]
   )
 
   return (
@@ -316,8 +304,8 @@ export default function ArtifactRestorer() {
             Artifact Restorer
           </h1>
           <p className="text-ink-2 max-w-xl mx-auto">
-            Upload a photo of a broken or damaged artifact and AI will generate what
-            it looked like in its original, undamaged state.
+            Upload a photo of a broken or damaged artifact, paint over the
+            damage, and AI will rebuild exactly what you marked.
           </p>
         </div>
 
@@ -426,30 +414,7 @@ export default function ArtifactRestorer() {
 
         {(step === 'preview' || step === 'restoring') && originalImage && (
           <div className="animate-fade-in-up">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-ink-2">Mode:</span>
-                <button
-                  onClick={() => setMode('auto')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                    mode === 'auto'
-                      ? 'bg-amber-500/20 text-accent border border-amber-500/30'
-                      : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel-2'
-                  }`}
-                >
-                  Auto Restore (Experimental)
-                </button>
-                <button
-                  onClick={() => setMode('manual')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                    mode === 'manual'
-                      ? 'bg-amber-500/20 text-accent border border-amber-500/30'
-                      : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel-2'
-                  }`}
-                >
-                  Manual Mask
-                </button>
-              </div>
+            <div className="flex flex-wrap items-center justify-end gap-4 mb-6">
               <button
                 onClick={handleReset}
                 className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer"
@@ -458,34 +423,30 @@ export default function ArtifactRestorer() {
               </button>
             </div>
 
-            {mode === 'manual' && (
-              <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
-                Paint over the cracks and missing areas for the best result.
-              </p>
-            )}
+            <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
+              Paint over the cracks and missing areas for the best result.
+            </p>
 
-            {mode === 'manual' && (
-              <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-ink-2">Brush size:</span>
-                  <input
-                    type="range"
-                    min="5"
-                    max="80"
-                    value={brushSize}
-                    onChange={e => setBrushSize(Number(e.target.value))}
-                    className="flex-1 accent-amber-500"
-                  />
-                  <span className="text-sm text-accent w-8 text-right">
-                    {brushSize}
-                  </span>
-                </div>
-                <p className="text-xs text-ink-3 mt-2">
-                  Paint over the damaged areas (cracks, chips, missing pieces). White
-                  overlay shows where AI will restore.
-                </p>
+            <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-ink-2">Brush size:</span>
+                <input
+                  type="range"
+                  min="5"
+                  max="80"
+                  value={brushSize}
+                  onChange={e => setBrushSize(Number(e.target.value))}
+                  className="flex-1 accent-amber-500"
+                />
+                <span className="text-sm text-accent w-8 text-right">
+                  {brushSize}
+                </span>
               </div>
-            )}
+              <p className="text-xs text-ink-3 mt-2">
+                Paint over the damaged areas (cracks, chips, missing pieces). White
+                overlay shows where AI will restore.
+              </p>
+            </div>
 
             <div className="relative rounded-2xl overflow-hidden border border-line bg-panel mb-6">
               <img
@@ -495,23 +456,21 @@ export default function ArtifactRestorer() {
                 className="w-full max-h-[60vh] object-contain"
                 onLoad={initCanvas}
               />
-              {mode === 'manual' && (
-                <canvas
-                  ref={canvasRef}
-                  className="absolute inset-0 w-full h-full cursor-crosshair"
-                  style={{ mixBlendMode: 'screen' }}
-                  onMouseDown={() => setIsDrawing(true)}
-                  onMouseUp={() => setIsDrawing(false)}
-                  onMouseLeave={() => setIsDrawing(false)}
-                  onMouseMove={e => isDrawing && draw(e)}
-                  onTouchStart={() => setIsDrawing(true)}
-                  onTouchEnd={() => setIsDrawing(false)}
-                  onTouchMove={e => {
-                    e.preventDefault()
-                    draw(e)
-                  }}
-                />
-              )}
+              <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full cursor-crosshair"
+                style={{ mixBlendMode: 'screen' }}
+                onMouseDown={() => setIsDrawing(true)}
+                onMouseUp={() => setIsDrawing(false)}
+                onMouseLeave={() => setIsDrawing(false)}
+                onMouseMove={e => isDrawing && draw(e)}
+                onTouchStart={() => setIsDrawing(true)}
+                onTouchEnd={() => setIsDrawing(false)}
+                onTouchMove={e => {
+                  e.preventDefault()
+                  draw(e)
+                }}
+              />
             </div>
 
             <button
@@ -583,10 +542,9 @@ export default function ArtifactRestorer() {
                       AI is restoring your artifact...
                     </p>
                     <p>
-                      The model analyzes cracks, breaks, and visible artifacts,
-                      then repairs them seamlessly while preserving the original
-                      style. This usually takes 5-20 seconds. Please don't close
-                      this page.
+                      The model rebuilds the areas you painted, matching the
+                      surrounding material, texture and lighting. This usually
+                      takes 5-20 seconds. Please don't close this page.
                     </p>
                   </div>
                 </div>
@@ -627,8 +585,9 @@ export default function ArtifactRestorer() {
                   We couldn&apos;t visibly repair this image.
                 </p>
                 <p>
-                  Try Manual Mask and paint over the damage — that path repairs
-                  reliably.
+                  Paint over the damage more thoroughly and try again — wider
+                  strokes over each crack or missing piece give the AI more to
+                  rebuild.
                 </p>
                 {result.error && (
                   <p className="mt-2 text-xs opacity-80 break-words">

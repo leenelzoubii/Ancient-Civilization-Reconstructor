@@ -203,7 +203,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
             {[
               { step: '01', title: 'Choose', desc: 'Select from 8 ancient civilizations spanning continents and millennia — from the pyramids of Egypt to the forts of the UAE.', color: 'from-amber-500 to-orange-600' },
               { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read structured sections covering history, culture, economy, society, and achievements — then test yourself with flashcard quizzes.', color: 'from-orange-500 to-red-600' },
-              { step: '03', title: 'Reconstruct', desc: 'Use AI to restore broken artifacts — upload a photo of a damaged item and watch AI bring it back to its original glory.', color: 'from-teal-500 to-cyan-600' },
+              { step: '03', title: 'Reconstruct', desc: 'Paint over the damage in a photo of a broken artifact, and AI rebuilds the marked areas back to their original glory.', color: 'from-teal-500 to-cyan-600' },
             ].map((item, i) => (
               <AnimatedSection key={item.step} delay={i * 150}>
                 <div className="group h-full">
@@ -274,37 +274,25 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
               <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Artifact Restoration
               </h2>
-              <p className="text-ink-3 max-w-xl mx-auto">Upload a broken artifact and watch AI restore it to its original condition.</p>
+              <p className="text-ink-3 max-w-xl mx-auto">Upload a photo, brush over the damage, and watch AI rebuild just the marked areas.</p>
             </div>
           </AnimatedSection>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <AnimatedSection animation="slide-left" delay={100}>
-              <div className="p-8 rounded-2xl border border-line bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 h-full">
+          <div className="max-w-2xl mx-auto">
+            <AnimatedSection animation="scale-in" delay={100}>
+              <div className="p-8 rounded-2xl border border-line bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
                     <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-ink">Auto Restore</h3>
-                </div>
-                <p className="text-ink-2 text-sm leading-relaxed">
-                  Simply upload a photo of any damaged artifact — cracked pottery, broken sculptures, eroded inscriptions — and our AI will generate a restored version in seconds.
-                </p>
-              </div>
-            </AnimatedSection>
-            <AnimatedSection animation="slide-right" delay={200}>
-              <div className="p-8 rounded-2xl border border-line bg-gradient-to-br from-white/[0.05] to-white/[0.02] hover:border-teal-500/20 hover:shadow-xl hover:shadow-teal-500/5 transition-all duration-500 h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-cool" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-ink">Manual Mask</h3>
+                  <h3 className="text-lg font-bold text-ink">Paint &amp; Restore</h3>
                 </div>
                 <p className="text-ink-2 text-sm leading-relaxed">
-                  For precise control, paint over the damaged areas yourself. The AI will only restore the parts you mark, preserving the rest of the artifact exactly as it is.
+                  Upload a photo of a cracked or broken artifact, brush over the
+                  damaged areas yourself, and AI rebuilds exactly what you marked —
+                  every untouched pixel, including the background, stays exactly as
+                  uploaded.
                 </p>
               </div>
             </AnimatedSection>
@@ -423,9 +411,26 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
 function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
   const civ = civilizations.civilizations.find(c => c.id === civId)
   const [activeTab, setActiveTab] = useState<Tab>('overview')
+  const sectionRef = useRef<HTMLDivElement>(null)
   const tags = TAG_MAPS[civId] || []
 
   if (!civ) return <div className="min-h-screen bg-app flex items-center justify-center text-ink">Civilization not found</div>
+
+  const tabIndex = TABS.indexOf(activeTab)
+  const prevTab = tabIndex > 0 ? TABS[tabIndex - 1] : null
+  const nextTab = tabIndex < TABS.length - 1 ? TABS[tabIndex + 1] : null
+
+  // Used by the Prev/Next buttons at the bottom of the content panel so the
+  // next section's tab bar is in view after switching.
+  const goTab = (tab: Tab) => {
+    setActiveTab(tab)
+    requestAnimationFrame(() => {
+      const el = sectionRef.current
+      if (!el) return
+      const y = el.getBoundingClientRect().top + window.scrollY - 70
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    })
+  }
 
   const tabContent: Record<Exclude<Tab, 'flashcards'>, string> = {
     overview: civ.overview,
@@ -511,7 +516,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
           </div>
         </div>
 
-        <div className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <div ref={sectionRef} className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <div className="flex flex-wrap gap-2 mb-0 border-b border-line pb-0">
             {TABS.map(tab => (
               <button
@@ -533,6 +538,35 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
             ) : (
               <RichContent text={tabContent[activeTab as Exclude<Tab, 'flashcards'>]} />
             )}
+
+            <div className="flex items-center justify-between gap-3 mt-8 pt-5 border-t border-line-soft">
+              {prevTab ? (
+                <button
+                  onClick={() => goTab(prevTab)}
+                  className="group flex items-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-panel-2 text-ink-2 text-sm font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer"
+                >
+                  <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  {TAB_LABELS[prevTab]}
+                </button>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+              {nextTab ? (
+                <button
+                  onClick={() => goTab(nextTab)}
+                  className="group flex items-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-panel-2 text-ink-2 text-sm font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer"
+                >
+                  {TAB_LABELS[nextTab]}
+                  <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              ) : (
+                <span aria-hidden="true" />
+              )}
+            </div>
           </div>
         </div>
       </div>
