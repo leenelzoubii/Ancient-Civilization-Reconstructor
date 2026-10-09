@@ -48,7 +48,11 @@ tourism-app-next/
 │   │   ├── ArtifactRestorer.tsx # AI restoration UI
 │   │   └── AboutPage.tsx
 │   └── services/
-│       └── huggingface.ts # Pollinations AI restore + Canvas fallback
+│       └── restoreService.ts # Restore flow: /api/restore + local mask in-paint
+├── api/
+│   ├── _lib.ts          # Shared guards (rate limit, origin, validation)
+│   ├── restore.ts       # Proxies image edits to OpenAI (key stays server-side)
+│   └── vision.ts        # Damage describe + result judge (gpt-6-luna)
 └── vite.config.ts
 ```
 
@@ -56,17 +60,21 @@ tourism-app-next/
 
 ```bash
 npm install
-npm run dev      # http://localhost:5176
+npm run dev      # frontend only: http://localhost:5176 (no /api)
+npx vercel dev   # frontend + /api together (needed to test the restorer)
 npm run build    # typecheck + production build
 ```
 
 ## Environment
 
-`.env` (not committed):
+`.env` (not committed) — server-side only, **never** `VITE_`-prefixed:
 
 ```
-VITE_POLLINATIONS_KEY=sk_...   # Pollinations API key for AI restoration
+OPENAI_API_KEY=sk-...        # used by /api/* functions (local `vercel dev`)
+# OPENAI_IMAGE_QUALITY=medium  # optional: low | medium | high
 ```
+
+In production the same value lives in Vercel → Settings → Environment Variables.
 
 ## Git Workflow
 
@@ -75,5 +83,5 @@ VITE_POLLINATIONS_KEY=sk_...   # Pollinations API key for AI restoration
 
 ## Deployment
 
-- **Frontend**: Vercel
-- **Backend**: Render (FastAPI SSE service at `tourism-app-backend`, optional)
+- **Frontend**: Vercel (static + `/api` Vercel Functions)
+- **Backend**: none — AI calls go through `/api/*` serverless functions (key stays server-side)

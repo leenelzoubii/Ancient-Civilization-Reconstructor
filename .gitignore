@@ -28,3 +28,4 @@ test-server.ps1
 *.sln
 *.sw?
 .env*
+!.env.example
