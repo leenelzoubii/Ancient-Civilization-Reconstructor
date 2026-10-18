@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import quizzesData from '../../data/quizzes.json'
 
 type Card = { q: string; options: string[]; a: number }
@@ -50,7 +50,7 @@ export default function Flashcards({ civId }: { civId: string }) {
     const perfect = score === cards.length
     return (
       <div className="animate-fade-in text-center py-6">
-        <div className="text-5xl mb-4">{perfect ? 'ðŸ†' : score >= cards.length / 2 ? 'ðŸ“œ' : 'ðŸº'}</div>
+        <div className="text-5xl mb-4">{perfect ? '🏆' : score >= cards.length / 2 ? '📜' : '🏺'}</div>
         <h3 className="text-2xl font-bold text-ink mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Quiz Complete!
         </h3>
@@ -62,14 +62,14 @@ export default function Flashcards({ civId }: { civId: string }) {
         </p>
         <p className="text-ink-3 text-base mb-6">
           {perfect
-            ? 'Perfect score â€” you know this civilization inside out!'
+            ? 'Perfect score — you know this civilization inside out!'
             : score >= cards.length / 2
-              ? 'Good work â€” review the missed answers to master them.'
+              ? 'Good work — review the missed answers to master them.'
               : 'Keep exploring the sections above, then try again!'}
         </p>
         <button
           onClick={reset}
-          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-xl hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
+          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
         >
           Restart Quiz
         </button>
@@ -139,7 +139,7 @@ export default function Flashcards({ civId }: { civId: string }) {
                 key={i}
                 onClick={() => choose(i)}
                 disabled={answered}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-full border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
               >
                 <span
                   className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-bold ${
@@ -153,8 +153,8 @@ export default function Flashcards({ civId }: { civId: string }) {
                   {LETTERS[i]}
                 </span>
                 <span className="text-base sm:text-lg font-medium">{opt}</span>
-                {answered && isCorrect && <span className="ml-auto text-forest text-base">âœ“</span>}
-                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">âœ—</span>}
+                {answered && isCorrect && <span className="ml-auto text-forest text-base">✓</span>}
+                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">✗</span>}
               </button>
             )
           })}
@@ -166,9 +166,9 @@ export default function Flashcards({ civId }: { civId: string }) {
         <button
           onClick={() => goTo(index - 1)}
           disabled={index === 0}
-          className="px-4 py-2.5 rounded-xl border border-line bg-panel text-ink-2 text-base font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2.5 rounded-full border border-line bg-panel text-ink-2 text-base font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          â† Previous
+          ← Previous
         </button>
 
         {!answered ? (
@@ -176,16 +176,16 @@ export default function Flashcards({ civId }: { civId: string }) {
         ) : index === cards.length - 1 ? (
           <button
             onClick={() => setFinished(true)}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
+            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
           >
             Finish
           </button>
         ) : (
           <button
             onClick={() => goTo(index + 1)}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Next â†’
+            Next →
           </button>
         )}
       </div>

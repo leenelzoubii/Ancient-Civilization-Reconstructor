@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import civilizations from '../data/civilizations.json'
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
@@ -135,7 +135,7 @@ function NavBar({
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavigate('home')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-accent-2' : 'text-[#e8dcc2] hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer px-3.5 py-1.5 rounded-full ${page === 'home' ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold' : 'text-[#e8dcc2] hover:bg-white/10 hover:text-white'}`}
           >
             Home
           </button>
@@ -146,19 +146,19 @@ function NavBar({
                 document.getElementById('civilizations')?.scrollIntoView({ behavior: 'smooth' })
               }, 100)
             }}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'home' ? 'text-[#e8dcc2] hover:text-white' : 'text-accent-2'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer px-3.5 py-1.5 rounded-full ${page === 'home' ? 'text-[#e8dcc2] hover:bg-white/10 hover:text-white' : 'bg-[#d9a92e] text-[#1d1a16] font-semibold'}`}
           >
             Civilizations
           </button>
           <button
             onClick={() => onNavigate('restore')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'restore' ? 'text-accent-2' : 'text-[#e8dcc2] hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer px-3.5 py-1.5 rounded-full ${page === 'restore' ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold' : 'text-[#e8dcc2] hover:bg-white/10 hover:text-white'}`}
           >
             AI Restorer
           </button>
           <button
             onClick={() => onNavigate('about')}
-            className={`text-sm font-medium transition-colors cursor-pointer ${page === 'about' ? 'text-accent-2' : 'text-[#e8dcc2] hover:text-white'}`}
+            className={`text-sm font-medium transition-colors cursor-pointer px-3.5 py-1.5 rounded-full ${page === 'about' ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold' : 'text-[#e8dcc2] hover:bg-white/10 hover:text-white'}`}
           >
             About
           </button>
@@ -201,8 +201,8 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
           </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { step: '01', title: 'Choose', desc: 'Select from 8 ancient civilizations spanning continents and millennia â€” from the pyramids of Egypt to the forts of the UAE.', color: 'from-amber-500 to-orange-600' },
-              { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read structured sections covering history, culture, economy, society, and achievements â€” then test yourself with flashcard quizzes.', color: 'from-orange-500 to-red-600' },
+              { step: '01', title: 'Choose', desc: 'Select from 8 ancient civilizations spanning continents and millennia — from the pyramids of Egypt to the forts of the UAE.', color: 'from-amber-500 to-orange-600' },
+              { step: '02', title: 'Explore', desc: 'Interact with 3D photogrammetry models, watch historical videos, and read structured sections covering history, culture, economy, society, and achievements — then test yourself with flashcard quizzes.', color: 'from-orange-500 to-red-600' },
               { step: '03', title: 'Reconstruct', desc: 'Paint over the damage in a photo of a broken artifact, and AI rebuilds the marked areas back to their original glory.', color: 'from-teal-500 to-cyan-600' },
             ].map((item, i) => (
               <AnimatedSection key={item.step} delay={i * 150}>
@@ -233,7 +233,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                 See History in Three Dimensions
               </h2>
               <p className="text-ink-2 leading-relaxed mb-6">
-                Our collection features real photogrammetry scans created by archaeologists and heritage organizations. These aren't artistic interpretations â€” they're precise digital twins of actual historical sites, captured using drones, laser scanning, and thousands of photographs.
+                Our collection features real photogrammetry scans created by archaeologists and heritage organizations. These aren't artistic interpretations — they're precise digital twins of actual historical sites, captured using drones, laser scanning, and thousands of photographs.
               </p>
               <p className="text-ink-2 leading-relaxed mb-8">
                 Rotate, zoom, and explore every angle. See the texture of carved stone, the wear of centuries, and the architectural details that photographs alone can't capture.
@@ -259,7 +259,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                     title="Taj Mahal 3D Model"
                   />
                 </div>
-                <p className="text-center text-ink-3 text-xs mt-3">Taj Mahal â€” Interactive 3D photogrammetry scan</p>
+                <p className="text-center text-ink-3 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
               </div>
             </AnimatedSection>
           </div>
@@ -290,7 +290,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
                 </div>
                 <p className="text-ink-2 text-sm leading-relaxed">
                   Upload a photo of a cracked or broken artifact, brush over the
-                  damaged areas yourself, and AI rebuilds exactly what you marked â€”
+                  damaged areas yourself, and AI rebuilds exactly what you marked —
                   every untouched pixel, including the background, stays exactly as
                   uploaded.
                 </p>
@@ -381,7 +381,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
           <AnimatedSection delay={300}>
             <div className="p-8 rounded-2xl border border-line bg-panel hover:border-amber-500/20 transition-colors">
               <p className="text-ink-2 text-sm leading-relaxed max-w-2xl mx-auto mb-6">
-                This project is a labor of love â€” combining skills in web development, data science, and historical research to create an interactive learning platform. Every civilization page is carefully researched using academic sources, museum archives, and on-the-ground heritage documentation.
+                This project is a labor of love — combining skills in web development, data science, and historical research to create an interactive learning platform. Every civilization page is carefully researched using academic sources, museum archives, and on-the-ground heritage documentation.
               </p>
               <div className="flex justify-center gap-4">
                 <a href="https://github.com/7nk2jkrmc4-hue/Graduation-Project---ACR" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-panel-2 border border-line text-ink-2 hover:text-ink hover:bg-panel-2 hover:border-amber-500/30 transition-all text-sm flex items-center gap-2">
@@ -401,7 +401,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
 
       <footer className="bg-[#1d1a16] border-t border-white/10 py-9 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-[#b9ab90] text-sm">
-          <p>ACR â€” Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>
@@ -484,7 +484,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
                 rel="noopener noreferrer"
                 className="text-xs text-accent hover:text-accent underline"
               >
-                Open on Sketchfab â†—
+                Open on Sketchfab ↗
               </a>
             </div>
             <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
@@ -573,7 +573,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
 
       <footer className="bg-[#1d1a16] border-t border-white/10 py-9 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-[#b9ab90] text-sm">
-          <p>ACR â€” Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>

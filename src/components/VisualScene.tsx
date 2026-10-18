@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 function Cloud({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -193,7 +193,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
   return (
     <div ref={sectionRef}>
-      {/* â•â•â•â•â•â•â•â•â•â•â• SECTION 1: GLOBAL CIVILIZATIONS â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ═══════════ SECTION 1: GLOBAL CIVILIZATIONS ═══════════ */}
       <section id="civilizations" className="relative py-24 sm:py-32 overflow-hidden scroll-mt-16">
         <div className="absolute inset-0 hero-bg" />
         <div className="absolute inset-0 opacity-30">
@@ -295,11 +295,11 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           {/* Exploration cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { id: 'egypt', title: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the secrets of the afterlife along the Nile.', icon: 'â–²', color: 'from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40' },
-              { id: 'rome', title: 'Ancient Rome', desc: 'Engineering marvels, law, and empire that shaped the Western world.', icon: 'â¬¡', color: 'from-sky-500/10 to-sky-500/5 border-sky-500/20 hover:border-sky-500/40' },
-              { id: 'maya', title: 'Maya Civilization', desc: 'Rainforest cities, advanced mathematics, and celestial calendars.', icon: 'â—†', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40' },
-              { id: 'taj-mahal', title: 'Taj Mahal', desc: 'The crown jewel of Mughal architecture and eternal love.', icon: 'â‹', color: 'from-rose-500/10 to-rose-500/5 border-rose-500/20 hover:border-rose-500/40' },
-              { id: 'petra', title: 'Petra', desc: 'The rose-red city carved into cliff faces by the Nabateans.', icon: 'â—‡', color: 'from-orange-500/10 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40' },
+              { id: 'egypt', title: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the secrets of the afterlife along the Nile.', icon: '▲', color: 'from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40' },
+              { id: 'rome', title: 'Ancient Rome', desc: 'Engineering marvels, law, and empire that shaped the Western world.', icon: '⬡', color: 'from-sky-500/10 to-sky-500/5 border-sky-500/20 hover:border-sky-500/40' },
+              { id: 'maya', title: 'Maya Civilization', desc: 'Rainforest cities, advanced mathematics, and celestial calendars.', icon: '◆', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40' },
+              { id: 'taj-mahal', title: 'Taj Mahal', desc: 'The crown jewel of Mughal architecture and eternal love.', icon: '❋', color: 'from-rose-500/10 to-rose-500/5 border-rose-500/20 hover:border-rose-500/40' },
+              { id: 'petra', title: 'Petra', desc: 'The rose-red city carved into cliff faces by the Nabateans.', icon: '◇', color: 'from-orange-500/10 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40' },
             ].map((civ, i) => (
               <button
                 key={civ.id}
@@ -316,7 +316,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
         </div>
       </section>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â• TRANSITION â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ═══════════ TRANSITION ═══════════ */}
       <div className="relative h-48 sm:h-64 overflow-hidden">
         <div className="absolute inset-0 transition-bg" />
         <div className="absolute inset-0 flex items-center justify-center">
@@ -336,7 +336,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
         </div>
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â• SECTION 2: UAE DESERT SCENE â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ═══════════ SECTION 2: UAE DESERT SCENE ═══════════ */}
       <section className="relative overflow-hidden">
         {/* Sky */}
         <div className="relative min-h-[85vh] sm:min-h-screen">
@@ -378,7 +378,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
             </div>
           </div>
 
-          {/* Camels on the sand â€” rendered AFTER ground so they're on top */}
+          {/* Camels on the sand — rendered AFTER ground so they're on top */}
           <Camel x={5} y={24} />
           <Camel x={18} y={27} />
           <Camel x={32} y={25} />
