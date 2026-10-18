@@ -253,13 +253,13 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
               <div className="rounded-2xl overflow-hidden border border-line bg-panel p-2 hover:border-amber-500/20 transition-colors">
                 <div className="aspect-video rounded-xl overflow-hidden">
                   <iframe
-                    src="https://sketchfab.com/models/d02e8cdef15946408be6613fc5d1f0ff/embed?autostart=0"
+                    src="https://sketchfab.com/models/e2f01432233b4c0983583ba5066af83d/embed?autostart=0"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     allow="autoplay; fullscreen; vr; xr-spatial-tracking"
-                    title="Taj Mahal 3D Model"
+                    title="Earth 16K 3D Model"
                   />
                 </div>
-                <p className="text-center text-ink-3 text-xs mt-3">Taj Mahal — Interactive 3D photogrammetry scan</p>
+                <p className="text-center text-ink-3 text-xs mt-3">Earth 16K — Interactive 3D model</p>
               </div>
             </AnimatedSection>
           </div>
