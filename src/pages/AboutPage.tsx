@@ -1,27 +1,27 @@
-export default function AboutPage() {
+﻿export default function AboutPage() {
   return (
     <div className="min-h-screen bg-app pt-20 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 animate-fade-in-up">
           <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">About</p>
-          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             ACR
           </h1>
           <p className="text-ink-2 max-w-xl mx-auto">
-            Ancient Civilization Reconstructor — an educational platform exploring the wonders of ancient civilizations through 3D models, historical content, and AI-powered tools.
+            Ancient Civilization Reconstructor â€” an educational platform exploring the wonders of ancient civilizations through 3D models, historical content, and AI-powered tools.
           </p>
         </div>
 
         <div className="space-y-8">
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.1s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Our Mission</h2>
+            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Our Mission</h2>
             <p className="text-ink-2 leading-relaxed">
               ACR (Ancient Civilization Reconstructor) is an educational and research project dedicated to bringing the past to life. We combine historical research, 3D photogrammetry models, and AI technology to help students, historians, and curious minds explore and reconstruct ancient artifacts and sites from around the world.
             </p>
           </section>
 
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.15s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Civilizations Covered</h2>
+            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Civilizations Covered</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { name: 'Taj Mahal', desc: 'Mughal architecture in Agra, India' },
@@ -45,12 +45,12 @@ export default function AboutPage() {
           </section>
 
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.2s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Features</h2>
+            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Features</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { icon: '🏛️', title: '3D Models', desc: 'Interactive Sketchfab photogrammetry scans of real archaeological sites' },
-                { icon: '🎥', title: 'Video Content', desc: 'Curated YouTube videos documenting each civilization' },
-                { icon: '🤖', title: 'AI Restorer', desc: 'Upload a broken artifact photo and AI generates a restored version' },
+                { icon: 'ðŸ›ï¸', title: '3D Models', desc: 'Interactive Sketchfab photogrammetry scans of real archaeological sites' },
+                { icon: 'ðŸŽ¥', title: 'Video Content', desc: 'Curated YouTube videos documenting each civilization' },
+                { icon: 'ðŸ¤–', title: 'AI Restorer', desc: 'Upload a broken artifact photo and AI generates a restored version' },
               ].map(f => (
                 <div key={f.title} className="text-center p-4 rounded-xl bg-panel border border-line-soft">
                   <div className="text-3xl mb-3">{f.icon}</div>
@@ -62,7 +62,7 @@ export default function AboutPage() {
           </section>
 
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.25s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Technology</h2>
+            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Technology</h2>
             <div className="space-y-3 text-ink-2 text-sm leading-relaxed">
               <p>
                 This project is built with <span className="text-ink font-medium">React</span>, <span className="text-ink font-medium">Vite</span>, and <span className="text-ink font-medium">Tailwind CSS</span>. It features interactive 3D model embeds from Sketchfab, curated YouTube video content, and an AI-powered artifact restoration tool: paint over damage and a server-side OpenAI image edit rebuilds only the painted area, with a basic local repair fallback when the AI call itself fails.
@@ -74,7 +74,7 @@ export default function AboutPage() {
           </section>
 
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.25s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>Meet the Team</h2>
+            <h2 className="text-2xl font-bold text-ink mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Meet the Team</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[
                 { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
@@ -93,9 +93,9 @@ export default function AboutPage() {
           </section>
 
           <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.3s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Credits & Sources</h2>
+            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Credits & Sources</h2>
             <div className="space-y-2 text-ink-2 text-sm">
-              <p><span className="text-ink font-medium">3D Models:</span> Sketchfab creators — Global Digital Heritage, Zlatan.Filipovic, HeritageTech, and community contributors</p>
+              <p><span className="text-ink font-medium">3D Models:</span> Sketchfab creators â€” Global Digital Heritage, Zlatan.Filipovic, HeritageTech, and community contributors</p>
               <p><span className="text-ink font-medium">Video Content:</span> YouTube educational creators and documentary channels</p>
               <p><span className="text-ink font-medium">AI Restoration:</span> OpenAI gpt-image-2.5-sunburst edits via serverless API (key stays server-side), gpt-6-luna result check, basic local repair fallback</p>
               <p><span className="text-ink font-medium">Historical Research:</span> UNESCO, national heritage departments, and academic publications</p>
@@ -112,7 +112,7 @@ export default function AboutPage() {
 
       <footer className="border-t border-line-soft py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
-          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+          <p>ACR â€” Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>

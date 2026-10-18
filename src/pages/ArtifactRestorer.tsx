@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+﻿import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   DEV_MOCK_AI,
   LARGE_MASK_FRACTION,
@@ -41,11 +41,11 @@ export default function ArtifactRestorer() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  // Offscreen mask at exact PNG pixel dimensions (alpha 1.0 strokes) — this
+  // Offscreen mask at exact PNG pixel dimensions (alpha 1.0 strokes) â€” this
   // is what gets sent to the API. The visible overlay is display-only.
   const maskRef = useRef<HTMLCanvasElement | null>(null)
   const paintedRef = useRef(false)
-  // Maps visible-canvas coords → image coords (handles object-contain boxes).
+  // Maps visible-canvas coords â†’ image coords (handles object-contain boxes).
   const imgMapRef = useRef({ scale: 1, offX: 0, offY: 0 })
 
   const [cameraActive, setCameraActive] = useState(false)
@@ -75,7 +75,7 @@ export default function ArtifactRestorer() {
       i.onerror = () => reject(new Error('decode failed'))
       i.src = rawUrl
     })
-    // True PNG at ≤1024px on the long side: correct MIME for the API and a
+    // True PNG at â‰¤1024px on the long side: correct MIME for the API and a
     // request body far below Vercel's ~4.5MB limit.
     const MAX = 1024
     let w = img.naturalWidth
@@ -88,7 +88,7 @@ export default function ArtifactRestorer() {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')!
     // Encode as a TRUE PNG; shrink further if the PNG body would risk the
-    // server's 4MB limit (~4.7M base64 chars ≈ 3.5MB raw).
+    // server's 4MB limit (~4.7M base64 chars â‰ˆ 3.5MB raw).
     let outW = w
     let outH = h
     let dataUrl = ''
@@ -193,7 +193,7 @@ export default function ArtifactRestorer() {
     canvas.height = ch
     const ctx = canvas.getContext('2d')!
     ctx.clearRect(0, 0, cw, ch)
-    // object-contain letterboxing: map visible-canvas coords → image coords.
+    // object-contain letterboxing: map visible-canvas coords â†’ image coords.
     const nw = img.naturalWidth
     const nh = img.naturalHeight
     if (!nw || !nh) return
@@ -256,7 +256,7 @@ export default function ArtifactRestorer() {
   }, [originalBase64, getMaskDataUrl])
 
   // Step 2: the single paid call (or $0 mock). Runs only from Continue /
-  // Try again — never automatically, never twice per click.
+  // Try again â€” never automatically, never twice per click.
   const doRestore = useCallback(async () => {
     if (!originalBase64 || !pendingMask) return
     if (inFlightRef.current) return
@@ -316,7 +316,7 @@ export default function ArtifactRestorer() {
       <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 animate-fade-in">
         <p className="text-sm text-ink font-medium mb-1">
           {DEV_MOCK_AI
-            ? 'This run is free (mock mode — no OpenAI call). Continue?'
+            ? 'This run is free (mock mode â€” no OpenAI call). Continue?'
             : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
         </p>
         <p className="text-xs text-ink-3 mb-3">
@@ -334,7 +334,7 @@ export default function ArtifactRestorer() {
                 onChange={e => setLargeAck(e.target.checked)}
                 className="w-4 h-4 accent-amber-500"
               />
-              I understand — restore anyway
+              I understand â€” restore anyway
             </label>
           </div>
         )}
@@ -430,7 +430,7 @@ export default function ArtifactRestorer() {
           </p>
           <h1
             className="text-4xl sm:text-5xl font-black text-ink mb-3"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
             Artifact Restorer
           </h1>
@@ -611,15 +611,15 @@ export default function ArtifactRestorer() {
             <div className="flex flex-wrap items-center gap-3 mb-4">
               {DEV_MOCK_AI && (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-teal-500/10 text-cool border-teal-500/30">
-                  Mock mode — $0, no OpenAI calls
+                  Mock mode â€” $0, no OpenAI calls
                 </span>
               )}
               <span className="text-xs text-ink-3">
-                Session spend ≈ $
+                Session spend â‰ˆ $
                 {spend.estimatedUsd < 0.01
                   ? spend.estimatedUsd.toFixed(3)
                   : spend.estimatedUsd.toFixed(2)}{' '}
-                · {spend.imageCalls} image / {spend.visionCalls} vision
+                Â· {spend.imageCalls} image / {spend.visionCalls} vision
               </span>
               {(spend.imageCalls > 0 || spend.visionCalls > 0) && (
                 <button
@@ -760,7 +760,7 @@ export default function ArtifactRestorer() {
                   We couldn&apos;t visibly repair this image.
                 </p>
                 <p>
-                  Paint over the damage more thoroughly and try again — wider
+                  Paint over the damage more thoroughly and try again â€” wider
                   strokes over each crack or missing piece give the AI more to
                   rebuild.
                 </p>
@@ -857,7 +857,7 @@ export default function ArtifactRestorer() {
 
       <footer className="border-t border-line-soft py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
-          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
+          <p>ACR â€” Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
     </div>

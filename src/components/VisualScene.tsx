@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 
 function Cloud({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -193,7 +193,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
 
   return (
     <div ref={sectionRef}>
-      {/* ═══════════ SECTION 1: GLOBAL CIVILIZATIONS ═══════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â• SECTION 1: GLOBAL CIVILIZATIONS â•â•â•â•â•â•â•â•â•â•â• */}
       <section id="civilizations" className="relative py-24 sm:py-32 overflow-hidden scroll-mt-16">
         <div className="absolute inset-0 hero-bg" />
         <div className="absolute inset-0 opacity-30">
@@ -205,7 +205,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16 animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.8s ease forwards' }}>
             <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">Our World, Our Heritage</p>
-            <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Global Civilizations
             </h2>
             <p className="text-ink-2 max-w-2xl mx-auto text-base sm:text-lg">
@@ -295,11 +295,11 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           {/* Exploration cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { id: 'egypt', title: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the secrets of the afterlife along the Nile.', icon: '▲', color: 'from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40' },
-              { id: 'rome', title: 'Ancient Rome', desc: 'Engineering marvels, law, and empire that shaped the Western world.', icon: '⬡', color: 'from-sky-500/10 to-sky-500/5 border-sky-500/20 hover:border-sky-500/40' },
-              { id: 'maya', title: 'Maya Civilization', desc: 'Rainforest cities, advanced mathematics, and celestial calendars.', icon: '◆', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40' },
-              { id: 'taj-mahal', title: 'Taj Mahal', desc: 'The crown jewel of Mughal architecture and eternal love.', icon: '❋', color: 'from-rose-500/10 to-rose-500/5 border-rose-500/20 hover:border-rose-500/40' },
-              { id: 'petra', title: 'Petra', desc: 'The rose-red city carved into cliff faces by the Nabateans.', icon: '◇', color: 'from-orange-500/10 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40' },
+              { id: 'egypt', title: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the secrets of the afterlife along the Nile.', icon: 'â–²', color: 'from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40' },
+              { id: 'rome', title: 'Ancient Rome', desc: 'Engineering marvels, law, and empire that shaped the Western world.', icon: 'â¬¡', color: 'from-sky-500/10 to-sky-500/5 border-sky-500/20 hover:border-sky-500/40' },
+              { id: 'maya', title: 'Maya Civilization', desc: 'Rainforest cities, advanced mathematics, and celestial calendars.', icon: 'â—†', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40' },
+              { id: 'taj-mahal', title: 'Taj Mahal', desc: 'The crown jewel of Mughal architecture and eternal love.', icon: 'â‹', color: 'from-rose-500/10 to-rose-500/5 border-rose-500/20 hover:border-rose-500/40' },
+              { id: 'petra', title: 'Petra', desc: 'The rose-red city carved into cliff faces by the Nabateans.', icon: 'â—‡', color: 'from-orange-500/10 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40' },
             ].map((civ, i) => (
               <button
                 key={civ.id}
@@ -316,13 +316,13 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
         </div>
       </section>
 
-      {/* ═══════════ TRANSITION ═══════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â• TRANSITION â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="relative h-48 sm:h-64 overflow-hidden">
         <div className="absolute inset-0 transition-bg" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center z-10 px-4">
             <p className="text-accent/70 text-xs sm:text-sm tracking-[0.3em] uppercase mb-2">Discover</p>
-            <h3 className="text-2xl sm:text-4xl font-black text-ink" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h3 className="text-2xl sm:text-4xl font-black text-ink" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               The UAE Heritage
             </h3>
             <div className="mt-3 flex items-center justify-center gap-3">
@@ -336,7 +336,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
         </div>
       </div>
 
-      {/* ═══════════ SECTION 2: UAE DESERT SCENE ═══════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â• SECTION 2: UAE DESERT SCENE â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="relative overflow-hidden">
         {/* Sky */}
         <div className="relative min-h-[85vh] sm:min-h-screen">
@@ -378,7 +378,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
             </div>
           </div>
 
-          {/* Camels on the sand — rendered AFTER ground so they're on top */}
+          {/* Camels on the sand â€” rendered AFTER ground so they're on top */}
           <Camel x={5} y={24} />
           <Camel x={18} y={27} />
           <Camel x={32} y={25} />
@@ -403,7 +403,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
           <div className="absolute bottom-[12%] sm:bottom-[15%] left-0 right-0 z-30">
             <div className="max-w-4xl mx-auto px-4">
               <div className="bg-gradient-to-r from-amber-900/40 via-amber-800/50 to-amber-900/40 backdrop-blur-sm rounded-2xl border border-amber-500/20 p-6 sm:p-8">
-                <p className="text-center text-amber-200/80 text-xs sm:text-sm tracking-widest uppercase mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <p className="text-center text-amber-200/80 text-xs sm:text-sm tracking-widest uppercase mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                   Explore UAE Historical Sites
                 </p>
                 <div className="flex justify-center gap-6 sm:gap-10 flex-wrap">

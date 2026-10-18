@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import quizzesData from '../../data/quizzes.json'
 
 type Card = { q: string; options: string[]; a: number }
@@ -50,8 +50,8 @@ export default function Flashcards({ civId }: { civId: string }) {
     const perfect = score === cards.length
     return (
       <div className="animate-fade-in text-center py-6">
-        <div className="text-5xl mb-4">{perfect ? '🏆' : score >= cards.length / 2 ? '📜' : '🏺'}</div>
-        <h3 className="text-2xl font-bold text-ink mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <div className="text-5xl mb-4">{perfect ? 'ðŸ†' : score >= cards.length / 2 ? 'ðŸ“œ' : 'ðŸº'}</div>
+        <h3 className="text-2xl font-bold text-ink mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Quiz Complete!
         </h3>
         <p className="text-ink-2 mb-1">
@@ -62,9 +62,9 @@ export default function Flashcards({ civId }: { civId: string }) {
         </p>
         <p className="text-ink-3 text-base mb-6">
           {perfect
-            ? 'Perfect score — you know this civilization inside out!'
+            ? 'Perfect score â€” you know this civilization inside out!'
             : score >= cards.length / 2
-              ? 'Good work — review the missed answers to master them.'
+              ? 'Good work â€” review the missed answers to master them.'
               : 'Keep exploring the sections above, then try again!'}
         </p>
         <button
@@ -153,8 +153,8 @@ export default function Flashcards({ civId }: { civId: string }) {
                   {LETTERS[i]}
                 </span>
                 <span className="text-base sm:text-lg font-medium">{opt}</span>
-                {answered && isCorrect && <span className="ml-auto text-forest text-base">✓</span>}
-                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">✗</span>}
+                {answered && isCorrect && <span className="ml-auto text-forest text-base">âœ“</span>}
+                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">âœ—</span>}
               </button>
             )
           })}
@@ -168,7 +168,7 @@ export default function Flashcards({ civId }: { civId: string }) {
           disabled={index === 0}
           className="px-4 py-2.5 rounded-xl border border-line bg-panel text-ink-2 text-base font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          ← Previous
+          â† Previous
         </button>
 
         {!answered ? (
@@ -185,7 +185,7 @@ export default function Flashcards({ civId }: { civId: string }) {
             onClick={() => goTo(index + 1)}
             className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Next →
+            Next â†’
           </button>
         )}
       </div>
