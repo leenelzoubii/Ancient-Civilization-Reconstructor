@@ -4,8 +4,12 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 animate-fade-in-up">
           <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">About</p>
-          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            ACR
+          <h1 className="mb-4">
+            <img
+              src="/logo/logo-banner.jpg"
+              alt="ACR — Ancient Civilization Reconstructor"
+              className="w-full max-w-md mx-auto rounded-2xl border border-line"
+            />
           </h1>
           <p className="text-ink-2 max-w-xl mx-auto">
             Ancient Civilization Reconstructor — an educational platform exploring the wonders of ancient civilizations through 3D models, historical content, and AI-powered tools.
@@ -112,6 +116,7 @@ export default function AboutPage() {
 
       <footer className="border-t border-line-soft py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
+          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
           <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>

@@ -117,19 +117,10 @@ function NavBar({
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-nav/90 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-        <button onClick={() => onNavigate('home')} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d9a92e] to-[#a4502f] flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <span className="flex flex-col items-start leading-none">
-            <span className="text-lg font-black text-accent-2 tracking-wide" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              ACR
-            </span>
-            <span className="hidden sm:block text-[9px] font-medium tracking-[0.15em] uppercase text-[#b9ab90] mt-0.5">
-              Ancient Civilization Reconstructor
-            </span>
+        <button onClick={() => onNavigate('home')} aria-label="ACR — Ancient Civilization Reconstructor — Home" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+          <img src="/logo/logo-light.png" alt="" className="h-9 w-auto" />
+          <span className="hidden sm:block text-[9px] font-medium tracking-[0.15em] uppercase text-[#b9ab90] border-l border-white/15 pl-3 leading-relaxed">
+            Ancient Civilization<br />Reconstructor
           </span>
         </button>
         <div className="flex items-center gap-4">
@@ -401,6 +392,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
 
       <footer className="bg-[#1d1a16] border-t border-white/10 py-9 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-[#b9ab90] text-sm">
+          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
           <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
@@ -573,6 +565,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
 
       <footer className="bg-[#1d1a16] border-t border-white/10 py-9 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-[#b9ab90] text-sm">
+          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
           <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>

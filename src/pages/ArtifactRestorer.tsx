@@ -857,6 +857,7 @@ export default function ArtifactRestorer() {
 
       <footer className="border-t border-line-soft py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
+          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
           <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
         </div>
       </footer>
