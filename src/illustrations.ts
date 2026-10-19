@@ -1,281 +1,322 @@
-/* Vector illustrations ported verbatim from the legacy site's js/illustrations.js.
-   Each function returns an SVG string; `id` keeps gradient IDs unique per instance. */
+/* Vector illustrations ported from the legacy site's js/illustrations.js, recomposed
+   as panoramic 900x140 banners. Each function returns an SVG string; `id` keeps
+   gradient IDs unique per instance. preserveAspectRatio="slice" fills the banner
+   strip edge-to-edge with a gentle center crop. */
+
+const romeArches = () =>
+  [59, 73, 87]
+    .map((y, r) =>
+      Array.from({ length: 15 }, (_, i) => {
+        const x = 278 + i * 24
+        const dy = Math.abs(i - 7) * 0.8
+        return `<path d="M${x} ${y + dy + 12} V${y + dy + 4} a5.5 5.5 0 0 1 11 0 V${y + dy + 12} Z" fill="${r === 0 ? '#9b8a68' : r === 1 ? '#a8956f' : '#b3a27f'}"/>`
+      }).join('')
+    )
+    .join('')
 
 const egypt = (id = 'e') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pyramids of Giza beside the Nile">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pyramids of Giza beside the Nile">
     <defs>
       <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c77a"/><stop offset=".6" stop-color="#f9e2b4"/><stop offset="1" stop-color="#fbeed3"/></linearGradient>
-      <linearGradient id="${id}sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4c48a"/><stop offset="1" stop-color="#c99f5f"/></linearGradient>
     </defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <circle cx="300" cy="78" r="30" fill="#fff4d8" opacity=".9"/>
-    <circle cx="300" cy="78" r="46" fill="#fff4d8" opacity=".25"/>
-    <path d="M60 196 L150 74 L240 196 Z" fill="#f2e6c9"/><path d="M150 74 L240 196 L176 196 Z" fill="#dcc79c"/>
-    <path d="M142 85 L150 74 L158 85 Z" fill="#d9a92e"/>
-    <path d="M206 196 L272 104 L338 196 Z" fill="#eadcb9"/><path d="M272 104 L338 196 L292 196 Z" fill="#d0ba8d"/>
-    <path d="M318 196 L352 150 L386 196 Z" fill="#d7b28c"/><path d="M352 150 L386 196 L362 196 Z" fill="#c09673"/>
-    <path d="M0 200 Q100 186 200 198 T400 194 V260 H0 Z" fill="url(#${id}sand)"/>
-    <path d="M0 226 Q120 214 230 228 T400 222 V260 H0 Z" fill="#3f7fa6" opacity=".85"/>
-    <path d="M0 236 Q140 228 260 238 T400 234" stroke="#8fc0dc" stroke-width="2" fill="none" opacity=".7"/>
-    <g fill="#4f7a32"><path d="M30 214 q8-22 2-40" stroke="#6e5034" stroke-width="3" fill="none"/>
-      <path d="M32 174 q-16-2-24 8 q14-2 24-6 q-8-12-22-12 q14 6 22 10 q2-14 14-18 q-6 10-12 18 q14-4 24 4 q-14-2-26 -4z"/></g>
-    <path d="M110 232 h34 l-6 8 h-22 z" fill="#7a5434"/><path d="M128 232 V196 L148 230 Z" fill="#fbf6ea"/>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="782" cy="38" r="18" fill="#fff4d8" opacity=".9"/>
+    <circle cx="782" cy="38" r="27" fill="#fff4d8" opacity=".25"/>
+    <path d="M250 100 L360 22 L470 100 Z" fill="#f2e6c9"/>
+    <path d="M360 22 L470 100 L397 100 Z" fill="#dcc79c"/>
+    <path d="M353 32 L360 22 L367 32 Z" fill="#d9a92e"/>
+    <path d="M486 100 L540 50 L594 100 Z" fill="#eadcb9"/>
+    <path d="M540 50 L594 100 L557 100 Z" fill="#d0ba8d"/>
+    <path d="M616 100 L656 68 L696 100 Z" fill="#d7b28c"/>
+    <path d="M656 68 L696 100 L669 100 Z" fill="#c09673"/>
+    <path d="M0 100 Q240 92 480 98 T900 94 V140 H0 Z" fill="#e4c48a"/>
+    <path d="M0 112 Q240 106 470 112 T900 108 V140 H0 Z" fill="#3f7fa6" opacity=".88"/>
+    <path d="M0 120 Q240 114 470 121 T900 116" fill="none" stroke="#8fc0dc" stroke-width="2" opacity=".7"/>
+    <path d="M0 131 Q240 126 470 132 T900 128" fill="none" stroke="#8fc0dc" stroke-width="2" opacity=".55"/>
+    <path d="M120 116 Q170 108 220 114 V122 H120 Z" fill="#e4c48a"/>
+    <g fill="#4f7a32">
+      <path d="M164 114 q4-26 0-42" stroke="#6e5034" stroke-width="4" fill="none"/>
+      <path d="M164 70 q-19-2-28 9 q16-3 28-7 q-9-15-26-15 q17 7 26 12 q3-17 17-22 q-7 13-15 22 q17-5 28 5 q-17-3-30-5z"/>
+    </g>
+    <g>
+      <path d="M618 116 h46 l-9 11 h-28 z" fill="#7a5434"/>
+      <path d="M641 116 V78 L668 110 Z" fill="#fbf6ea"/>
+      <path d="M641 96 L624 112" stroke="#b8862b" stroke-width="1.5"/>
+    </g>
+    <g fill="#6e5a44"><path d="M330 44 q4-4 8 0 q-4-1.5-8 0z"/><path d="M346 50 q4-4 8 0 q-4-1.5-8 0z"/><path d="M580 34 q4-4 8 0 q-4-1.5-8 0z"/></g>
   </svg>`
 
 const rome = (id = 'r') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Colosseum in Rome">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Colosseum in Rome">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc4e4"/><stop offset="1" stop-color="#f1ead9"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <ellipse cx="200" cy="206" rx="170" ry="26" fill="#cbbd9f"/>
-    <path d="M52 200 V92 Q200 62 348 92 V200 Q200 226 52 200 Z" fill="#e7dcc3"/>
-    <path d="M52 92 Q200 62 348 92 V104 Q200 76 52 104 Z" fill="#d4c6a7"/>
-    ${[0, 1, 2].map(r => {
-      const y = 112 + r * 30;
-      let s = '';
-      for (let i = 0; i < 11; i++) {
-        const x = 66 + i * 25.6, curve = Math.abs(i - 5) * 1.6;
-        s += `<path d="M${x} ${y + 24 + curve} V${y + 8 + curve} a8 8 0 0 1 16 0 V${y + 24 + curve} Z" fill="${r === 0 ? '#9b8a68' : '#b3a27f'}"/>`;
-      }
-      return s + `<path d="M52 ${y + 26} Q200 ${y + 2 + 26} 348 ${y + 26}" stroke="#cdbf9f" stroke-width="3" fill="none"/>`;
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="770" cy="34" r="16" fill="#fff8e4" opacity=".85"/>
+    <path d="M0 100 Q450 92 900 100 V140 H0 Z" fill="#8f9e5c"/>
+    <path d="M270 100 V56 Q450 34 630 56 V100 Q450 114 270 100 Z" fill="#e7dcc3"/>
+    <path d="M270 56 Q450 34 630 56" fill="none" stroke="#d4c6a7" stroke-width="5"/>
+    ${romeArches()}
+    ${Array.from({ length: 23 }, (_, i) => {
+      const x = 274 + i * 16
+      const y = 40 + Math.abs(i - 11) * 1.05
+      return `<rect x="${x}" y="${y}" width="3" height="8" fill="#c8b994"/>`
     }).join('')}
-    ${Array.from({ length: 22 }, (_, i) => `<rect x="${60 + i * 13.2}" y="${96 + Math.abs(i - 10.5) * 0.9}" width="3" height="10" fill="#c8b994"/>`).join('')}
-    <path d="M0 214 Q200 200 400 214 V260 H0 Z" fill="#8f9e5c"/>
-    <g fill="#3b5a2f"><path d="M24 214 l8-58 l8 58z"/><path d="M372 214 l7-48 l7 48z"/><path d="M356 216 l6-34 l6 34z"/></g>
+    <path d="M0 118 Q120 112 240 118 T480 116 T900 118 V140 H0 Z" fill="#7d8f50"/>
+    <g fill="#2f5a2a">
+      <ellipse cx="150" cy="76" rx="8" ry="24"/><rect x="147" y="96" width="6" height="16" fill="#6b4f30"/>
+      <ellipse cx="750" cy="80" rx="7" ry="22"/><rect x="747" y="98" width="6" height="14" fill="#6b4f30"/>
+      <ellipse cx="196" cy="94" rx="6" ry="14"/><rect x="194" y="104" width="4" height="10" fill="#6b4f30"/>
+      <ellipse cx="706" cy="96" rx="6" ry="13"/><rect x="704" y="105" width="4" height="9" fill="#6b4f30"/>
+    </g>
+    <g fill="#5b7a3a"><ellipse cx="80" cy="124" rx="16" ry="6"/><ellipse cx="830" cy="126" rx="18" ry="6"/><ellipse cx="450" cy="132" rx="30" ry="6" opacity=".7"/></g>
   </svg>`
 
 const maya = (id = 'm') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Maya stepped pyramid in the rainforest">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Maya stepped pyramid in the rainforest">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fcbd6"/><stop offset="1" stop-color="#e5f1df"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <g fill="#5a8a4a" opacity=".55"><circle cx="40" cy="170" r="40"/><circle cx="90" cy="160" r="34"/><circle cx="320" cy="164" r="38"/><circle cx="372" cy="170" r="36"/></g>
-    ${Array.from({ length: 9 }, (_, i) => {
-      const w = 260 - i * 22, y = 210 - (i + 1) * 15;
-      return `<rect x="${200 - w / 2}" y="${y}" width="${w}" height="15" fill="${i % 2 ? '#d9cfb3' : '#e6ddc4'}"/><rect x="${200 - w / 2}" y="${y + 12}" width="${w}" height="3" fill="#c3b896"/>`;
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="130" cy="34" r="17" fill="#fff8e4" opacity=".85"/>
+    <g fill="#5a8a4a" opacity=".6">
+      <circle cx="40" cy="84" r="42"/><circle cx="100" cy="76" r="34"/><circle cx="170" cy="88" r="30"/>
+      <circle cx="730" cy="84" r="34"/><circle cx="800" cy="76" r="40"/><circle cx="866" cy="88" r="32"/>
+    </g>
+    <path d="M0 100 Q450 93 900 100 V140 H0 Z" fill="#cfc6a6"/>
+    ${Array.from({ length: 7 }, (_, i) => {
+      const w = 260 - i * 30
+      const y = 100 - (i + 1) * 9
+      return `<rect x="${450 - w / 2}" y="${y}" width="${w}" height="9" fill="${i % 2 ? '#d9cfb3' : '#e6ddc4'}"/><rect x="${450 - w / 2}" y="${y + 7}" width="${w}" height="2" fill="#c3b896"/>`
     }).join('')}
-    <path d="M178 210 L190 75 H210 L222 210 Z" fill="#efe7d2"/>
-    ${Array.from({ length: 22 }, (_, i) => `<line x1="${179 + i * 0.55}" x2="${221 - i * 0.55}" y1="${206 - i * 6.1}" y2="${206 - i * 6.1}" stroke="#cfc4a5" stroke-width="1.2"/>`).join('')}
-    <rect x="172" y="44" width="56" height="32" fill="#efe7d2"/><rect x="170" y="44" width="60" height="8" fill="#a3412e"/>
-    <rect x="182" y="58" width="9" height="18" fill="#3b3226"/><rect x="196" y="58" width="9" height="18" fill="#3b3226"/><rect x="210" y="58" width="9" height="18" fill="#3b3226"/>
-    <path d="M0 212 Q200 200 400 212 V260 H0 Z" fill="#cfc6a6"/>
-    <g fill="#2f5a2a"><circle cx="16" cy="212" r="30"/><circle cx="58" cy="222" r="26"/><circle cx="350" cy="214" r="30"/><circle cx="392" cy="222" r="26"/></g>
+    <path d="M436 37 L464 37 L486 100 L414 100 Z" fill="#efe7d2"/>
+    ${Array.from({ length: 6 }, (_, j) => {
+      const y = 37 + (j + 1) * 10
+      const hw = 14 + (j + 1) * 3.7
+      return `<line x1="${450 - hw}" x2="${450 + hw}" y1="${y}" y2="${y}" stroke="#cfc4a5" stroke-width="1.2"/>`
+    }).join('')}
+    <rect x="418" y="24" width="64" height="13" fill="#efe7d2"/>
+    <path d="M414 24 L450 15 L486 24 Z" fill="#a3412e"/>
+    <rect x="442" y="27" width="16" height="10" fill="#3b3226"/>
+    <g fill="#2f5a2a">
+      <circle cx="60" cy="118" r="34"/><circle cx="130" cy="126" r="28"/>
+      <circle cx="770" cy="118" r="34"/><circle cx="844" cy="126" r="28"/>
+      <circle cx="300" cy="132" r="22"/><circle cx="604" cy="134" r="20"/>
+    </g>
+    <g fill="#7fa84e"><ellipse cx="240" cy="130" rx="14" ry="5"/><ellipse cx="668" cy="130" rx="14" ry="5"/><ellipse cx="450" cy="136" rx="24" ry="5"/></g>
   </svg>`
 
 const tajMahal = (id = 't') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Taj Mahal with its reflecting pool">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Taj Mahal with its reflecting pool">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6d9a8"/><stop offset=".7" stop-color="#fbecd0"/><stop offset="1" stop-color="#fdf6e6"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <circle cx="320" cy="60" r="26" fill="#fff3d6" opacity=".85"/>
-    <rect y="196" width="400" height="64" fill="#8ba35e"/>
-    <rect y="196" width="400" height="10" fill="#7d9454"/>
-    <rect x="168" y="206" width="64" height="54" fill="#7fb3c8"/>
-    <rect x="168" y="206" width="64" height="54" fill="none" stroke="#e8e0cc" stroke-width="3"/>
-    <path d="M176 220 h48 M176 236 h48 M176 252 h48" stroke="#a7cddc" stroke-width="2"/>
-    <rect x="92" y="184" width="216" height="16" fill="#e6ddc8"/>
-    <rect x="88" y="196" width="224" height="8" fill="#d8ccb2"/>
-    <rect x="140" y="118" width="120" height="68" fill="#f6f0e2"/>
-    <path d="M185 186 V148 Q200 128 215 148 V186 Z" fill="#b9a98c"/>
-    <path d="M190 186 V150 Q200 134 210 150 V186 Z" fill="#8f7f64"/>
-    <path d="M150 186 V156 Q158 144 166 156 V186 Z" fill="#cbbfa4"/>
-    <path d="M234 186 V156 Q242 144 250 156 V186 Z" fill="#cbbfa4"/>
-    <rect x="176" y="104" width="48" height="16" fill="#efe8d6"/>
-    <path d="M162 106 Q162 72 182 56 Q192 48 200 40 Q208 48 218 56 Q238 72 238 106 Z" fill="#f8f3e6"/>
-    <path d="M170 104 Q170 76 186 62 Q194 55 200 48" fill="none" stroke="#e6dcc4" stroke-width="2"/>
-    <line x1="200" y1="40" x2="200" y2="28" stroke="#b8862b" stroke-width="2"/>
-    <circle cx="200" cy="26" r="3" fill="#d9a92e"/>
-    <circle cx="150" cy="114" r="7" fill="#f4edda"/><rect x="147" y="116" width="6" height="6" fill="#e6dcc4"/>
-    <circle cx="250" cy="114" r="7" fill="#f4edda"/><rect x="247" y="116" width="6" height="6" fill="#e6dcc4"/>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="800" cy="32" r="16" fill="#fff3d6" opacity=".85"/>
+    <path d="M0 100 Q450 93 900 100 V140 H0 Z" fill="#8ba35e"/>
+    <path d="M0 100 Q450 93 900 100 V108 H0 Z" fill="#7d9454"/>
+    <rect x="316" y="90" width="268" height="9" fill="#e6ddc8"/>
+    <rect x="310" y="99" width="280" height="6" fill="#d8ccb2"/>
+    <rect x="372" y="52" width="156" height="40" fill="#f6f0e2"/>
+    <path d="M436 92 V70 Q450 58 464 70 V92 Z" fill="#b9a98c"/>
+    <path d="M440 92 V72 Q450 62 460 72 V92 Z" fill="#8f7f64"/>
+    <path d="M392 92 V76 Q400 68 408 76 V92 Z" fill="#cbbfa4"/>
+    <path d="M492 92 V76 Q500 68 508 76 V92 Z" fill="#cbbfa4"/>
+    <rect x="426" y="44" width="48" height="10" fill="#efe8d6"/>
+    <path d="M414 48 Q414 30 432 20 Q441 15 450 11 Q459 15 468 20 Q486 30 486 48 Z" fill="#f8f3e6"/>
+    <path d="M422 46 Q422 32 436 24" fill="none" stroke="#e6dcc4" stroke-width="2"/>
+    <circle cx="450" cy="9" r="3.5" fill="#d9a92e"/>
+    <g fill="#f4edda">
+      <circle cx="390" cy="48" r="7"/><rect x="387" y="50" width="6" height="5" fill="#e6dcc4"/>
+      <circle cx="510" cy="48" r="7"/><rect x="507" y="50" width="6" height="5" fill="#e6dcc4"/>
+    </g>
     <g fill="#f2ecdc">
-      <rect x="106" y="108" width="9" height="80"/><ellipse cx="110.5" cy="106" rx="8" ry="6"/><line x1="110.5" y1="98" x2="110.5" y2="92" stroke="#b8862b" stroke-width="1.5"/>
-      <rect x="285" y="108" width="9" height="80"/><ellipse cx="289.5" cy="106" rx="8" ry="6"/><line x1="289.5" y1="98" x2="289.5" y2="92" stroke="#b8862b" stroke-width="1.5"/>
-      <rect x="122" y="124" width="7" height="64"/><ellipse cx="125.5" cy="122" rx="6.5" ry="5"/>
-      <rect x="271" y="124" width="7" height="64"/><ellipse cx="274.5" cy="122" rx="6.5" ry="5"/>
+      <rect x="334" y="44" width="10" height="48"/><ellipse cx="339" cy="42" rx="7.5" ry="5.5"/>
+      <rect x="556" y="44" width="10" height="48"/><ellipse cx="561" cy="42" rx="7.5" ry="5.5"/>
+      <rect x="316" y="56" width="8" height="36"/><ellipse cx="320" cy="54" rx="6" ry="4.5"/>
+      <rect x="576" y="56" width="8" height="36"/><ellipse cx="580" cy="54" rx="6" ry="4.5"/>
     </g>
-    <g fill="#dcd2b8"><rect x="104" y="136" width="13" height="3"/><rect x="283" y="136" width="13" height="3"/><rect x="120" y="148" width="11" height="3"/><rect x="269" y="148" width="11" height="3"/></g>
+    <g fill="#dcd2b8">
+      <rect x="331" y="62" width="16" height="3"/><rect x="553" y="62" width="16" height="3"/>
+      <rect x="313" y="72" width="14" height="3"/><rect x="573" y="72" width="14" height="3"/>
+    </g>
+    <rect x="430" y="105" width="40" height="35" fill="#7fb3c8"/>
+    <rect x="430" y="105" width="40" height="35" fill="none" stroke="#e8e0cc" stroke-width="3"/>
+    <path d="M436 116 h28 M436 126 h28 M436 136 h28" stroke="#a7cddc" stroke-width="2"/>
     <g fill="#35603c">
-      <ellipse cx="60" cy="170" rx="7" ry="26"/><rect x="58.5" y="186" width="3" height="14" fill="#6b4f30"/>
-      <ellipse cx="340" cy="170" rx="7" ry="26"/><rect x="338.5" y="186" width="3" height="14" fill="#6b4f30"/>
-      <ellipse cx="84" cy="178" rx="6" ry="20"/><ellipse cx="316" cy="178" rx="6" ry="20"/>
+      <ellipse cx="356" cy="86" rx="7" ry="18"/><rect x="354" y="100" width="4" height="10" fill="#6b4f30"/>
+      <ellipse cx="544" cy="86" rx="7" ry="18"/><rect x="542" y="100" width="4" height="10" fill="#6b4f30"/>
+      <ellipse cx="262" cy="90" rx="6" ry="15"/><rect x="260" y="102" width="4" height="8" fill="#6b4f30"/>
+      <ellipse cx="640" cy="90" rx="6" ry="15"/><rect x="638" y="102" width="4" height="8" fill="#6b4f30"/>
     </g>
+    <path d="M0 118 Q220 112 450 118 T900 116 V140 H0 Z" fill="#7d9454"/>
+    <g fill="#5b7a3a"><ellipse cx="180" cy="128" rx="20" ry="6"/><ellipse cx="720" cy="128" rx="20" ry="6"/><ellipse cx="450" cy="136" rx="34" ry="5" opacity=".7"/></g>
   </svg>`
 
 const khorfakkan = (id = 'k') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Khor Fakkan Portuguese fort by the sea">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Khor Fakkan Portuguese fort by the sea">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc8de"/><stop offset="1" stop-color="#f3e7cf"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <circle cx="70" cy="58" r="24" fill="#fff3d6" opacity=".8"/>
-    <rect y="158" width="400" height="50" fill="#4f8fb2"/>
-    <path d="M0 158 Q60 152 120 158 T240 156 T400 158" fill="none" stroke="#7db8d0" stroke-width="2"/>
-    <path d="M0 176 h400 M0 192 h400" stroke="#6aa8c4" stroke-width="1.5" opacity=".6"/>
-    <path d="M30 208 Q120 168 210 176 L330 186 Q370 196 400 208 V260 H0 Z" fill="#d9b98a"/>
-    <path d="M30 208 Q120 168 210 176 L330 186 Q370 196 400 208" fill="none" stroke="#c4a274" stroke-width="2"/>
-    <g fill="#cbb691">
-      <path d="M120 176 L140 140 L180 136 L210 150 L230 174 Z" opacity=".5"/>
-    </g>
-    <rect x="132" y="118" width="150" height="66" fill="#d8b887"/>
-    <rect x="132" y="118" width="150" height="8" fill="#c9a670"/>
-    <rect x="124" y="104" width="30" height="80" rx="3" fill="#cbaa78"/>
-    <rect x="262" y="104" width="30" height="80" rx="3" fill="#cbaa78"/>
-    <rect x="188" y="96" width="38" height="88" rx="3" fill="#d2b180"/>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="140" cy="32" r="16" fill="#fff3d6" opacity=".8"/>
+    <rect y="62" width="900" height="34" fill="#4f8fb2"/>
+    <path d="M0 62 Q120 58 240 62 T480 61 T720 62 T900 61" fill="none" stroke="#7db8d0" stroke-width="2"/>
+    <path d="M0 74 h900 M0 86 h900" stroke="#6aa8c4" stroke-width="1.5" opacity=".55"/>
+    <path d="M0 96 Q450 90 900 96 V140 H0 Z" fill="#d9b98a"/>
+    <path d="M240 104 Q330 88 450 88 Q580 88 664 104 Z" fill="#cbb691"/>
+    <path d="M258 104 Q344 92 450 92 Q566 92 648 104 Z" fill="#d9b98a"/>
+    <rect x="330" y="58" width="240" height="34" fill="#d8b887"/>
+    <rect x="330" y="58" width="240" height="6" fill="#c9a670"/>
+    <rect x="316" y="50" width="34" height="42" rx="3" fill="#cbaa78"/>
+    <rect x="550" y="50" width="34" height="42" rx="3" fill="#cbaa78"/>
+    <rect x="432" y="42" width="40" height="50" rx="3" fill="#d2b180"/>
     <g fill="#cbaa78">
-      <rect x="122" y="98" width="7" height="8"/><rect x="132" y="98" width="7" height="8"/><rect x="142" y="98" width="7" height="8"/><rect x="150" y="98" width="7" height="8"/>
-      <rect x="260" y="98" width="7" height="8"/><rect x="270" y="98" width="7" height="8"/><rect x="280" y="98" width="7" height="8"/><rect x="288" y="98" width="7" height="8"/>
-      <rect x="186" y="90" width="7" height="8"/><rect x="196" y="90" width="7" height="8"/><rect x="206" y="90" width="7" height="8"/><rect x="216" y="90" width="7" height="8"/><rect x="224" y="90" width="7" height="8"/>
-      <rect x="160" y="112" width="8" height="7"/><rect x="174" y="112" width="8" height="7"/><rect x="236" y="112" width="8" height="7"/><rect x="250" y="112" width="8" height="7"/>
+      ${Array.from({ length: 5 }, (_, i) => `<rect x="${314 + i * 10}" y="44" width="7" height="7"/>`).join('')}
+      ${Array.from({ length: 5 }, (_, i) => `<rect x="${548 + i * 10}" y="44" width="7" height="7"/>`).join('')}
+      ${Array.from({ length: 5 }, (_, i) => `<rect x="${430 + i * 10}" y="36" width="7" height="7"/>`).join('')}
+      ${Array.from({ length: 8 }, (_, i) => `<rect x="${366 + i * 16}" y="52" width="8" height="6"/>`).join('')}
     </g>
-    <rect x="196" y="146" width="16" height="38" rx="8" fill="#7a5a38"/>
-    <rect x="198" y="150" width="12" height="30" rx="6" fill="#5e432a"/>
-    <g fill="#b99568"><rect x="144" y="132" width="9" height="12" rx="4"/><rect x="164" y="132" width="9" height="12" rx="4"/><rect x="244" y="132" width="9" height="12" rx="4"/><rect x="264" y="132" width="9" height="12" rx="4"/></g>
-    <line x1="207" y1="90" x2="207" y2="66" stroke="#6b4f30" stroke-width="2"/>
-    <path d="M207 66 L232 72 L207 78 Z" fill="#b8862b"/>
+    <rect x="442" y="70" width="16" height="22" rx="8" fill="#7a5a38"/>
+    <rect x="444" y="74" width="12" height="18" rx="6" fill="#5e432a"/>
+    <g fill="#b99568"><rect x="374" y="66" width="9" height="11" rx="4"/><rect x="398" y="66" width="9" height="11" rx="4"/><rect x="500" y="66" width="9" height="11" rx="4"/><rect x="524" y="66" width="9" height="11" rx="4"/></g>
+    <line x1="452" y1="36" x2="452" y2="16" stroke="#6b4f30" stroke-width="2"/>
+    <path d="M452 16 L476 22 L452 28 Z" fill="#b8862b"/>
     <g>
-      <path d="M320 176 L320 160 L348 168 L320 172 Z" fill="#8a5e3c"/>
-      <path d="M322 160 L344 166 L322 170 Z" fill="#f4ecd8"/>
-      <path d="M316 176 h34 l-6 8 h-22 z" fill="#7a5434"/>
+      <path d="M196 90 L196 74 L222 82 L196 86 Z" fill="#f4ecd8"/>
+      <path d="M194 74 L194 88 L182 85 Z" fill="#e8dcc0"/>
+      <path d="M176 90 h34 l-7 9 h-20 z" fill="#7a5434"/>
     </g>
     <g fill="#3f6e3a">
-      <path d="M56 236 q2-28 0-40 q10 12 8 40 z" stroke="#6b4f30" stroke-width="3"/>
-      <ellipse cx="58" cy="192" rx="16" ry="6"/><ellipse cx="50" cy="198" rx="12" ry="5" transform="rotate(-30 50 198)"/><ellipse cx="66" cy="198" rx="12" ry="5" transform="rotate(30 66 198)"/>
-      <ellipse cx="58" cy="186" rx="10" ry="5"/>
+      <path d="M744 128 q3-30 0-44" stroke="#6b4f30" stroke-width="5" fill="none"/>
+      <ellipse cx="746" cy="82" rx="17" ry="6"/><ellipse cx="735" cy="90" rx="13" ry="5" transform="rotate(-30 735 90)"/><ellipse cx="757" cy="90" rx="13" ry="5" transform="rotate(30 757 90)"/><ellipse cx="746" cy="76" rx="10" ry="4"/>
+      <path d="M118 130 q3-26 0-38" stroke="#6b4f30" stroke-width="4" fill="none"/>
+      <ellipse cx="120" cy="90" rx="14" ry="5"/><ellipse cx="110" cy="97" rx="11" ry="4" transform="rotate(-30 110 97)"/><ellipse cx="130" cy="97" rx="11" ry="4" transform="rotate(30 130 97)"/><ellipse cx="120" cy="85" rx="8" ry="4"/>
     </g>
-    <path d="M0 240 Q80 232 160 240 T400 236 V260 H0 Z" fill="#c9a76e"/>
+    <path d="M0 116 Q240 110 470 116 T900 112 V140 H0 Z" fill="#c9a76e"/>
+    <g fill="#b8925a"><ellipse cx="210" cy="126" rx="12" ry="4"/><ellipse cx="690" cy="130" rx="14" ry="4"/><ellipse cx="450" cy="134" rx="18" ry="4"/></g>
   </svg>`
 
 const petra = (id = 'p') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Treasury facade at Petra in its rose-red canyon">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Treasury facade at Petra in its rose-red canyon">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4d9ad"/><stop offset="1" stop-color="#f9ecd2"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <path d="M0 0 H130 L112 260 H0 Z" fill="#c97b5a"/>
-    <path d="M0 0 H84 L70 260 H0 Z" fill="#b96a4a"/>
-    <path d="M40 0 L52 260 M84 0 L96 260" stroke="#a85a3e" stroke-width="3" opacity=".5"/>
-    <path d="M400 0 H270 L288 260 H400 Z" fill="#c97b5a"/>
-    <path d="M400 0 H316 L330 260 H400 Z" fill="#b96a4a"/>
-    <path d="M360 0 L348 260 M316 0 L304 260" stroke="#a85a3e" stroke-width="3" opacity=".5"/>
-    <rect x="140" y="118" width="120" height="112" fill="#e8b892"/>
-    <rect x="140" y="118" width="120" height="8" fill="#dbA078"/>
-    <path d="M138 118 L200 84 L262 118 Z" fill="#edc29c"/>
-    <path d="M148 118 L200 92 L252 118 Z" fill="#e0ae84"/>
-    <path d="M162 118 L200 96 L238 118 Z" fill="#d49a70"/>
-    <g fill="#d9a078">
-      <rect x="148" y="126" width="10" height="92"/><rect x="168" y="126" width="10" height="92"/>
-      <rect x="188" y="126" width="10" height="92"/><rect x="208" y="126" width="10" height="92"/>
-      <rect x="228" y="126" width="10" height="92"/><rect x="244" y="126" width="10" height="92"/>
-    </g>
-    <g fill="#c98d64">
-      <rect x="146" y="126" width="14" height="5"/><rect x="166" y="126" width="14" height="5"/>
-      <rect x="186" y="126" width="14" height="5"/><rect x="206" y="126" width="14" height="5"/>
-      <rect x="226" y="126" width="14" height="5"/><rect x="242" y="126" width="14" height="5"/>
-    </g>
-    <path d="M186 230 V186 Q200 166 214 186 V230 Z" fill="#6e4530"/>
-    <path d="M190 230 V188 Q200 172 210 188 V230 Z" fill="#4f3020"/>
-    <rect x="176" y="52" width="48" height="34" fill="#e8b892"/>
-    <path d="M176 52 L200 34 L224 52 Z" fill="#edc29c"/>
-    <circle cx="200" cy="42" r="4" fill="#d9a92e"/>
-    <g fill="#d9a078"><rect x="182" y="56" width="7" height="26"/><rect x="194" y="56" width="7" height="26"/><rect x="206" y="56" width="7" height="26"/></g>
-    <path d="M154 60 L176 52 L176 86 L154 78 Z" fill="#dbA078"/>
-    <path d="M246 60 L224 52 L224 86 L246 78 Z" fill="#dbA078"/>
-    <rect x="196" y="22" width="8" height="14" fill="#e0ae84"/>
-    <ellipse cx="200" cy="20" rx="6" ry="5" fill="#e8b892"/>
-    <rect x="128" y="230" width="144" height="10" fill="#d9a078"/>
-    <path d="M0 240 Q200 228 400 240 V260 H0 Z" fill="#e2b184"/>
-    <path d="M0 250 Q200 240 400 250" fill="none" stroke="#cf9a6c" stroke-width="2"/>
-    <g fill="#a85a3e" opacity=".6"><path d="M112 60 L118 260 L108 260 Z"/><path d="M288 60 L282 260 L292 260 Z"/></g>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <path d="M0 0 H250 L232 140 H0 Z" fill="#c97b5a"/>
+    <path d="M0 0 H148 L134 140 H0 Z" fill="#b96a4a"/>
+    <path d="M56 0 L68 140 M120 0 L132 140" stroke="#a85a3e" stroke-width="3" opacity=".5"/>
+    <path d="M900 0 H650 L668 140 H900 Z" fill="#c97b5a"/>
+    <path d="M900 0 H752 L766 140 H900 Z" fill="#b96a4a"/>
+    <path d="M844 0 L832 140 M780 0 L768 140" stroke="#a85a3e" stroke-width="3" opacity=".5"/>
+    <rect x="310" y="60" width="280" height="46" fill="#e8b892"/>
+    <rect x="310" y="60" width="280" height="5" fill="#dba078"/>
+    ${[320, 360, 400, 500, 540, 580]
+      .map(x => `<rect x="${x}" y="64" width="14" height="42" fill="#d9a078"/><rect x="${x - 3}" y="64" width="20" height="4" fill="#c98d64"/>`)
+      .join('')}
+    <path d="M436 106 V84 Q450 70 464 84 V106 Z" fill="#6e4530"/>
+    <path d="M440 106 V86 Q450 74 460 86 V106 Z" fill="#4f3020"/>
+    <rect x="310" y="36" width="130" height="24" fill="#e8b892"/>
+    <rect x="460" y="36" width="130" height="24" fill="#e8b892"/>
+    <path d="M310 36 L375 22 L440 36 Z" fill="#edc29c"/>
+    <path d="M460 36 L525 22 L590 36 Z" fill="#edc29c"/>
+    <path d="M320 36 L375 26 L430 36 Z" fill="#e0ae84"/>
+    <path d="M470 36 L525 26 L580 36 Z" fill="#e0ae84"/>
+    <rect x="424" y="34" width="52" height="26" fill="#e8b892"/>
+    <path d="M420 34 L450 22 L480 34 Z" fill="#edc29c"/>
+    <g fill="#d9a078"><rect x="430" y="38" width="8" height="20"/><rect x="444" y="38" width="8" height="20"/><rect x="458" y="38" width="8" height="20"/><rect x="470" y="38" width="6" height="20"/></g>
+    <rect x="446" y="16" width="8" height="6" fill="#e0ae84"/>
+    <ellipse cx="450" cy="14" rx="5" ry="4" fill="#e8b892"/>
+    <path d="M296 106 H604 L604 112 H296 Z" fill="#d9a078"/>
+    <path d="M0 112 Q450 104 900 112 V140 H0 Z" fill="#e2b184"/>
+    <path d="M0 124 Q450 116 900 124" fill="none" stroke="#cf9a6c" stroke-width="2"/>
+    <g fill="#a85a3e" opacity=".55"><path d="M232 20 L244 140 L228 140 Z"/><path d="M668 20 L656 140 L672 140 Z"/></g>
+    <g fill="#b96a4a" opacity=".5"><ellipse cx="450" cy="134" rx="40" ry="5"/></g>
   </svg>`
 
 const alJazirat = (id = 'j') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Al-Jazirat Al-Hamra courtyard houses and wind tower">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Al-Jazirat Al-Hamra courtyard houses and wind tower">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d9a9"/><stop offset="1" stop-color="#fbf0da"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <circle cx="330" cy="56" r="24" fill="#fff3d6" opacity=".85"/>
-    <rect y="176" width="400" height="20" fill="#7fb0c4"/>
-    <path d="M0 176 h400 M0 186 h400" stroke="#a3cddc" stroke-width="1.5" opacity=".7"/>
-    <path d="M0 196 Q200 186 400 196 V260 H0 Z" fill="#e6cf9f"/>
-    <path d="M0 216 Q200 206 400 216 V260 H0 Z" fill="#dcc28e"/>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="780" cy="30" r="16" fill="#fff3d6" opacity=".85"/>
+    <rect y="58" width="900" height="26" fill="#7fb0c4"/>
+    <path d="M0 62 h900 M0 70 h900 M0 78 h900" stroke="#a3cddc" stroke-width="1.5" opacity=".7"/>
+    <path d="M0 80 Q450 74 900 80 V140 H0 Z" fill="#e6cf9f"/>
     <g>
-      <rect x="30" y="130" width="86" height="68" fill="#dfc294"/>
-      <rect x="30" y="130" width="86" height="7" fill="#cfae7e"/>
-      <rect x="64" y="160" width="18" height="38" rx="9" fill="#7a5a38"/>
-      <rect x="42" y="142" width="12" height="12" fill="#a8875c"/>
-      <rect x="94" y="142" width="12" height="12" fill="#a8875c"/>
+      <rect x="206" y="78" width="96" height="28" fill="#dfc294"/>
+      <rect x="206" y="78" width="96" height="5" fill="#cfae7e"/>
+      <path d="M246 106 V94 Q254 86 262 94 V106 Z" fill="#7a5a38"/>
+      <rect x="220" y="88" width="11" height="11" fill="#a8875c"/>
+      <rect x="278" y="88" width="11" height="11" fill="#a8875c"/>
     </g>
     <g>
-      <rect x="124" y="144" width="70" height="54" fill="#d4b285"/>
-      <rect x="124" y="144" width="70" height="6" fill="#c29f70"/>
-      <rect x="150" y="166" width="16" height="32" rx="8" fill="#6e5034"/>
-      <rect x="134" y="154" width="10" height="10" fill="#a8875c"/>
-      <rect x="174" y="154" width="10" height="10" fill="#a8875c"/>
+      <rect x="306" y="70" width="84" height="36" fill="#d4b285"/>
+      <rect x="306" y="70" width="84" height="5" fill="#c29f70"/>
+      <path d="M341 106 V94 Q348 86 355 94 V106 Z" fill="#6e5034"/>
+      <rect x="316" y="80" width="10" height="10" fill="#a8875c"/>
+      <rect x="372" y="80" width="10" height="10" fill="#a8875c"/>
     </g>
     <g>
-      <rect x="204" y="152" width="58" height="46" fill="#dfc294"/>
-      <rect x="204" y="152" width="58" height="6" fill="#cfae7e"/>
-      <rect x="226" y="170" width="14" height="28" rx="7" fill="#7a5a38"/>
+      <rect x="560" y="74" width="90" height="32" fill="#dfc294"/>
+      <rect x="560" y="74" width="90" height="5" fill="#cfae7e"/>
+      <path d="M598 106 V94 Q605 86 612 94 V106 Z" fill="#7a5a38"/>
+      <rect x="572" y="84" width="10" height="10" fill="#a8875c"/>
+      <rect x="630" y="84" width="10" height="10" fill="#a8875c"/>
     </g>
     <g>
-      <rect x="290" y="138" width="82" height="60" fill="#d4b285"/>
-      <rect x="290" y="138" width="82" height="6" fill="#c29f70"/>
-      <rect x="322" y="162" width="16" height="36" rx="8" fill="#6e5034"/>
-      <rect x="302" y="150" width="11" height="11" fill="#a8875c"/>
-      <rect x="350" y="150" width="11" height="11" fill="#a8875c"/>
+      <rect x="654" y="80" width="76" height="26" fill="#d4b285"/>
+      <rect x="654" y="80" width="76" height="5" fill="#c29f70"/>
+      <path d="M686 106 V96 Q692 89 698 96 V106 Z" fill="#6e5034"/>
+      <rect x="664" y="89" width="9" height="9" fill="#a8875c"/>
+      <rect x="712" y="89" width="9" height="9" fill="#a8875c"/>
     </g>
     <g>
-      <rect x="258" y="96" width="36" height="76" fill="#e2c69a"/>
-      <rect x="258" y="96" width="36" height="6" fill="#d0b184"/>
-      <rect x="252" y="82" width="14" height="18" fill="#e8d0a8"/>
-      <rect x="270" y="82" width="14" height="18" fill="#e8d0a8"/>
-      <rect x="252" y="82" width="32" height="5" fill="#d8bc90"/>
-      <g fill="#8a6a44"><rect x="255" y="86" width="3" height="10"/><rect x="262" y="86" width="3" height="10"/><rect x="273" y="86" width="3" height="10"/><rect x="280" y="86" width="3" height="10"/></g>
-      <rect x="266" y="120" width="8" height="12" fill="#a8875c"/>
-      <rect x="266" y="142" width="8" height="12" fill="#a8875c"/>
+      <rect x="404" y="54" width="36" height="52" fill="#e2c69a"/>
+      <rect x="398" y="42" width="48" height="12" fill="#e8d0a8"/>
+      <rect x="398" y="34" width="12" height="8" fill="#e8d0a8"/>
+      <rect x="434" y="34" width="12" height="8" fill="#e8d0a8"/>
+      <g fill="#8a6a44"><rect x="404" y="45" width="4" height="7"/><rect x="413" y="45" width="4" height="7"/><rect x="422" y="45" width="4" height="7"/><rect x="431" y="45" width="4" height="7"/></g>
+      <rect x="416" y="66" width="9" height="11" fill="#a8875c"/>
+      <rect x="416" y="84" width="9" height="11" fill="#a8875c"/>
     </g>
     <g>
-      <line x1="150" y1="144" x2="150" y2="84" stroke="#8a6a44" stroke-width="3"/>
-      <path d="M150 88 L188 118 L150 112 Z" fill="#f4ecd8"/>
-      <path d="M150 88 L150 112 L136 108 Z" fill="#e8dcc0"/>
+      <line x1="482" y1="106" x2="482" y2="46" stroke="#8a6a44" stroke-width="3"/>
+      <path d="M484 50 L524 90 L484 82 Z" fill="#f4ecd8"/>
+      <path d="M484 50 L484 82 L470 78 Z" fill="#e8dcc0"/>
     </g>
     <g fill="#3f6e3a">
-      <rect x="102" y="160" width="4" height="38" fill="#6b4f30"/>
-      <ellipse cx="104" cy="156" rx="14" ry="6"/><ellipse cx="95" cy="162" rx="11" ry="5" transform="rotate(-30 95 162)"/><ellipse cx="113" cy="162" rx="11" ry="5" transform="rotate(30 113 162)"/><ellipse cx="104" cy="150" rx="9" ry="4"/>
-      <rect x="372" y="164" width="4" height="34" fill="#6b4f30"/>
-      <ellipse cx="374" cy="160" rx="12" ry="5"/><ellipse cx="366" cy="165" rx="9" ry="4" transform="rotate(-30 366 165)"/><ellipse cx="382" cy="165" rx="9" ry="4" transform="rotate(30 382 165)"/>
+      <rect x="154" y="88" width="4" height="24" fill="#6b4f30"/>
+      <ellipse cx="156" cy="84" rx="15" ry="6"/><ellipse cx="146" cy="90" rx="11" ry="5" transform="rotate(-30 146 90)"/><ellipse cx="166" cy="90" rx="11" ry="5" transform="rotate(30 166 90)"/><ellipse cx="156" cy="78" rx="9" ry="4"/>
+      <rect x="784" y="90" width="4" height="22" fill="#6b4f30"/>
+      <ellipse cx="786" cy="86" rx="13" ry="5"/><ellipse cx="777" cy="92" rx="10" ry="4" transform="rotate(-30 777 92)"/><ellipse cx="795" cy="92" rx="10" ry="4" transform="rotate(30 795 92)"/><ellipse cx="786" cy="81" rx="8" ry="3"/>
     </g>
-    <path d="M0 232 Q100 224 200 232 T400 228 V260 H0 Z" fill="#d2b078"/>
-    <g fill="#c2a068"><ellipse cx="60" cy="242" rx="10" ry="4"/><ellipse cx="180" cy="248" rx="12" ry="4"/><ellipse cx="300" cy="240" rx="9" ry="3"/></g>
+    <path d="M0 112 Q450 106 900 112 V140 H0 Z" fill="#dcc28e"/>
+    <g fill="#c2a068"><ellipse cx="250" cy="122" rx="13" ry="4"/><ellipse cx="470" cy="128" rx="15" ry="4"/><ellipse cx="690" cy="120" rx="12" ry="4"/><ellipse cx="120" cy="132" rx="14" ry="4"/><ellipse cx="810" cy="132" rx="14" ry="4"/></g>
   </svg>`
 
 const dhayah = (id = 'd') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dhayah Fort on its hilltop above the palm oasis">
+  <svg viewBox="0 0 900 140" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dhayah Fort on its hilltop above the palm oasis">
     <defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2cf9a"/><stop offset=".7" stop-color="#fae8c8"/><stop offset="1" stop-color="#fdf4e0"/></linearGradient></defs>
-    <rect width="400" height="260" fill="url(#${id}sky)"/>
-    <circle cx="90" cy="64" r="26" fill="#fff3d6" opacity=".85"/>
-    <path d="M0 150 Q80 140 160 150 T320 146 T400 152 V260 H0 Z" fill="#d9b98a" opacity=".45"/>
-    <path d="M46 224 Q130 120 200 108 Q280 100 358 224 Z" fill="#b98d5f"/>
-    <path d="M46 224 Q130 128 200 116 Q280 110 358 224 Z" fill="#c69a6a"/>
-    <path d="M96 200 Q160 140 200 130 Q256 124 312 200" fill="none" stroke="#a87c50" stroke-width="3" opacity=".6"/>
-    <path d="M130 180 Q180 140 200 136 Q236 132 274 176" fill="none" stroke="#a87c50" stroke-width="2.5" opacity=".5"/>
+    <rect width="900" height="140" fill="url(#${id}sky)"/>
+    <circle cx="140" cy="30" r="16" fill="#fff3d6" opacity=".85"/>
+    <path d="M0 78 Q200 70 400 76 T700 72 T900 78 V140 H0 Z" fill="#d9b98a" opacity=".45"/>
+    <path d="M110 126 Q270 58 450 54 Q640 52 800 126 Z" fill="#b98d5f"/>
+    <path d="M170 126 Q300 72 450 68 Q610 66 740 126 Z" fill="#c69a6a"/>
+    <path d="M220 120 Q330 84 450 80 Q580 78 690 120" fill="none" stroke="#a87c50" stroke-width="3" opacity=".55"/>
+    <path d="M270 112 Q360 90 450 88 Q550 86 640 112" fill="none" stroke="#a87c50" stroke-width="2.5" opacity=".5"/>
     <g>
-      <rect x="168" y="96" width="64" height="40" fill="#d8b487"/>
-      <rect x="168" y="96" width="64" height="6" fill="#c69f70"/>
-      <g fill="#c69f70">
-        <rect x="166" y="88" width="8" height="9"/><rect x="178" y="88" width="8" height="9"/><rect x="190" y="88" width="8" height="9"/><rect x="202" y="88" width="8" height="9"/><rect x="214" y="88" width="8" height="9"/><rect x="226" y="88" width="8" height="9"/>
-      </g>
-      <rect x="156" y="104" width="18" height="34" rx="2" fill="#cbaa7a"/>
-      <rect x="226" y="104" width="18" height="34" rx="2" fill="#cbaa7a"/>
-      <g fill="#cbaa7a"><rect x="154" y="98" width="7" height="7"/><rect x="164" y="98" width="7" height="7"/><rect x="224" y="98" width="7" height="7"/><rect x="234" y="98" width="7" height="7"/></g>
-      <rect x="192" y="112" width="14" height="24" rx="7" fill="#7a5a38"/>
-      <rect x="174" y="106" width="6" height="8" fill="#8a6a44"/>
-      <rect x="220" y="106" width="6" height="8" fill="#8a6a44"/>
-      <line x1="200" y1="88" x2="200" y2="68" stroke="#6b4f30" stroke-width="2"/>
-      <path d="M200 68 L222 73 L200 79 Z" fill="#b8862b"/>
+      <rect x="392" y="36" width="116" height="26" fill="#d8b487"/>
+      <rect x="392" y="36" width="116" height="5" fill="#c69f70"/>
+      ${Array.from({ length: 8 }, (_, i) => `<rect x="${388 + i * 16}" y="28" width="8" height="8" fill="#c69f70"/>`).join('')}
+      <rect x="378" y="34" width="20" height="30" rx="2" fill="#cbaa7a"/>
+      <rect x="502" y="34" width="20" height="30" rx="2" fill="#cbaa7a"/>
+      <g fill="#cbaa7a"><rect x="376" y="27" width="7" height="7"/><rect x="387" y="27" width="7" height="7"/><rect x="500" y="27" width="7" height="7"/><rect x="511" y="27" width="7" height="7"/></g>
+      <rect x="442" y="46" width="16" height="16" rx="8" fill="#7a5a38"/>
+      <rect x="404" y="42" width="7" height="8" fill="#8a6a44"/>
+      <rect x="489" y="42" width="7" height="8" fill="#8a6a44"/>
+      <line x1="450" y1="28" x2="450" y2="14" stroke="#6b4f30" stroke-width="2"/>
+      <path d="M450 14 L472 19 L450 25 Z" fill="#b8862b"/>
     </g>
-    <path d="M168 136 L150 152 L246 152 L232 136 Z" fill="#a87c50"/>
-    <path d="M150 152 L142 158 H256 L246 152 Z" fill="#8a6240"/>
+    <path d="M392 62 L372 76 L530 76 L508 62 Z" fill="#a87c50"/>
+    <path d="M372 76 L362 84 H540 L530 76 Z" fill="#8a6240"/>
     <g fill="#3f6e3a">
-      <rect x="70" y="210" width="4" height="30" fill="#6b4f30"/><ellipse cx="72" cy="206" rx="13" ry="5"/><ellipse cx="63" cy="211" rx="10" ry="4" transform="rotate(-30 63 211)"/><ellipse cx="81" cy="211" rx="10" ry="4" transform="rotate(30 81 211)"/><ellipse cx="72" cy="200" rx="8" ry="4"/>
-      <rect x="100" y="216" width="4" height="26" fill="#6b4f30"/><ellipse cx="102" cy="212" rx="11" ry="4"/><ellipse cx="94" cy="217" rx="8" ry="3" transform="rotate(-30 94 217)"/><ellipse cx="110" cy="217" rx="8" ry="3" transform="rotate(30 110 217)"/>
-      <rect x="300" y="212" width="4" height="28" fill="#6b4f30"/><ellipse cx="302" cy="208" rx="12" ry="5"/><ellipse cx="293" cy="213" rx="9" ry="4" transform="rotate(-30 293 213)"/><ellipse cx="311" cy="213" rx="9" ry="4" transform="rotate(30 311 213)"/>
-      <rect x="330" y="218" width="4" height="24" fill="#6b4f30"/><ellipse cx="332" cy="214" rx="10" ry="4"/><ellipse cx="324" cy="219" rx="8" ry="3" transform="rotate(-30 324 219)"/><ellipse cx="340" cy="219" rx="8" ry="3" transform="rotate(30 340 219)"/>
+      <rect x="248" y="104" width="4" height="26" fill="#6b4f30"/><ellipse cx="250" cy="100" rx="13" ry="5"/><ellipse cx="241" cy="106" rx="10" ry="4" transform="rotate(-30 241 106)"/><ellipse cx="259" cy="106" rx="10" ry="4" transform="rotate(30 259 106)"/><ellipse cx="250" cy="95" rx="8" ry="3"/>
+      <rect x="292" y="110" width="4" height="22" fill="#6b4f30"/><ellipse cx="294" cy="106" rx="11" ry="4"/><ellipse cx="286" cy="111" rx="8" ry="3" transform="rotate(-30 286 111)"/><ellipse cx="302" cy="111" rx="8" ry="3" transform="rotate(30 302 111)"/><ellipse cx="294" cy="102" rx="7" ry="3"/>
+      <rect x="614" y="106" width="4" height="24" fill="#6b4f30"/><ellipse cx="616" cy="102" rx="12" ry="5"/><ellipse cx="607" cy="108" rx="9" ry="4" transform="rotate(-30 607 108)"/><ellipse cx="625" cy="108" rx="9" ry="4" transform="rotate(30 625 108)"/><ellipse cx="616" cy="97" rx="8" ry="3"/>
+      <rect x="662" y="112" width="4" height="20" fill="#6b4f30"/><ellipse cx="664" cy="108" rx="10" ry="4"/><ellipse cx="656" cy="113" rx="8" ry="3" transform="rotate(-30 656 113)"/><ellipse cx="672" cy="113" rx="8" ry="3" transform="rotate(30 672 113)"/><ellipse cx="664" cy="104" rx="7" ry="3"/>
     </g>
-    <path d="M0 238 Q200 226 400 238 V260 H0 Z" fill="#c9a76e"/>
-    <g fill="#b8925a"><ellipse cx="50" cy="248" rx="9" ry="3"/><ellipse cx="170" cy="252" rx="11" ry="3"/><ellipse cx="290" cy="246" rx="8" ry="3"/><ellipse cx="360" cy="252" rx="10" ry="3"/></g>
+    <path d="M0 124 Q450 116 900 124 V140 H0 Z" fill="#c9a76e"/>
+    <g fill="#b8925a"><ellipse cx="170" cy="132" rx="11" ry="3"/><ellipse cx="450" cy="136" rx="16" ry="3"/><ellipse cx="740" cy="130" rx="10" ry="3"/></g>
   </svg>`
 
 export const CIV_ILLUSTRATIONS: Record<string, (id?: string) => string> = {

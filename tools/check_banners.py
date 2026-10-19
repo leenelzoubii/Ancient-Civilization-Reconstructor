@@ -21,6 +21,8 @@ labels = [
 ]
 for label in labels:
     print(f"{label[:30]:32} in bundle: {label in js}")
+print("all panoramic (900x140):   ", js.count('viewBox="0 0 900 140"') == 8)
+print("all slice-cropped:         ", js.count('preserveAspectRatio="xMidYMid slice"') == 8)
+print("no square art left:        ", js.count('viewBox="0 0 400 260"') == 0)
 print("civ-banner rule: ", ".civ-banner" in css)
-print("banner height clamp: ", "clamp(110px" in css)
-print("bg-panel wiring: ", "civ-banner mt-6" in js and "bg-panel" in js)
+print("banner fill sizing: ", "clamp(110px" in css)
