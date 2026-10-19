@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import civilizations from '../data/civilizations.json'
+import { CIV_ILLUSTRATIONS } from './illustrations'
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
 import VisualScene from './components/VisualScene'
@@ -459,6 +460,12 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
             {civ.name}
           </h1>
           <p className="text-ink-3 text-lg capitalize">{civ.id.replace(/-/g, ' ')}</p>
+          {CIV_ILLUSTRATIONS[civId] && (
+            <div
+              className="civ-banner mt-6 rounded-2xl overflow-hidden border border-line"
+              dangerouslySetInnerHTML={{ __html: CIV_ILLUSTRATIONS[civId](`banner-${civId}`) }}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
