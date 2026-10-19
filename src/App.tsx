@@ -462,7 +462,7 @@ function DetailPage({ civId, onBack }: { civId: string; onBack: () => void }) {
           <p className="text-ink-3 text-lg capitalize">{civ.id.replace(/-/g, ' ')}</p>
           {CIV_ILLUSTRATIONS[civId] && (
             <div
-              className="civ-banner mt-6 rounded-2xl overflow-hidden border border-line"
+              className="civ-banner mt-6 rounded-2xl overflow-hidden border border-line bg-panel"
               dangerouslySetInnerHTML={{ __html: CIV_ILLUSTRATIONS[civId](`banner-${civId}`) }}
             />
           )}
