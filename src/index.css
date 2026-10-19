@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source not "../public/legacy";
 @import "./styles.css" layer(base);
 
 @theme {
