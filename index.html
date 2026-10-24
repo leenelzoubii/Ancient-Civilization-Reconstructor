@@ -1,29 +1,146 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="64x64" href="/logo/favicon-64.png" />
-    <link rel="apple-touch-icon" href="/logo/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ACR — Ancient Civilization Reconstructor</title>
-    <meta name="description" content="ACR (Ancient Civilization Reconstructor) — explore 8 historical sites, from Ancient Egypt, Rome and the Maya to the UAE's Khor Fakkan Fort, Al-Jazirat Al-Hamra and Dhayah Fort, through 3D photogrammetry models, videos, and AI-powered artifact restoration." />
-    <script>
-      try {
-        var t = localStorage.getItem('acr-theme');
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        }
-        document.documentElement.dataset.theme = t;
-      } catch (e) {
-        document.documentElement.dataset.theme = 'dark';
-      }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ancient Civilization Reconstructor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@400,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <a href="#home-section" class="skip-link">Skip to content</a>
+
+  <!-- Navigation -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <a href="#home-section" class="brand">
+        <span class="brand-text">Ancient Civilization<br><strong>Reconstructor</strong></span>
+      </a>
+      <nav class="primary-nav">
+        <a href="#home-section" class="active">Home</a>
+        <a href="#civilizations-section">Civilizations</a>
+        <a href="#about-section">About</a>
+        <a href="#contact-section">Contact</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- Home Section -->
+  <header id="home-section" class="section">
+    <div class="hero-inner container">
+      <div>
+        <span class="eyebrow">Explore · Learn · Reconstruct</span>
+        <h1>Step inside the worlds of <em>ancient civilizations</em></h1>
+        <p class="lead">Reconstruct historical environments and discover the wonders of the past. Walk around digital reconstructions of Ancient Egypt, Rome, the Maya, and historic sites of the Arabian Gulf.</p>
+        <div class="hero-actions">
+          <a href="#civilizations-section" class="btn btn-gold">Explore now</a>
+          <a href="#about-section" class="btn btn-outline">About the project</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>7</strong><span>Civilizations &amp; sites</span></div>
+          <div><strong>3,000+</strong><span>Years of history</span></div>
+          <div><strong>1</strong><span>AI artifact restorer</span></div>
+        </div>
+      </div>
+      <div class="hero-banner">
+        <div id="hero-banner-inner"></div>
+      </div>
+    </div>
+
+    <!-- Civilization cards on home -->
+    <div class="container hero-cards" id="home-cards"></div>
+  </header>
+
+  <!-- Civilizations Section -->
+  <main id="civilizations-section" class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Select a Civilization</h2>
+        <p>Choose from ancient wonders and historic sites</p>
+      </div>
+      <div class="civilization-grid" id="civilization-grid"></div>
+    </div>
+  </main>
+
+  <!-- Reconstruction View (initially hidden) -->
+  <main id="reconstruction-view" class="section" style="display: none;">
+    <div class="container">
+      <div class="reconstruction-header">
+        <a href="#civilizations-section" class="back">← Back to civilizations</a>
+        <div class="civ-tags" id="civ-tags"></div>
+        <h1 id="civilization-title">Civilization Name</h1>
+        <p class="civ-id muted" id="civilization-id"></p>
+        <div class="civ-banner" id="civ-banner"></div>
+      </div>
+
+      <div class="reconstruction-layout">
+        <!-- 3D Viewer Panel -->
+        <div class="reconstruction-panel">
+          <div class="info-panel">
+            <div class="video-section">
+              <h3>Historical Video</h3>
+              <div id="youtube-video"><p class="muted">Select a civilization to view video</p></div>
+            </div>
+            <div class="viewer-section-3d">
+              <h3>3D Reconstruction</h3>
+              <div id="sketchfab-viewer"><p class="muted">Select a civilization to view 3D model</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content Panel -->
+        <div class="info-panel">
+          <div class="panel-tabs">
+            <button class="tab-btn active" data-tab="overview-tab">Overview</button>
+            <button class="tab-btn" data-tab="history-tab">History</button>
+            <button class="tab-btn" data-tab="architecture-tab">Architecture</button>
+            <button class="tab-btn" data-tab="daily-life-tab">Daily Life</button>
+            <button class="tab-btn" data-tab="achievements-tab">Achievements</button>
+          </div>
+          <div class="tab-content active" id="overview-tab-tab">
+            <p>Select a civilization to view details</p>
+          </div>
+          <div class="tab-content" id="history-tab-tab"></div>
+          <div class="tab-content" id="architecture-tab-tab"></div>
+          <div class="tab-content" id="daily-life-tab-tab"></div>
+          <div class="tab-content" id="achievements-tab-tab"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- About Section -->
+  <section id="about-section" class="section" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <h2>About This Project</h2>
+      </div>
+      <div class="about-content">
+        <p>The Ancient Civilization Reconstructor is a website where users can pick an ancient civilization and explore reconstructed environments with historical information. The project features civilizations including Ancient Egypt, Ancient Rome, the Maya Civilization, and historic sites from the Arabian Gulf region.</p>
+        <p>Users can explore 3D reconstructions, watch historical videos, and learn about the architecture, daily life, and achievements of each civilization.</p>
+        <p>The project also includes an AI-powered "broken artifact" reconstruction feature, where users can upload a photo of a broken artifact and get an AI-estimated "complete" appearance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact-section" class="section" style="display: none;">
+    <div class="container">
+      <div class="section-header">
+        <h2>Contact</h2>
+      </div>
+      <div class="contact-content">
+        <p>Email: info@ancientcivilization-reconstructor.example</p>
+        <p>For educational and research purposes</p>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/illustrations.js"></script>
+  <script type="module" src="js/civilizations.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
 </html>
