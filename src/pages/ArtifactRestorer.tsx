@@ -11,9 +11,11 @@ import {
 } from '../services/restoreService'
 import type { RestoreResult } from '../services/restoreService'
 
+type Mode = 'manual' | 'auto'
 type Step = 'upload' | 'preview' | 'restoring' | 'result'
 
 export default function ArtifactRestorer() {
+  const [mode, setMode] = useState<Mode>('manual')
   const [step, setStep] = useState<Step>('upload')
   const [originalImage, setOriginalImage] = useState<string | null>(null)
   const [originalBase64, setOriginalBase64] = useState<string | null>(null)
@@ -22,8 +24,6 @@ export default function ArtifactRestorer() {
   const [error, setError] = useState<string | null>(null)
   const [brushSize, setBrushSize] = useState(10)
   const [isDrawing, setIsDrawing] = useState(false)
-  // Spend-safe restore flow: pre-flight + explicit confirmation before the
-  // single paid call. One click can never produce two billable calls.
   const [confirming, setConfirming] = useState<{
     large: boolean
     fraction: number
@@ -32,8 +32,6 @@ export default function ArtifactRestorer() {
   const [pendingMask, setPendingMask] = useState<string | null>(null)
   const [lastFraction, setLastFraction] = useState(0)
   const [spend, setSpend] = useState(getSessionSpend)
-  // Ref guard (not state): blocks double-clicks that land before React
-  // re-renders the disabled button.
   const inFlightRef = useRef(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -41,11 +39,8 @@ export default function ArtifactRestorer() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  // Offscreen mask at exact PNG pixel dimensions (alpha 1.0 strokes) — this
-  // is what gets sent to the API. The visible overlay is display-only.
   const maskRef = useRef<HTMLCanvasElement | null>(null)
   const paintedRef = useRef(false)
-  // Maps visible-canvas coords → image coords (handles object-contain boxes).
   const imgMapRef = useRef({ scale: 1, offX: 0, offY: 0 })
 
   const [cameraActive, setCameraActive] = useState(false)
@@ -75,8 +70,6 @@ export default function ArtifactRestorer() {
       i.onerror = () => reject(new Error('decode failed'))
       i.src = rawUrl
     })
-    // True PNG at ≤1024px on the long side: correct MIME for the API and a
-    // request body far below Vercel's ~4.5MB limit.
     const MAX = 1024
     let w = img.naturalWidth
     let h = img.naturalHeight
@@ -87,8 +80,6 @@ export default function ArtifactRestorer() {
     }
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')!
-    // Encode as a TRUE PNG; shrink further if the PNG body would risk the
-    // server's 4MB limit (~4.7M base64 chars ≈ 3.5MB raw).
     let outW = w
     let outH = h
     let dataUrl = ''
@@ -143,7 +134,6 @@ export default function ArtifactRestorer() {
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
-      // Clear so re-selecting the same file fires onChange again.
       e.target.value = ''
       if (file) handleFile(file)
     },
@@ -193,7 +183,6 @@ export default function ArtifactRestorer() {
     canvas.height = ch
     const ctx = canvas.getContext('2d')!
     ctx.clearRect(0, 0, cw, ch)
-    // object-contain letterboxing: map visible-canvas coords → image coords.
     const nw = img.naturalWidth
     const nh = img.naturalHeight
     if (!nw || !nh) return
@@ -203,7 +192,6 @@ export default function ArtifactRestorer() {
       offX: (cw - nw * scale) / 2,
       offY: (ch - nh * scale) / 2,
     }
-    // Offscreen mask at EXACT image pixel dimensions; strokes at alpha 1.0.
     const mask = document.createElement('canvas')
     mask.width = nw
     mask.height = nh
@@ -221,9 +209,7 @@ export default function ArtifactRestorer() {
 
   const getMaskDataUrl = useCallback((): string | null => {
     const mask = maskRef.current
-    if (!mask || !paintedRef.current) return null
-    // Fast path says painted; confirm pixels actually landed inside the image
-    // (strokes in the letterbox margin don't count).
+    if (!mask) return null
     const d = mask.getContext('2d')!.getImageData(0, 0, mask.width, mask.height).data
     for (let i = 3; i < d.length; i += 4) {
       if (d[i] > 127) return mask.toDataURL('image/png')
@@ -231,32 +217,58 @@ export default function ArtifactRestorer() {
     return null
   }, [])
 
-  // Step 1: free pre-flight + paid-call confirmation. Makes NO API call.
+  // Build a full-coverage mask (all transparent = edit everything) for auto mode
+  const getFullImageMask = useCallback((): string | null => {
+    if (!originalBase64) return null
+    const mask = document.createElement('canvas')
+    const img = new Image()
+    // We need dimensions; create a reasonable mask based on original
+    // Use a small canvas that will be resized by preflight
+    mask.width = 512
+    mask.height = 512
+    const ctx = mask.getContext('2d')!
+    ctx.clearRect(0, 0, 512, 512) // fully transparent = edit all
+    return mask.toDataURL('image/png')
+  }, [originalBase64])
+
+  // Step 1: pre-flight + confirmation. Makes NO API call.
   const handleRestore = useCallback(async () => {
     if (!originalBase64) return
     if (inFlightRef.current) return
     setError(null)
-    const mask = getMaskDataUrl()
-    if (!mask) {
-      setError('Please paint over the damaged areas first.')
-      return
-    }
-    try {
-      const pre = await preflightMask(originalBase64, mask)
-      setPendingMask(mask)
-      setLastFraction(pre.analysis.fraction)
-      setLargeAck(false)
-      setConfirming({
-        large: pre.analysis.fraction > LARGE_MASK_FRACTION,
-        fraction: pre.analysis.fraction,
-      })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Mask check failed.')
-    }
-  }, [originalBase64, getMaskDataUrl])
 
-  // Step 2: the single paid call (or $0 mock). Runs only from Continue /
-  // Try again — never automatically, never twice per click.
+    let mask: string | null
+    if (mode === 'auto') {
+      mask = getFullImageMask()
+      if (!mask) {
+        setError('Unable to prepare auto-restore mask.')
+        return
+      }
+      setPendingMask(mask)
+      setLastFraction(1) // full image = large area
+      setConfirming({ large: true, fraction: 1 })
+    } else {
+      mask = getMaskDataUrl()
+      if (!mask) {
+        setError('Please paint over the damaged areas first.')
+        return
+      }
+      try {
+        const pre = await preflightMask(originalBase64, mask)
+        setPendingMask(mask)
+        setLastFraction(pre.analysis.fraction)
+        setLargeAck(false)
+        setConfirming({
+          large: pre.analysis.fraction > LARGE_MASK_FRACTION,
+          fraction: pre.analysis.fraction,
+        })
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Mask check failed.')
+      }
+    }
+  }, [originalBase64, mode, getMaskDataUrl, getFullImageMask])
+
+  // Step 2: the single paid call (or $0 mock). Runs only from Continue / Try again.
   const doRestore = useCallback(async () => {
     if (!originalBase64 || !pendingMask) return
     if (inFlightRef.current) return
@@ -271,16 +283,13 @@ export default function ArtifactRestorer() {
       setSpend(getSessionSpend())
       setStep('result')
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Restoration failed. Please try again.'
-      )
+      setError(err instanceof Error ? err.message : 'Restoration failed. Please try again.')
       setStep('preview')
     } finally {
       inFlightRef.current = false
     }
   }, [originalBase64, pendingMask])
 
-  // User-initiated retry: the ONLY way a second paid call happens.
   const tryAgain = useCallback(() => {
     if (inFlightRef.current) return
     setError(null)
@@ -296,7 +305,6 @@ export default function ArtifactRestorer() {
     setSpend(getSessionSpend())
   }, [])
 
-  // Dev only: download the exact PNG bytes (image + mask) for inspection.
   const downloadDebug = useCallback(() => {
     const mask = getMaskDataUrl()
     const files: { url: string; name: string }[] = []
@@ -320,7 +328,8 @@ export default function ArtifactRestorer() {
             : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
         </p>
         <p className="text-xs text-ink-3 mb-3">
-          Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
+          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'}{' '}
+          • Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
         </p>
         {confirming.large && (
           <div className="mb-3">
@@ -403,7 +412,6 @@ export default function ArtifactRestorer() {
       ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2)
       ctx.fill()
 
-      // Mirror into the offscreen image-space mask at full opacity (alpha 1.0).
       const mask = maskRef.current
       if (mask) {
         const { scale, offX, offY } = imgMapRef.current
@@ -425,18 +433,38 @@ export default function ArtifactRestorer() {
     <div className="min-h-screen bg-app pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10 animate-fade-in-up">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <button
+              onClick={() => setMode('manual')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                mode === 'manual'
+                  ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold shadow-sm'
+                  : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel hover:text-ink'
+              }`}
+            >
+              Manual
+            </button>
+            <button
+              onClick={() => setMode('auto')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                mode === 'auto'
+                  ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold shadow-sm'
+                  : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel hover:text-ink'
+              }`}
+            >
+              Auto Restorer
+            </button>
+          </div>
           <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">
             AI-Powered
           </p>
-          <h1
-            className="text-4xl sm:text-5xl font-black text-ink mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
-          >
+          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Artifact Restorer
           </h1>
           <p className="text-ink-2 max-w-xl mx-auto">
-            Upload a photo of a broken or damaged artifact, paint over the
-            damage, and AI will rebuild exactly what you marked.
+            {mode === 'auto'
+              ? 'Upload a photo of a damaged artifact. AI detects cracks and imperfections automatically and restores them. A price estimate is shown before generation.'
+              : 'Upload a photo of a broken or damaged artifact, paint over the damage, and AI will rebuild exactly what you marked.'}
           </p>
         </div>
 
@@ -456,24 +484,12 @@ export default function ArtifactRestorer() {
                 className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-amber-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                  <svg
-                    className="w-8 h-8 text-accent"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
+                  <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
                 <p className="text-ink font-semibold mb-1">Upload Image</p>
-                <p className="text-ink-3 text-sm">
-                  Drag & drop or click to browse
-                </p>
+                <p className="text-ink-3 text-sm">Drag & drop or click to browse</p>
                 <p className="text-ink-4 text-xs mt-2">PNG or JPEG</p>
               </button>
 
@@ -482,24 +498,9 @@ export default function ArtifactRestorer() {
                 className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-teal-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-teal-500/10 flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
-                  <svg
-                    className="w-8 h-8 text-cool"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
+                  <svg className="w-8 h-8 text-cool" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <p className="text-ink font-semibold mb-1">Take Photo</p>
@@ -518,23 +519,12 @@ export default function ArtifactRestorer() {
 
             {cameraActive && (
               <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
-                <video
-                  ref={videoRef}
-                  className="max-w-full max-h-[70vh] rounded-2xl"
-                  autoPlay
-                  playsInline
-                />
+                <video ref={videoRef} className="max-w-full max-h-[70vh] rounded-2xl" autoPlay playsInline />
                 <div className="flex gap-4 mt-6">
-                  <button
-                    onClick={capturePhoto}
-                    className="px-8 py-3 bg-amber-500 text-black font-bold rounded-full hover:bg-amber-400 transition-colors cursor-pointer"
-                  >
+                  <button onClick={capturePhoto} className="px-8 py-3 bg-amber-500 text-black font-bold rounded-full hover:bg-amber-400 transition-colors cursor-pointer">
                     Capture
                   </button>
-                  <button
-                    onClick={stopCamera}
-                    className="px-8 py-3 bg-panel-2 text-ink font-medium rounded-full hover:bg-panel-2 transition-colors cursor-pointer"
-                  >
+                  <button onClick={stopCamera} className="px-8 py-3 bg-panel-2 text-ink font-medium rounded-full hover:bg-panel-2 transition-colors cursor-pointer">
                     Cancel
                   </button>
                 </div>
@@ -546,67 +536,65 @@ export default function ArtifactRestorer() {
         {(step === 'preview' || step === 'restoring') && originalImage && (
           <div className="animate-fade-in-up">
             <div className="flex flex-wrap items-center justify-end gap-4 mb-6">
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer"
-              >
+              <button onClick={handleReset} className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer">
                 Start Over
               </button>
             </div>
 
-            <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
-              Paint thinly along the cracks, not over the whole face.
-            </p>
+            {mode === 'manual' && (
+              <>
+                <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
+                  Paint thinly along the cracks, not over the whole face.
+                </p>
 
-            <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-ink-2">Brush size:</span>
-                <input
-                  type="range"
-                  min="2"
-                  max="80"
-                  value={brushSize}
-                  onChange={e => setBrushSize(Number(e.target.value))}
-                  className="flex-1 accent-amber-500"
-                />
-                <span
-                  aria-live="polite"
-                  title="Brush size in image pixels"
-                  className="text-base font-bold text-accent min-w-12 text-center tabular-nums px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30"
-                >
-                  {brushSize}px
-                </span>
-              </div>
-              <p className="text-xs text-ink-3 mt-2">
-                Paint over the damaged areas (cracks, chips, missing pieces). White
-                overlay shows where AI will restore.
-              </p>
-            </div>
+                <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-ink-2">Brush size:</span>
+                    <input
+                      type="range"
+                      min="2"
+                      max="80"
+                      value={brushSize}
+                      onChange={e => setBrushSize(Number(e.target.value))}
+                      className="flex-1 accent-amber-500"
+                    />
+                    <span className="text-base font-bold text-accent min-w-12 text-center tabular-nums px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                      {brushSize}px
+                    </span>
+                  </div>
+                  <p className="text-xs text-ink-3 mt-2">
+                    Paint over the damaged areas (cracks, chips, missing pieces). White overlay shows where AI will restore.
+                  </p>
+                </div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-line bg-panel mb-6">
-              <img
-                ref={imageRef}
-                src={originalImage}
-                alt="Uploaded artifact"
-                className="w-full max-h-[60vh] object-contain"
-                onLoad={initCanvas}
-              />
-              <canvas
-                ref={canvasRef}
-                className="absolute inset-0 w-full h-full cursor-crosshair"
-                style={{ mixBlendMode: 'screen' }}
-                onMouseDown={() => setIsDrawing(true)}
-                onMouseUp={() => setIsDrawing(false)}
-                onMouseLeave={() => setIsDrawing(false)}
-                onMouseMove={e => isDrawing && draw(e)}
-                onTouchStart={() => setIsDrawing(true)}
-                onTouchEnd={() => setIsDrawing(false)}
-                onTouchMove={e => {
-                  e.preventDefault()
-                  draw(e)
-                }}
-              />
-            </div>
+                <div className="relative rounded-2xl overflow-hidden border border-line bg-panel mb-6">
+                  <img ref={imageRef} src={originalImage} alt="Uploaded artifact" className="w-full max-h-[60vh] object-contain" onLoad={initCanvas} />
+                  <canvas ref={canvasRef} className="absolute inset-0 w-full h-full cursor-crosshair" style={{ mixBlendMode: 'screen' }} onMouseDown={() => setIsDrawing(true)} onMouseUp={() => setIsDrawing(false)} onMouseLeave={() => setIsDrawing(false)} onMouseMove={e => isDrawing && draw(e)} onTouchStart={() => setIsDrawing(true)} onTouchEnd={() => setIsDrawing(false)} onTouchMove={e => { e.preventDefault(); draw(e) }} />
+                </div>
+              </>
+            )}
+
+            {mode === 'auto' && (
+              <>
+                <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
+                  AI will detect cracks and imperfections automatically and restore them.
+                </p>
+                <div className="mb-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="text-sm text-ink-2">
+                      <p className="font-medium text-accent mb-1">Auto Restorer</p>
+                      <p className="text-ink-3">
+                        No brushing needed. AI analyzes the full image, detects damaged areas,
+                        and restores them automatically. A price estimate is shown before generation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="flex flex-wrap items-center gap-3 mb-4">
               {DEV_MOCK_AI && (
@@ -616,24 +604,16 @@ export default function ArtifactRestorer() {
               )}
               <span className="text-xs text-ink-3">
                 Session spend ≈ $
-                {spend.estimatedUsd < 0.01
-                  ? spend.estimatedUsd.toFixed(3)
-                  : spend.estimatedUsd.toFixed(2)}{' '}
+                {spend.estimatedUsd < 0.01 ? spend.estimatedUsd.toFixed(3) : spend.estimatedUsd.toFixed(2)}
                 · {spend.imageCalls} image / {spend.visionCalls} vision
               </span>
               {(spend.imageCalls > 0 || spend.visionCalls > 0) && (
-                <button
-                  onClick={resetSpend}
-                  className="text-xs text-ink-3 hover:text-ink underline cursor-pointer"
-                >
+                <button onClick={resetSpend} className="text-xs text-ink-3 hover:text-ink underline cursor-pointer">
                   reset
                 </button>
               )}
               {import.meta.env.DEV && (
-                <button
-                  onClick={downloadDebug}
-                  className="text-xs text-ink-3 hover:text-ink underline cursor-pointer"
-                >
+                <button onClick={downloadDebug} className="text-xs text-ink-3 hover:text-ink underline cursor-pointer">
                   Download debug PNGs
                 </button>
               )}
@@ -646,43 +626,18 @@ export default function ArtifactRestorer() {
             >
               {step === 'restoring' ? (
                 <>
-                  <svg
-                    className="w-5 h-5 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
                   Restoring...
                 </>
               ) : (
                 <>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Restore Artifact
+                  {mode === 'auto' ? 'Auto Restore Artifact' : 'Restore Artifact'}
                 </>
               )}
             </button>
@@ -692,27 +647,16 @@ export default function ArtifactRestorer() {
             {step === 'restoring' && (
               <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
                 <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  <svg className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <div className="text-sm text-ink-2">
-                    <p className="font-medium text-accent mb-1">
-                      AI is restoring your artifact...
-                    </p>
+                    <p className="font-medium text-accent mb-1">AI is restoring your artifact...</p>
                     <p>
-                      The model rebuilds the areas you painted, matching the
-                      surrounding material, texture and lighting. This usually
-                      takes 5-20 seconds. Please don't close this page.
+                      {mode === 'auto'
+                        ? 'The AI detects cracks and imperfections automatically and rebuilds them.'
+                        : 'The model rebuilds the areas you painted, matching the surrounding material, texture and lighting.'}
+                      This usually takes 5-20 seconds. Please don't close this page.
                     </p>
                   </div>
                 </div>
@@ -725,18 +669,10 @@ export default function ArtifactRestorer() {
           <div className="animate-fade-in-up">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-ink">
-                  {result?.failed ? 'Restoration Incomplete' : 'Restoration Complete'}
-                </h2>
+                <h2 className="text-xl font-bold text-ink">{result?.failed ? 'Restoration Incomplete' : 'Restoration Complete'}</h2>
                 {result && !result.failed && (
                   <>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                        result.engine === 'ai'
-                          ? 'bg-amber-500/10 text-accent border-amber-500/30'
-                          : 'bg-teal-500/10 text-cool border-teal-500/30'
-                      }`}
-                    >
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${result.engine === 'ai' ? 'bg-amber-500/10 text-accent border-amber-500/30' : 'bg-teal-500/10 text-cool border-teal-500/30'}`}>
                       {result.engine === 'ai' ? 'AI Restored' : 'Local Repair (basic)'}
                     </span>
                     {result.mock && (
@@ -747,27 +683,16 @@ export default function ArtifactRestorer() {
                   </>
                 )}
               </div>
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer"
-              >
+              <button onClick={handleReset} className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer">
                 Restore Another
               </button>
             </div>
             {result?.failed && (
               <div className="mb-6 p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm leading-relaxed animate-fade-in">
-                <p className="font-semibold mb-1">
-                  We couldn&apos;t visibly repair this image.
-                </p>
-                <p>
-                  Paint over the damage more thoroughly and try again — wider
-                  strokes over each crack or missing piece give the AI more to
-                  rebuild.
-                </p>
+                <p className="font-semibold mb-1">We couldn&apos;t visibly repair this image.</p>
+                <p>Paint over the damage more thoroughly and try again — wider strokes over each crack or missing piece give the AI more to rebuild.</p>
                 {result.error && (
-                  <p className="mt-2 text-xs opacity-80 break-words">
-                    ({result.error})
-                  </p>
+                  <p className="mt-2 text-xs opacity-80 break-words">({result.error})</p>
                 )}
               </div>
             )}
@@ -776,38 +701,21 @@ export default function ArtifactRestorer() {
                 {result.fallbackReason}
               </div>
             )}
-            {!result?.failed &&
-              result?.engine === 'ai' &&
-              result?.weak &&
-              result?.note && (
-                <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-accent text-xs leading-relaxed animate-fade-in">
-                  {result.note}
-                </div>
-              )}
+            {!result?.failed && result?.engine === 'ai' && result?.weak && result?.note && (
+              <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-accent text-xs leading-relaxed animate-fade-in">
+                {result.note}
+              </div>
+            )}
 
-            <div
-              className={`grid grid-cols-1 ${restoredImage ? 'md:grid-cols-2' : ''} gap-6 mb-8`}
-            >
+            <div className={`grid grid-cols-1 ${restoredImage ? 'md:grid-cols-2' : ''} gap-6 mb-8`}>
               <div className="rounded-2xl overflow-hidden border border-line bg-panel">
-                <div className="p-3 border-b border-line-soft text-xs text-ink-3 font-medium">
-                  Original (Damaged)
-                </div>
-                <img
-                  src={originalImage}
-                  alt="Original artifact"
-                  className="w-full max-h-[400px] object-contain"
-                />
+                <div className="p-3 border-b border-line-soft text-xs text-ink-3 font-medium">Original (Damaged)</div>
+                <img src={originalImage} alt="Original artifact" className="w-full max-h-[400px] object-contain" />
               </div>
               {restoredImage && (
                 <div className="rounded-2xl overflow-hidden border border-amber-500/20 bg-panel">
-                  <div className="p-3 border-b border-amber-500/10 text-xs text-accent font-medium">
-                    Restored
-                  </div>
-                  <img
-                    src={restoredImage}
-                    alt="Restored artifact"
-                    className="w-full max-h-[400px] object-contain"
-                  />
+                  <div className="p-3 border-b border-amber-500/10 text-xs text-accent font-medium">Restored</div>
+                  <img src={restoredImage} alt="Restored artifact" className="w-full max-h-[400px] object-contain" />
                 </div>
               )}
             </div>
@@ -816,38 +724,19 @@ export default function ArtifactRestorer() {
 
             <div className="flex flex-wrap gap-4">
               {(result?.failed || result?.weak || result?.engine === 'local') && (
-                <button
-                  onClick={tryAgain}
-                  className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer"
-                >
+                <button onClick={tryAgain} className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer">
                   Try again ({DEV_MOCK_AI ? 'free in mock' : 'uses credit again'})
                 </button>
               )}
               {!result?.failed && (
-                <button
-                  onClick={handleDownload}
-                  className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
+                <button onClick={handleDownload} className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                   Download Restored Image
                 </button>
               )}
-              <button
-                onClick={handleReset}
-                className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer"
-              >
+              <button onClick={handleReset} className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer">
                 Restore Another Artifact
               </button>
             </div>

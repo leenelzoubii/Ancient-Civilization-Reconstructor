@@ -11,8 +11,6 @@ export default function Flashcards({ civId }: { civId: string }) {
   const cards = quizzes[civId] || []
   const [index, setIndex] = useState(0)
   const [choices, setChoices] = useState<(number | null)[]>(() => cards.map(() => null))
-  // Set when the user presses Finish on the last card: show the score
-  // screen with whatever has been answered so far.
   const [finished, setFinished] = useState(false)
 
   if (!cards.length) {
@@ -95,15 +93,7 @@ export default function Flashcards({ civId }: { civId: string }) {
               key={i}
               onClick={() => goTo(i)}
               aria-label={`Go to question ${i + 1}`}
-              className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                grade(i) === 'correct'
-                  ? 'bg-forest'
-                  : grade(i) === 'wrong'
-                    ? 'bg-danger'
-                    : i === index
-                      ? 'bg-accent'
-                      : 'bg-line-2'
-              } ${i === index ? 'scale-125' : ''}`}
+              className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${grade(i) === 'correct' ? 'bg-forest' : grade(i) === 'wrong' ? 'bg-danger' : i === index ? 'bg-accent' : 'bg-line-2'} ${i === index ? 'scale-125' : ''}`}
             />
           ))}
         </div>
@@ -111,10 +101,7 @@ export default function Flashcards({ civId }: { civId: string }) {
 
       {/* Progress bar */}
       <div className="h-1.5 rounded-full bg-panel-2 mb-6 overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
-          style={{ width: `${(answeredCount / cards.length) * 100}%` }}
-        />
+        <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500" style={{ width: `${(answeredCount / cards.length) * 100}%` }} />
       </div>
 
       {/* Question */}
@@ -127,8 +114,7 @@ export default function Flashcards({ civId }: { civId: string }) {
           {card.options.map((opt, i) => {
             const isCorrect = i === card.a
             const isChosen = selected === i
-            let cls =
-              'border-line bg-panel-2 text-ink-2 hover:border-accent/40 hover:text-ink'
+            let cls = 'border-line bg-panel-2 text-ink-2 hover:border-accent/40 hover:text-ink'
             if (answered) {
               if (isCorrect) cls = 'border-forest/60 bg-forest/10 text-forest'
               else if (isChosen) cls = 'border-danger/60 bg-danger/10 text-danger'
@@ -141,15 +127,7 @@ export default function Flashcards({ civId }: { civId: string }) {
                 disabled={answered}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-full border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
               >
-                <span
-                  className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-bold ${
-                    answered && isCorrect
-                      ? 'bg-forest/20 text-forest'
-                      : answered && isChosen
-                        ? 'bg-danger/20 text-danger'
-                        : 'bg-accent/10 text-accent'
-                  }`}
-                >
+                <span className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-bold ${answered && isCorrect ? 'bg-forest/20 text-forest' : answered && isChosen ? 'bg-danger/20 text-danger' : 'bg-accent/10 text-accent'}`}>
                   {LETTERS[i]}
                 </span>
                 <span className="text-base sm:text-lg font-medium">{opt}</span>
@@ -174,17 +152,11 @@ export default function Flashcards({ civId }: { civId: string }) {
         {!answered ? (
           <span className="text-sm text-ink-3">Choose an answer to continue</span>
         ) : index === cards.length - 1 ? (
-          <button
-            onClick={() => setFinished(true)}
-            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
-          >
+          <button onClick={() => setFinished(true)} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer">
             Finish
           </button>
         ) : (
-          <button
-            onClick={() => goTo(index + 1)}
-            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          >
+          <button onClick={() => goTo(index + 1)} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
             Next →
           </button>
         )}
