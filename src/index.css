@@ -51,6 +51,28 @@
   --c-forest: #2f6b55;
   --c-rose: #a4502f;
   --c-danger: #b03a2e;
+
+  /* Supervisor CSS variable aliases (supervisor's CSS uses these names) */
+  --ink: var(--c-ink);
+  --ink-2: var(--c-ink-2);
+  --ink-3: var(--c-ink-3);
+  --papyrus: var(--c-app);
+  --paper: var(--c-panel);
+  --sand: var(--c-panel-2);
+  --line: var(--c-line);
+  --gold: var(--c-accent);
+  --gold-2: var(--c-accent-2);
+  --terracotta: var(--c-rose);
+  --lapis: var(--c-cool);
+  --jade: var(--c-cool-2);
+  --danger: var(--c-danger);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(29, 26, 22, .06), 0 8px 24px rgba(29, 26, 22, .08);
+  --shadow-lg: 0 2px 4px rgba(29, 26, 22, .06), 0 20px 50px rgba(29, 26, 22, .14);
+  --display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --header-h: 72px;
   /* Hero + transition backgrounds (VisualScene) */
   --c-hero-a: #efe9db;
   --c-hero-b: #f7f2e8;
@@ -82,6 +104,28 @@
   --c-hero-b: #1a1510;
   --c-transition-b: #241a0c;
   color-scheme: dark;
+
+  /* Supervisor CSS variable aliases (dark theme) */
+  --ink: var(--c-ink);
+  --ink-2: var(--c-ink-2);
+  --ink-3: var(--c-ink-3);
+  --papyrus: var(--c-app);
+  --paper: var(--c-panel);
+  --sand: var(--c-panel-2);
+  --line: var(--c-line);
+  --gold: var(--c-accent);
+  --gold-2: var(--c-accent-2);
+  --terracotta: var(--c-rose);
+  --lapis: var(--c-cool);
+  --jade: var(--c-cool-2);
+  --danger: var(--c-danger);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(29, 26, 22, .06), 0 8px 24px rgba(29, 26, 22, .08);
+  --shadow-lg: 0 2px 4px rgba(29, 26, 22, .06), 0 20px 50px rgba(29, 26, 22, .14);
+  --display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --header-h: 72px;
 }
 
 body {
