@@ -167,7 +167,7 @@ function NavBar({
   )
 }
 
-// ── HomePage ──────────────────────────────────────────────────────────
+// ── HomePage (supervisor's hero + steps + feature banner + stats) ──────
 function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => void; onNavigate: (p: Page) => void }) {
   return (
     <div className="min-h-screen bg-app flex flex-col">
