@@ -1,125 +1,86 @@
-# ACR — Ancient Civilization Reconstructor
+# Ancient Civilization Reconstructor
 
-A Vite + React + TypeScript web application exploring 8 historical sites — from Ancient Egypt, Rome and the Maya to the UAE's Khor Fakkan Fort, Al-Jazirat Al-Hamra and Dhayah Fort — with interactive 3D photogrammetry models, YouTube videos, structured historical content, flashcard quizzes, and AI-powered artifact restoration.
+An interactive educational website for exploring **Ancient Egypt**, **Ancient Rome** and **the Maya** through 3D reconstructions, with an **AI Artifact Reconstruction** feature that estimates how a broken artifact originally looked.
+
+Computing and Artificial Intelligence Cluster — Capstone Project
+Applied Technology Schools, Baniyas Girls campus · Supervisor: Ms. Ashjan Saleh
+
+Team: Mahrah Ahmed Hassan Saeed Alyammahi · Afraa Mohammed Alawi Hadi Al Hamed · Hajar Hashim Mohamed Sharif Alsaqqaf · Salama Ali Saeed Kardous Alhadhrami
+
+---
+
+## How to run
+
+1. Unzip the folder.
+2. Double-click **`index.html`** (opens in Chrome, Edge, Firefox or Safari).
+
+No installation, server or internet connection is needed. (With internet, the site also loads its web fonts.)
+
+To open it from Visual Studio Code, you can also use the *Live Server* extension → right-click `index.html` → *Open with Live Server*.
+
+## Pages (matching the wireframes)
+
+| # | Page | Address |
+|---|------|---------|
+| 1 | Home | `#/` |
+| 2 | Civilization Selection | `#/civilizations` |
+| 3 | Reconstruction View (interactive 3D) | `#/civ/egypt`, `#/civ/rome`, `#/civ/maya` |
+| 4 | Information Page | `#/civ/egypt/info/history` (overview, history, architecture, dailylife, achievements) |
+| 5 | AI Artifact Reconstruction | `#/reconstruct` |
+| 6 | Reconstruction Result | `#/reconstruct/result` |
+| – | About the project | `#/about` |
 
 ## Features
 
-- **8 Historical Sites**: Ancient Egypt, Ancient Rome, Maya, Taj Mahal, Petra, Khor Fakkan Portuguese Fort, Al-Jazirat Al-Hamra, Dhayah Fort
-- **Scene Illustration Banners**: each detail page opens with a banner-sized panoramic SVG scene (900×140, `preserveAspectRatio="slice"` full-bleed fill), ported from the legacy site's `illustrations.js` into `src/illustrations.ts`
-- **Light / Dark Mode**: Theme toggle with CSS-variable-driven colors, persisted in `localStorage`
-- **3D Photogrammetry**: Sketchfab embeds for each civilization (homepage features Earth 16K)
-- **YouTube Integration**: Historical video per civilization
-- **Tabbed Content**: Overview, History, Architecture, Culture, Economy, Society & Daily Life, Achievements, Flashcards — with Prev/Next buttons to step through every section
-- **Flashcard Quizzes**: 4 multiple-choice questions per civilization with instant right/wrong feedback, question dots, navigation, and score tracking
-- **AI Artifact Restorer**: Paint over damage on an uploaded photo; server-side OpenAI edit (`gpt-image-2.5-sunburst`) rebuilds only the painted area. Spend-safe by design: mock mode for $0 testing, one click = at most one billable call (no auto-retry), cost confirmation before every paid call, HTTP 200 results always shown, daily server-side cap on billed calls
-- **Legacy Sub-Site**: the original vanilla HTML/CSS/JS build preserved byte-for-byte at `/legacy/` (excluded from the bundle via `@source not`)
-- **Smooth Animations**: CSS keyframe animations (fade-in, float, drift, pulse-glow)
-- **Responsive Design**: Mobile, tablet, desktop
+- **3D reconstructions** of Giza and the Nile, Imperial Rome (Colosseum, temple, arch, aqueduct, insulae) and Chichén Itzá (El Castillo, ball court, cenote). Drag to rotate, scroll/pinch to zoom, Shift+drag to pan; numbered landmarks fly the camera to each monument; auto-rotate, screenshot and full-screen buttons.
+- **Educational content** for each civilization: overview, history, architecture, daily life, achievements, timelines and key facts.
+- **AI Artifact Reconstruction**: upload (or drag, drop or paste) a photo of a broken artifact, add optional reference images, and get an estimated complete artifact with before/after comparison slider, highlighted restored areas, **predicted civilization with match % and reasons**, confidence score, colour palette, download and a saved gallery. Three sample broken artifacts are built in for demos.
+- **Site search**, **session saving** (remembers the last civilization and visited pages), responsive layout for phones and tablets, keyboard navigation.
 
-## Civilizations
+## Virtual reality (VR)
 
-| ID | Name |
-|----|------|
-| egypt | Ancient Egypt |
-| rome | Ancient Rome |
-| maya | Maya Civilization |
-| taj-mahal | Taj Mahal |
-| petra | Petra |
-| khorfakkan | Khor Fakkan Portuguese Fort |
-| al-jazirat-al-hamra | Al-Jazirat Al-Hamra Courtyard Complex |
-| dhayah-fort | Dhayah Fort |
+On any 3D page, click **Enter VR** (or the headset button on the viewer) and choose:
 
-## Architecture
+| Mode | Device | How to use |
+|------|--------|-----------|
+| **VR headset** | Meta Quest, Pico and other WebXR headsets | Open the website in the headset's browser. Trigger = next landmark, left trigger = previous, grip = show/hide info panel, left stick = walk, right stick = turn. |
+| **Phone VR viewer** | Phone + Google Cardboard-style viewer | Split-screen view. Turn your head to look around (motion sensors), tap the screen to go to the next landmark. |
+| **Walk-in view** | Any computer, tablet or phone | Full-screen first-person view. Drag to look, W A S D to walk, ← → to change landmark, I to hide the info panel. |
 
-```
-tourism-app-next/
-├── index.html            # Entry HTML (title, fonts, favicon, no-flash theme script)
-├── public/
-│   ├── logo/             # Brand assets: logo-light.png, logo-banner.jpg, favicons
-│   └── legacy/           # Original vanilla site, served intact at /legacy/
-│       ├── index.html
-│       ├── css/styles.css
-│       ├── js/           # app, data, engine3d, scenes, illustrations, vr, reconstruct
-│       └── assets/       # ACR marks + favicons (byte-identical to originals)
-├── data/
-│   ├── civilizations.json  # Structured content per civilization
-│   └── quizzes.json        # Flashcard questions per civilization
-├── src/
-│   ├── App.tsx           # Routing, NavBar, Home, Detail pages (banner slot), theme state
-│   ├── illustrations.ts  # Panoramic 900×140 SVG scene banners for all 8 sites
-│   ├── index.css         # Tailwind + light/dark theme variables + .civ-banner sizing
-│   ├── components/
-│   │   ├── VisualScene.tsx      # Global + UAE desert homepage scenes
-│   │   ├── AnimatedSection.tsx  # Scroll-reveal wrapper
-│   │   ├── Flashcards.tsx       # MCQ quiz UI (larger text, dots, score)
-│   │   └── CustomCursor.tsx
-│   ├── pages/
-│   │   ├── ArtifactRestorer.tsx # Manual-mask restore UI (confirm, spend meter, Try again)
-│   │   └── AboutPage.tsx
-│   └── services/
-│       └── restoreService.ts # Single-call restore flow: pre-flight, mock, blend, verify
-├── api/
-│   ├── _lib.ts          # Shared guards (rate limit, daily budget, mock flag, PNG checks)
-│   ├── restore.ts       # Proxies image edits to OpenAI (key stays server-side)
-│   └── vision.ts        # Damage describe + result judge (gpt-6-luna, opt-in)
-├── TESTING.md          # Mock + manual QA checklist, cost figures
-└── vite.config.ts
-```
+You stand at eye level, at real-world scale, beside each landmark, with a floating panel showing its information.
 
-## Running
+**Important:** VR headsets and phone motion sensors only work when the website is opened from a secure **https** address. The easiest free option is **GitHub Pages**: upload the folder to a GitHub repository, then Settings → Pages → deploy from the main branch. The walk-in view works anywhere, even when opening `index.html` directly.
 
-```bash
-npm install
-npm run dev      # frontend only: http://localhost:5176 (no /api)
-npx vercel dev   # frontend + /api together (needed to test the restorer)
-npm run build    # typecheck + production build
-```
+## How the AI reconstruction works
 
-## Environment
+All processing runs in the browser (`js/reconstruct.js`); photos are never uploaded.
 
-`.env` (not committed) — server-side only, **never** `VITE_`-prefixed keys:
+1. **Normalise** – resize the photo and add a margin.
+2. **Segment** – estimate the background colour from the image border, pick a threshold with Otsu's method, and grow the artifact region (hysteresis) so pale highlights are kept.
+3. **Find the symmetry axis** – each row's left/right edge midpoint is collected; undamaged rows agree on the true centre, so the most common midpoint is the axis.
+4. **Rebuild the outline** – mirror the artifact across the axis and close small notches in the profile, while keeping real openings such as handle loops.
+5. **Restore the surface** – copy each missing pixel from its mirror position; any remaining gaps are inpainted by growing colour inward from the edges.
+6. **Use reference images** – a k-means colour palette is learned from the references and blended into inferred areas.
+7. **Blend and report** – seams are smoothed, and the result reports how much was restored, the symmetry match and an estimated confidence.
+8. **Predict the civilization** – the reconstructed artifact's colours (terracotta, black, blue, cream, deep red) and shape (height/width ratio, neck width, widest point, straight sides, handles) are compared with typical pottery of Egypt, Rome and the Maya. Each matching trait adds weighted evidence, the scores are turned into percentages, and the page shows the most likely civilization, the match % for all three, and the reasons.
+
+**Best results:** photograph the object straight on, upright, against a plain contrasting background. Works best for symmetrical objects (pots, vases, jars, columns). Results are educational estimates, not archaeological fact.
+
+## Project structure
 
 ```
-OPENAI_API_KEY=sk-...        # used by /api/* functions (local `vercel dev`)
-OPENAI_MOCK=true             # dev only: /api/* return canned $0 answers, no OpenAI calls
-# OPENAI_IMAGE_QUALITY=medium  # optional: low | medium | high (dev defaults low, prod medium)
-# MAX_CALLS_PER_DAY=20         # optional daily cap on billed image calls
+index.html            Page shell, header, footer
+css/styles.css        All styling (responsive)
+js/engine3d.js        WebGL 3D engine: geometry, lighting, fog, camera orbit controls
+js/scenes.js          The three 3D scenes and their landmarks
+js/data.js            Historical content for each civilization
+js/illustrations.js   Vector illustrations for cards and pages
+js/vr.js              VR headset (WebXR), phone VR viewer and walk-in modes
+js/reconstruct.js     AI artifact reconstruction pipeline + sample artifacts
+js/app.js             Pages, routing, search, session saving
+assets/logo.svg       Logo / favicon
 ```
 
-Client flags (safe `VITE_` toggles, not secrets — set in `.env.local` or shell):
+## Note on Three.js
 
-```
-# VITE_MOCK_AI=false    # force the real HTTP stack in dev (still $0 if OPENAI_MOCK=true)
-# VITE_VISION_LAYER=true  # opt in to the judge call (default off; annotates only)
-```
-
-In production the key lives in Vercel → Settings → Environment Variables.
-**Never set `OPENAI_MOCK=true` on Production** (the code also refuses to
-mock when `VERCEL_ENV=production`).
-
-Spend rules: one click = at most one billable image call (no auto-retry;
-"Try again" is the only retry), HTTP 200 results are always shown, and the
-server caps billed image calls per day (`MAX_CALLS_PER_DAY`, in-memory —
-use Upstash/KV for a production-grade guard).
-
-## Git Workflow
-
-- Work directly on `main`; commit with descriptive messages and push to GitHub regularly
-- Ship with `npx vercel deploy --prod --yes` after a green `npm run build`
-
-## Deployment
-
-- **Frontend**: Vercel (static + `/api` Vercel Functions) — https://tourism-app-next.vercel.app
-- **Repository**: https://github.com/leenelzoubii/Ancient-Civilization-Reconstructor
-- **Backend**: none — AI calls go through `/api/*` serverless functions (key stays server-side)
-
-## Credits
-
-ACR was built by:
-
-- Mahrah Alyammahi
-- Afra Al Hamed
-- Hajar Alsaqqaf
-- Salama Alhadhrami
-
-Educational & research project. 3D models are property of their respective creators on Sketchfab.
+The project plan lists Three.js. The 3D viewer here uses a small built-in WebGL engine (`js/engine3d.js`) instead, so the website works offline with no downloads. It follows the same ideas as Three.js (scene, mesh geometry, camera, lights, fog, orbit controls). The scenes in `js/scenes.js` can be ported to Three.js later, or models made in Blender can be added, if required.
