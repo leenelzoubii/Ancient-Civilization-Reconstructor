@@ -131,7 +131,7 @@ function NavBar({
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <button onClick={() => onNavigate('home')} aria-label="Ancient Civilization Reconstructor — Home" className="brand flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+        <button onClick={() => onNavigate('home')} aria-label="ACR — Ancient Civilization Reconstructor — Home" className="brand flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
           <img src="/logo/logo-light.png" alt="" className="brand-mark" />
           <span className="brand-text hidden sm:block text-[9px] font-medium tracking-[0.15em] uppercase border-l border-white/15 pl-3 leading-relaxed">
             Ancient Civilization<br />Reconstructor
@@ -167,7 +167,7 @@ function NavBar({
   )
 }
 
-// ── HomePage (supervisor's hero + steps + feature banner + stats) ──────
+// ── HomePage ──────────────────────────────────────────────────────────
 function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => void; onNavigate: (p: Page) => void }) {
   return (
     <div className="min-h-screen bg-app flex flex-col">
@@ -205,7 +205,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
               <h2>See History in Three Dimensions</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
             <div>
               <p className="text-ink-2 leading-relaxed mb-6">
                 Our collection features real photogrammetry scans created by archaeologists and heritage organizations. These aren't artistic interpretations — they're precise digital twins of actual historical sites, captured using drones, laser scanning, and thousands of photographs.
