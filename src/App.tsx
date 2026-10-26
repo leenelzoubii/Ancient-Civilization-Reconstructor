@@ -131,9 +131,9 @@ function NavBar({
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <button onClick={() => onNavigate('home')} aria-label="ACR — Ancient Civilization Reconstructor — Home" className="brand flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+        <button onClick={() => onNavigate('home')} aria-label="ACR — Ancient Civilization Reconstructor — Home" className="brand">
           <img src="/logo/logo-light.png" alt="" className="brand-mark" />
-          <span className="brand-text hidden sm:block text-[9px] font-medium tracking-[0.15em] uppercase border-l border-white/15 pl-3 leading-relaxed">
+          <span className="brand-text hidden sm:block">
             Ancient Civilization<br />Reconstructor
           </span>
         </button>
@@ -167,7 +167,7 @@ function NavBar({
   )
 }
 
-// ── HomePage (supervisor's hero + steps + feature banner + stats) ──────
+// ── HomePage ──────────────────────────────────────────────────────────
 function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => void; onNavigate: (p: Page) => void }) {
   return (
     <div className="min-h-screen bg-app flex flex-col">
@@ -179,7 +179,7 @@ function HomePage({ onSelectCiv, onNavigate }: { onSelectCiv: (id: string) => vo
             <h1>Step inside the worlds of <em>ancient civilizations</em></h1>
             <p className="lead">Walk around digital reconstructions of Ancient Egypt, Rome and the Maya, discover how people lived, and use AI to imagine how broken artifacts once looked.</p>
             <div className="hero-actions">
-              <a className="btn btn-gold" href="#civilizations">Explore now →</a>
+              <button className="btn btn-gold" onClick={() => document.getElementById('civilizations')?.scrollIntoView({ behavior: 'smooth' })}>Explore now →</button>
               <button className="btn btn-light" onClick={() => onNavigate('restore')}>Reconstruct an artifact</button>
             </div>
             <div className="hero-stats">
