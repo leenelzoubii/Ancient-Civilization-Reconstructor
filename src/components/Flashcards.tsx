@@ -7,6 +7,13 @@ type Grade = 'correct' | 'wrong' | null
 const quizzes = quizzesData.quizzes as Record<string, Card[]>
 const LETTERS = ['A', 'B', 'C', 'D']
 
+/**
+ * Flashcards — a short multiple-choice quiz per civilization.
+ *
+ * Rendered with the supervisor's design language (panel / eyebrow / btn /
+ * progress / poi-dots) so it sits inside an info page without looking like a
+ * separate app. All quiz state is local and resets when the civ changes.
+ */
 export default function Flashcards({ civId }: { civId: string }) {
   const cards = quizzes[civId] || []
   const [index, setIndex] = useState(0)
@@ -14,7 +21,11 @@ export default function Flashcards({ civId }: { civId: string }) {
   const [finished, setFinished] = useState(false)
 
   if (!cards.length) {
-    return <p className="text-ink-3 text-base">No quiz available for this civilization.</p>
+    return (
+      <p className="muted" style={{ margin: 0 }}>
+        No quiz is available for this civilization yet.
+      </p>
+    )
   }
 
   const grade = (i: number): Grade =>
@@ -24,7 +35,7 @@ export default function Flashcards({ civId }: { civId: string }) {
   const selected = choices[index]
   const answered = selected !== null
   const score = cards.filter((_, i) => grade(i) === 'correct').length
-  const answeredCount = choices.filter(c => c !== null).length
+  const answeredCount = choices.filter((c) => c !== null).length
   const done = answeredCount === cards.length
 
   const choose = (optionIndex: number) => {
@@ -44,119 +55,189 @@ export default function Flashcards({ civId }: { civId: string }) {
     setFinished(false)
   }
 
+  /* ---------------------------------------------------------------- result */
+
   if (done || finished) {
     const perfect = score === cards.length
     return (
-      <div className="animate-fade-in text-center py-6">
-        <div className="text-5xl mb-4">{perfect ? '🏆' : score >= cards.length / 2 ? '📜' : '🏺'}</div>
-        <h3 className="text-2xl font-bold text-ink mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Quiz Complete!
-        </h3>
-        <p className="text-ink-2 mb-1">
-          You scored{' '}
-          <span className="text-accent font-bold text-xl">
-            {score}/{cards.length}
-          </span>
+      <div className="fade-in" style={{ textAlign: 'center', clear: 'both' }}>
+        <span className="eyebrow" style={{ marginBottom: 4 }}>
+          Flashcards complete
+        </span>
+        <h2 style={{ margin: '0 0 6px' }}>
+          {perfect ? 'Perfect score' : score >= cards.length / 2 ? 'Well done' : 'Keep exploring'}
+        </h2>
+        <p className="lead" style={{ margin: '0 auto 6px', textAlign: 'center' }}>
+          You answered{' '}
+          <strong style={{ color: 'var(--gold)' }}>
+            {score} of {cards.length}
+          </strong>{' '}
+          correctly.
         </p>
-        <p className="text-ink-3 text-base mb-6">
+        <p className="muted" style={{ margin: '0 0 20px' }}>
           {perfect
-            ? 'Perfect score — you know this civilization inside out!'
+            ? 'You know this civilization inside out.'
             : score >= cards.length / 2
-              ? 'Good work — review the missed answers to master them.'
-              : 'Keep exploring the sections above, then try again!'}
+              ? 'Review the sections above to master the ones you missed.'
+              : 'Read through the sections above, then try the quiz again.'}
         </p>
-        <button
-          onClick={reset}
-          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer"
-        >
-          Restart Quiz
-        </button>
+        <div className="result-actions" style={{ justifyContent: 'center', marginTop: 0 }}>
+          <button type="button" className="btn btn-gold" onClick={reset}>
+            Restart quiz
+          </button>
+          <a className="btn btn-outline" href={`#/civ/${civId}/info/overview`}>
+            Review overview
+          </a>
+        </div>
       </div>
     )
   }
 
+  /* --------------------------------------------------------------- question */
+
   return (
-    <div className="animate-fade-in">
-      {/* Header: progress + score */}
-      <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <span className="text-base text-ink-2">
-            Question <span className="text-accent font-bold">{index + 1}</span> of {cards.length}
-          </span>
-          <span className="px-2.5 py-0.5 rounded-full text-sm font-semibold bg-accent/10 text-accent border border-accent/30">
-            Score: {score}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {choices.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Go to question ${i + 1}`}
-              className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${grade(i) === 'correct' ? 'bg-forest' : grade(i) === 'wrong' ? 'bg-danger' : i === index ? 'bg-accent' : 'bg-line-2'} ${i === index ? 'scale-125' : ''}`}
-            />
-          ))}
-        </div>
+    <div className="fade-in" style={{ clear: 'both' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+          marginBottom: 12,
+        }}
+      >
+        <span className="eyebrow" style={{ margin: 0 }}>
+          Question {index + 1} of {cards.length}
+        </span>
+        <span className="pill medium">Score: {score}</span>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-1.5 rounded-full bg-panel-2 mb-6 overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500" style={{ width: `${(answeredCount / cards.length) * 100}%` }} />
+      <div className="progress" style={{ marginTop: 0, marginBottom: 22 }}>
+        <div style={{ width: `${(answeredCount / cards.length) * 100}%` }} />
       </div>
 
-      {/* Question */}
-      <div className="rounded-2xl border border-line bg-panel p-6 sm:p-8">
-        <p className="text-accent text-sm font-semibold tracking-widest uppercase mb-3">Question {index + 1}</p>
-        <p className="text-ink text-xl sm:text-2xl font-semibold leading-relaxed mb-6">{card.q}</p>
+      <div className="panel">
+        <h3 style={{ marginBottom: '.5em' }}>{card.q}</h3>
 
-        {/* Options */}
-        <div className="flex flex-col gap-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
           {card.options.map((opt, i) => {
             const isCorrect = i === card.a
             const isChosen = selected === i
-            let cls = 'border-line bg-panel-2 text-ink-2 hover:border-accent/40 hover:text-ink'
-            if (answered) {
-              if (isCorrect) cls = 'border-forest/60 bg-forest/10 text-forest'
-              else if (isChosen) cls = 'border-danger/60 bg-danger/10 text-danger'
-              else cls = 'border-line bg-panel-2 text-ink-4 opacity-60'
-            }
+
+            const border = answered
+              ? isCorrect
+                ? 'var(--jade)'
+                : isChosen
+                  ? 'var(--danger)'
+                  : 'var(--line)'
+              : 'var(--line)'
+            const background = answered
+              ? isCorrect
+                ? 'rgba(47, 107, 85, .1)'
+                : isChosen
+                  ? 'rgba(176, 58, 46, .08)'
+                  : 'transparent'
+              : 'transparent'
+            const colour = answered
+              ? isCorrect
+                ? 'var(--jade)'
+                : isChosen
+                  ? 'var(--danger)'
+                  : 'var(--ink-3)'
+              : 'var(--ink)'
+
             return (
               <button
                 key={i}
+                type="button"
                 onClick={() => choose(i)}
                 disabled={answered}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-full border text-left transition-all cursor-pointer disabled:cursor-default ${cls}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14,
+                  width: '100%',
+                  padding: '13px 16px',
+                  borderRadius: 12,
+                  border: `1.5px solid ${border}`,
+                  background,
+                  color: colour,
+                  font: 'inherit',
+                  fontSize: '.98rem',
+                  textAlign: 'left',
+                  cursor: answered ? 'default' : 'pointer',
+                  transition: 'border-color .2s, background .2s, color .2s',
+                }}
               >
-                <span className={`w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-sm font-bold ${answered && isCorrect ? 'bg-forest/20 text-forest' : answered && isChosen ? 'bg-danger/20 text-danger' : 'bg-accent/10 text-accent'}`}>
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    flex: 'none',
+                    borderRadius: 8,
+                    display: 'grid',
+                    placeItems: 'center',
+                    fontSize: '.82rem',
+                    fontWeight: 700,
+                    background: answered && isCorrect ? 'var(--jade)' : 'var(--sand)',
+                    color: answered && isCorrect ? '#fff' : 'var(--ink-2)',
+                  }}
+                >
                   {LETTERS[i]}
                 </span>
-                <span className="text-base sm:text-lg font-medium">{opt}</span>
-                {answered && isCorrect && <span className="ml-auto text-forest text-base">✓</span>}
-                {answered && isChosen && !isCorrect && <span className="ml-auto text-danger text-base">✗</span>}
+                <span style={{ fontWeight: 500 }}>{opt}</span>
+                {answered && isCorrect ? (
+                  <span style={{ marginLeft: 'auto', color: 'var(--jade)', fontWeight: 700 }}>✓</span>
+                ) : null}
+                {answered && isChosen && !isCorrect ? (
+                  <span style={{ marginLeft: 'auto', color: 'var(--danger)', fontWeight: 700 }}>✗</span>
+                ) : null}
               </button>
             )
           })}
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="mt-4 flex flex-wrap items-center gap-3 justify-between">
+      <div className="poi-dots" style={{ marginTop: 16 }}>
+        {choices.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Go to question ${i + 1}`}
+            className={i === index ? 'active' : ''}
+            style={
+              grade(i) === 'correct'
+                ? { background: 'var(--jade)' }
+                : grade(i) === 'wrong'
+                  ? { background: 'var(--danger)' }
+                  : undefined
+            }
+          />
+        ))}
+      </div>
+
+      <div className="result-actions" style={{ justifyContent: 'space-between', marginTop: 22 }}>
         <button
+          type="button"
+          className="btn btn-outline"
           onClick={() => goTo(index - 1)}
           disabled={index === 0}
-          className="px-4 py-2.5 rounded-full border border-line bg-panel text-ink-2 text-base font-medium hover:text-ink hover:border-accent/40 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
           ← Previous
         </button>
 
         {!answered ? (
-          <span className="text-sm text-ink-3">Choose an answer to continue</span>
+          <span className="muted" style={{ fontSize: '.86rem', alignSelf: 'center' }}>
+            Choose an answer to continue
+          </span>
         ) : index === cards.length - 1 ? (
-          <button onClick={() => setFinished(true)} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer">
-            Finish
+          <button type="button" className="btn btn-gold" onClick={() => setFinished(true)}>
+            See results
           </button>
         ) : (
-          <button onClick={() => goTo(index + 1)} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-black text-base font-bold hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+          <button type="button" className="btn btn-gold" onClick={() => goTo(index + 1)}>
             Next →
           </button>
         )}

@@ -1,125 +1,163 @@
+const TEAM = [
+  { name: 'Mahrah Ahmed Hassan Saeed Alyammahi', initials: 'MA', colour: '#b8862b' },
+  { name: 'Afraa Mohammed Alawi Hadi Al Hamed', initials: 'AA', colour: '#a4502f' },
+  { name: 'Hajar Hashim Mohamed Sharif Alsaqqaf', initials: 'HA', colour: '#2f6b55' },
+  { name: 'Salama Ali Saeed Kardous Alhadhrami', initials: 'SA', colour: '#23466b' },
+]
+
+const OBJECTIVES = [
+  'Create an interactive website about ancient civilizations.',
+  'Allow users to select different civilizations.',
+  'Display reconstructed historical environments.',
+  'Provide educational information about each civilization.',
+  'Use technology and AI to improve learning experiences.',
+]
+
+const SYSTEM_FLOW = [
+  'Access web platform',
+  'Select civilization',
+  'Retrieve historical data',
+  'Process with reconstruction algorithms',
+  'Generate 3D city layout',
+  'Display interactive environment',
+  'Explore in VR',
+  'Show historical facts',
+  'Save / exit session',
+]
+
+const AI_FLOW = [
+  'Upload photo',
+  'Choose manual or auto mode',
+  'Estimate the price',
+  'Detect the damage',
+  'Rebuild the surface',
+  'Display & download',
+]
+
+const TECHNOLOGIES = [
+  'React',
+  'TypeScript',
+  'Vite',
+  'WebGL 3D rendering',
+  'WebXR virtual reality',
+  'Serverless AI image editing',
+  'Canvas image processing',
+  'Sketchfab photogrammetry',
+]
+
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-app pt-20 pb-16 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12 animate-fade-in-up">
-          <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">About</p>
-          <h1 className="mb-4">
-            <img
-              src="/logo/logo-banner.jpg"
-              alt="ACR — Ancient Civilization Reconstructor"
-              className="w-full max-w-md mx-auto rounded-2xl border border-line"
-            />
-          </h1>
-          <p className="text-ink-2 max-w-xl mx-auto">
-            Ancient Civilization Reconstructor — an educational platform exploring the wonders of ancient civilizations through 3D models, historical content, and AI-powered tools.
-          </p>
-        </div>
+    <div className="container">
+      <div className="page-head">
+        <span className="eyebrow">Capstone project</span>
+        <h1>About the Project</h1>
+        <p className="lead">
+          Ancient Civilization Reconstructor combines history, technology and artificial
+          intelligence to create an engaging educational experience that helps users understand
+          ancient civilizations through interactive visual reconstructions.
+        </p>
+      </div>
 
-        <div className="space-y-8">
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.1s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Our Mission</h2>
-            <p className="text-ink-2 leading-relaxed">
-              ACR (Ancient Civilization Reconstructor) is an educational and research project dedicated to bringing the past to life. We combine historical research, 3D photogrammetry models, and AI technology to help students, historians, and curious minds explore and reconstruct ancient artifacts and sites from around the world.
+      <div className="about-grid" style={{ paddingBottom: 64 }}>
+        <div>
+          <section className="panel">
+            <h3>Project objectives</h3>
+            <ul className="checklist">
+              {OBJECTIVES.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="panel">
+            <h3>How the system works</h3>
+            <ol className="flow">
+              {SYSTEM_FLOW.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+
+            <h3 style={{ marginTop: 24 }}>AI artifact reconstruction</h3>
+            <ol className="flow">
+              {AI_FLOW.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+
+            <p className="muted" style={{ margin: '16px 0 0', fontSize: '.92rem' }}>
+              The restorer runs on a serverless function so the API key never reaches the browser.
+              It supports a manual brush mode and an automatic mode, always shows a price estimate
+              before generating, and falls back to a basic local repair when the AI call fails.
             </p>
           </section>
 
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.15s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Civilizations Covered</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { name: 'Taj Mahal', desc: 'Mughal architecture in Agra, India' },
-                { name: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the Nile' },
-                { name: 'Ancient Rome', desc: 'Engineering marvels and empire' },
-                { name: 'Maya Civilization', desc: 'Calendar, mathematics, and temples' },
-                { name: 'Khor Fakkan Portuguese Fort', desc: '16th-century coastal fortress, UAE' },
-                { name: 'Petra', desc: 'Rock-cut Nabatean city, Jordan' },
-                { name: 'Al-Jazirat Al-Hamra', desc: 'Historic pearl diving village, UAE' },
-                { name: 'Dhayah Fort', desc: 'Hilltop fort in Ras Al Khaimah, UAE' },
-              ].map(civ => (
-                <div key={civ.name} className="flex items-start gap-3 p-3 rounded-xl bg-panel border border-line-soft">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-ink font-medium text-sm">{civ.name}</p>
-                    <p className="text-ink-3 text-xs">{civ.desc}</p>
-                  </div>
-                </div>
+          <section className="panel">
+            <h3>Technologies</h3>
+            <div className="tech">
+              {TECHNOLOGIES.map((tech) => (
+                <span key={tech}>{tech}</span>
               ))}
             </div>
           </section>
+        </div>
 
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.2s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Features</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { icon: '🏛️', title: '3D Models', desc: 'Interactive Sketchfab photogrammetry scans of real archaeological sites' },
-                { icon: '🎥', title: 'Video Content', desc: 'Curated YouTube videos documenting each civilization' },
-                { icon: '🤖', title: 'AI Restorer', desc: 'Upload a broken artifact photo and AI generates a restored version' },
-              ].map(f => (
-                <div key={f.title} className="text-center p-4 rounded-xl bg-panel border border-line-soft">
-                  <div className="text-3xl mb-3">{f.icon}</div>
-                  <p className="text-ink font-semibold text-sm mb-1">{f.title}</p>
-                  <p className="text-ink-3 text-xs leading-relaxed">{f.desc}</p>
-                </div>
+        <div>
+          <figure className="about-logo">
+            <img src="/logo/logo-banner.jpg" alt="ACR — Ancient Civilization Reconstructor logo" />
+          </figure>
+
+          <section className="panel">
+            <h3>Project details</h3>
+            <table className="info-table">
+              <tbody>
+                <tr>
+                  <th>Cluster</th>
+                  <td>Computing and Artificial Intelligence</td>
+                </tr>
+                <tr>
+                  <th>Campus</th>
+                  <td>Baniyas — Girls</td>
+                </tr>
+                <tr>
+                  <th>Supervisor</th>
+                  <td>Ms. Ashjan Saleh</td>
+                </tr>
+                <tr>
+                  <th>Civilizations</th>
+                  <td>
+                    Ancient Egypt, Ancient Rome, the Maya, the Taj Mahal, Petra and three UAE
+                    heritage sites
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section className="panel">
+            <h3>Project team</h3>
+            <ul className="team">
+              {TEAM.map((member) => (
+                <li key={member.name}>
+                  <span className="avatar" style={{ background: member.colour }}>
+                    {member.initials}
+                  </span>
+                  <span>{member.name}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
 
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.25s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Technology</h2>
-            <div className="space-y-3 text-ink-2 text-sm leading-relaxed">
-              <p>
-                This project is built with <span className="text-ink font-medium">React</span>, <span className="text-ink font-medium">Vite</span>, and <span className="text-ink font-medium">Tailwind CSS</span>. It features interactive 3D model embeds from Sketchfab, curated YouTube video content, and an AI-powered artifact restoration tool: paint over damage and a server-side OpenAI image edit rebuilds only the painted area, with a basic local repair fallback when the AI call itself fails.
-              </p>
-              <p>
-                The 3D models are photogrammetry scans created by researchers and heritage organizations including Global Digital Heritage, the American University of Sharjah, and independent creators. These models provide accurate, high-resolution digital preservation of irreplaceable cultural heritage sites.
-              </p>
-            </div>
-          </section>
-
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.25s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Meet the Team</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {[
-                { name: 'Mahrah Alyammahi', initials: 'MA', gradient: 'from-amber-500 to-orange-600' },
-                { name: 'Afra Al Hamed', initials: 'AA', gradient: 'from-rose-500 to-pink-600' },
-                { name: 'Hajar Alsaqqaf', initials: 'HA', gradient: 'from-violet-500 to-purple-600' },
-                { name: 'Salama Alhadhrami', initials: 'SA', gradient: 'from-emerald-500 to-green-600' },
-              ].map((member) => (
-                <div key={member.name} className="group flex flex-col items-center gap-3">
-                  <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300`}>
-                    <span className="text-white font-black text-xl">{member.initials}</span>
-                  </div>
-                  <p className="text-ink text-sm font-medium leading-tight text-center">{member.name}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="animate-fade-in-up rounded-2xl border border-line bg-panel p-6 sm:p-8" style={{ animationDelay: '0.3s' }}>
-            <h2 className="text-2xl font-bold text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Credits & Sources</h2>
-            <div className="space-y-2 text-ink-2 text-sm">
-              <p><span className="text-ink font-medium">3D Models:</span> Sketchfab creators — Global Digital Heritage, Zlatan.Filipovic, HeritageTech, and community contributors</p>
-              <p><span className="text-ink font-medium">Video Content:</span> YouTube educational creators and documentary channels</p>
-              <p><span className="text-ink font-medium">AI Restoration:</span> OpenAI gpt-image-2.5-sunburst edits via serverless API (key stays server-side), gpt-6-luna result check, basic local repair fallback</p>
-              <p><span className="text-ink font-medium">Historical Research:</span> UNESCO, national heritage departments, and academic publications</p>
-            </div>
-          </section>
-
-          <section className="animate-fade-in-up text-center py-8" style={{ animationDelay: '0.35s' }}>
-            <p className="text-ink-4 text-sm">
-              This is an educational and research project. All content is used for non-commercial purposes.
+          <section className="panel">
+            <h3>Sources</h3>
+            <p className="muted" style={{ margin: 0, fontSize: '.92rem' }}>
+              Historical content is based on reliable educational sources, UNESCO and national
+              heritage publications, museum archives and research articles. 3D scenes are simplified
+              reconstructions based on the documented layout and proportions of the real monuments,
+              and photogrammetry models are the property of their creators on Sketchfab.
             </p>
           </section>
         </div>
       </div>
-
-      <footer className="border-t border-line-soft py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
-          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
-          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -1,4 +1,13 @@
 import { useEffect, useRef } from 'react'
+import { CIV_ILLUSTRATIONS } from '../illustrations'
+
+/* =====================================================================
+   The UAE Heritage — our extra section on the home page.
+
+   It keeps the desert artwork (sun, clouds, camels, palms) but presents
+   it the way the supervisor's site presents content: a full-width strip
+   followed by the same `.civ-card` grid used for the civilizations.
+   ===================================================================== */
 
 function Cloud({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -16,79 +25,57 @@ function Cloud({ className, style }: { className?: string; style?: React.CSSProp
 
 function Sun() {
   return (
-    <div className="absolute top-8 right-[15%] z-10">
-      <div className="relative w-28 h-28">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-200 via-amber-300 to-orange-400 animate-pulse" style={{ animationDuration: '3s' }} />
-        <div className="absolute inset-0 rounded-full bg-yellow-300/40 blur-xl" style={{ transform: 'scale(2.5)' }} />
-        <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-2xl" style={{ transform: 'scale(3.5)' }} />
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-          <div
-            key={deg}
-            className="absolute top-1/2 left-1/2 w-1.5 h-10 bg-gradient-to-b from-yellow-300/60 to-transparent rounded-full"
-            style={{
-              transformOrigin: 'center top',
-              transform: `translate(-50%, 0) rotate(${deg}deg)`,
-              height: '50px',
-            }}
-          />
-        ))}
-        <svg className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)]" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
-          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.3" strokeDasharray="4 6" />
-        </svg>
+    <div className="absolute top-6 right-[12%] z-10">
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+        <div
+          className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-200 via-amber-300 to-orange-400 animate-pulse"
+          style={{ animationDuration: '4s' }}
+        />
+        <div className="absolute inset-0 rounded-full bg-yellow-300/40 blur-xl" style={{ transform: 'scale(2.2)' }} />
+        <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-2xl" style={{ transform: 'scale(3)' }} />
       </div>
     </div>
   )
 }
 
-function Camel({ x, y }: { x: number; y: number }) {
+function Camel({ x, bottom, scale = 0.5 }: { x: number; bottom: number; scale?: number }) {
   return (
     <div
-      className="absolute z-30 animate-float"
+      className="absolute z-20 animate-float"
       style={{
         left: `${x}%`,
-        bottom: `${y}%`,
-        animationDuration: '5s',
-        animationDelay: `${(x % 7) * 0.5}s`,
+        bottom: `${bottom}%`,
+        transform: `scale(${scale})`,
+        transformOrigin: 'bottom left',
+        animationDuration: '6s',
+        animationDelay: `${(x % 7) * 0.6}s`,
         pointerEvents: 'none',
       }}
     >
       <svg width="140" height="130" viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Body */}
         <ellipse cx="70" cy="65" rx="34" ry="20" fill="#8B6914" />
         <ellipse cx="70" cy="63" rx="30" ry="16" fill="#A0791A" />
-        {/* Hump */}
         <ellipse cx="50" cy="48" rx="12" ry="10" fill="#8B6914" />
         <ellipse cx="50" cy="46" rx="9" ry="7" fill="#A0791A" />
         <ellipse cx="50" cy="44" rx="6" ry="5" fill="#B8922A" />
-        {/* Neck */}
         <path d="M102 48 Q115 30 120 20 Q122 14 118 12 Q114 10 112 16 L108 55" fill="#8B6914" />
         <path d="M105 45 Q112 26 116 18 Q117 14 113 13 L108 55" fill="#A0791A" />
-        {/* Head */}
         <ellipse cx="118" cy="10" rx="11" ry="7" fill="#8B6914" transform="rotate(-12 118 10)" />
         <ellipse cx="119" cy="9" rx="9" ry="5" fill="#A0791A" transform="rotate(-12 119 9)" />
-        {/* Eye */}
         <circle cx="124" cy="6" r="1.5" fill="#2D1B00" />
         <circle cx="124.5" cy="5.5" r="0.5" fill="white" />
-        {/* Mouth */}
         <path d="M132 8 Q135 9 134 11" stroke="#5C3A00" strokeWidth="1" fill="none" />
-        {/* Front legs */}
         <line x1="80" y1="80" x2="85" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
         <line x1="75" y1="82" x2="78" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
-        {/* Back legs */}
         <line x1="45" y1="80" x2="43" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
         <line x1="38" y1="78" x2="35" y2="115" stroke="#7A5C10" strokeWidth="5" strokeLinecap="round" />
-        {/* Hooves */}
         <ellipse cx="85" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
         <ellipse cx="78" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
         <ellipse cx="43" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
         <ellipse cx="35" cy="118" rx="3" ry="1.5" fill="#3D2B00" />
-        {/* Shadow */}
         <ellipse cx="70" cy="122" rx="40" ry="5" fill="#7A5C10" opacity="0.2" />
-        {/* Tail */}
         <path d="M20 50 Q10 45 8 50 Q10 55 20 55" stroke="#7A5C10" strokeWidth="2" fill="none" />
         <ellipse cx="21" cy="55" rx="3" ry="5" fill="#7A5C10" />
-        {/* Saddle cloth */}
         <path d="M40 36 Q52 32 72 34 Q82 36 87 44 L82 51 Q67 46 47 46 Z" fill="#C85A30" opacity="0.7" />
         <path d="M44 38 Q54 34 68 35 Q78 37 82 41" stroke="#E8A020" strokeWidth="1" fill="none" />
       </svg>
@@ -96,29 +83,26 @@ function Camel({ x, y }: { x: number; y: number }) {
   )
 }
 
-function PalmTree({ x, size = 1 }: { x: number; size?: number }) {
+function PalmTree({ x, bottom = 26, size = 1 }: { x: number; bottom?: number; size?: number }) {
   return (
     <div
       className="absolute z-10"
-      style={{ left: `${x}%`, bottom: '30%', pointerEvents: 'none' }}
+      style={{ left: `${x}%`, bottom: `${bottom}%`, pointerEvents: 'none' }}
     >
       <svg
-        width={80 * size}
-        height={140 * size}
+        width={70 * size}
+        height={120 * size}
         viewBox="0 0 80 140"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Trunk */}
         <path d="M38 140 Q36 110 37 85 Q38 65 40 50" stroke="#8B6514" strokeWidth="7" strokeLinecap="round" fill="none" />
         <path d="M39 140 Q37 110 38 85 Q39 65 41 50" stroke="#A0791A" strokeWidth="4" strokeLinecap="round" fill="none" />
-        {/* Trunk rings */}
         <line x1="36" y1="120" x2="42" y2="120" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
         <line x1="36" y1="105" x2="42" y2="105" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
         <line x1="37" y1="90" x2="43" y2="90" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
         <line x1="37" y1="75" x2="43" y2="75" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
         <line x1="38" y1="60" x2="44" y2="60" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
-        {/* Palm fronds */}
         <path d="M40 50 Q25 35 5 30" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
         <path d="M40 50 Q28 38 8 40" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
         <path d="M40 50 Q55 35 75 30" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
@@ -126,50 +110,38 @@ function PalmTree({ x, size = 1 }: { x: number; size?: number }) {
         <path d="M40 50 Q30 30 20 15" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
         <path d="M40 50 Q50 30 60 15" stroke="#3A8F3A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
         <path d="M40 50 Q38 28 40 10" stroke="#2D7A2D" strokeWidth="4" strokeLinecap="round" fill="none" />
-        {/* Frond leaves (small branches) */}
-        <path d="M15 32 Q12 28 8 32" stroke="#2D7A2D" strokeWidth="2" fill="none" />
-        <path d="M65 32 Q68 28 72 32" stroke="#2D7A2D" strokeWidth="2" fill="none" />
-        <path d="M30 18 Q26 14 24 18" stroke="#3A8F3A" strokeWidth="2" fill="none" />
-        <path d="M50 18 Q54 14 56 18" stroke="#3A8F3A" strokeWidth="2" fill="none" />
-        {/* Coconuts */}
         <circle cx="36" cy="52" r="4" fill="#5C4033" />
         <circle cx="44" cy="53" r="3.5" fill="#6B4E3D" />
         <circle cx="40" cy="56" r="3.5" fill="#5C4033" />
-        {/* Ground shadow */}
         <ellipse cx="40" cy="138" rx="18" ry="4" fill="#7A5C10" opacity="0.2" />
       </svg>
     </div>
   )
 }
 
-function UAEIcon({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="group flex flex-col items-center gap-2 cursor-pointer"
-    >
-      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center group-hover:from-amber-500/30 group-hover:to-orange-500/30 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all duration-300">
-        {icon}
-      </div>
-      <span className="text-ink/80 text-xs sm:text-sm font-medium group-hover:text-amber-300 transition-colors text-center leading-tight max-w-[90px]">{label}</span>
-    </button>
-  )
-}
-
-function GlobalCivSymbol({ children, label, color, onClick }: { children: React.ReactNode; label: string; color: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={`Explore ${label}`}
-      className="group flex flex-col items-center gap-3 cursor-pointer"
-    >
-      <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl ${color} flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:shadow-xl`}>
-        {children}
-      </div>
-      <span className="text-ink-2 text-xs sm:text-sm font-medium group-hover:text-ink transition-colors text-center">{label}</span>
-    </button>
-  )
-}
+const UAE_SITES = [
+  {
+    id: 'khorfakkan',
+    name: 'Khor Fakkan Fort',
+    era: '16th century',
+    blurb: 'A Portuguese coastal fort above the Gulf of Oman, built to guard the anchorage and the trade road inland.',
+    accent: '#23466b',
+  },
+  {
+    id: 'al-jazirat-al-hamra',
+    name: 'Al-Jazirat Al-Hamra',
+    era: 'Several centuries',
+    blurb: 'A pearl-diving village of coral-stone houses, wind towers and narrow lanes on the Ras Al Khaimah coast.',
+    accent: '#2f6b55',
+  },
+  {
+    id: 'dhayah-fort',
+    name: 'Dhayah Fort',
+    era: '18th century',
+    blurb: 'A hilltop fortress above the palm gardens of Ras Al Khaimah, the last stand against the British in 1819.',
+    accent: '#b8862b',
+  },
+]
 
 export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string) => void }) {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -178,12 +150,10 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-visible')
-          }
+          if (entry.isIntersecting) entry.target.classList.add('animate-visible')
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     )
 
     const els = sectionRef.current?.querySelectorAll('.animate-on-scroll')
@@ -192,276 +162,97 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
   }, [])
 
   return (
-    <div ref={sectionRef}>
-      {/* ═══════════ SECTION 1: GLOBAL CIVILIZATIONS ═══════════ */}
-      <section id="civilizations" className="relative py-24 sm:py-32 overflow-hidden scroll-mt-16">
-        <div className="absolute inset-0 hero-bg" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-10 left-[10%] w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-[10%] w-80 h-80 bg-rose-500/5 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+    <section className="section" id="uae-heritage" ref={sectionRef}>
+      <div className="container">
+        <div className="section-title">
+          <div>
+            <span className="eyebrow">Discover</span>
+            <h2>The UAE Heritage</h2>
+          </div>
+          <a className="btn btn-outline btn-sm" href="#/civilizations">
+            All civilizations
+          </a>
         </div>
+        <p className="lead" style={{ marginBottom: 0 }}>
+          From the Portuguese fort at Khor Fakkan to the wind-tower houses of Al-Jazirat Al-Hamra
+          and the hilltop defences of Dhayah, the Emirates keep a deep record of trade, pearl diving
+          and desert life. Choose a site below to explore it in 3D.
+        </p>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16 animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.8s ease forwards' }}>
-            <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">Our World, Our Heritage</p>
-            <h2 className="text-3xl sm:text-5xl font-black text-ink mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              Global Civilizations
-            </h2>
-            <p className="text-ink-2 max-w-2xl mx-auto text-base sm:text-lg">
-              From the banks of the Nile to the jungles of Mesoamerica, humanity has built extraordinary civilizations. Explore their wonders.
-            </p>
-          </div>
+        {/* Decorative desert strip — sun, clouds, camels and palms */}
+        <div className="uae-strip" aria-hidden="true">
+          <div className="uae-strip-sky" />
 
-          {/* World Map Style Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 mb-16">
-            <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.1s forwards' }}>
-              <GlobalCivSymbol label="Ancient Egypt" onClick={() => onSelectCiv('egypt')} color="bg-gradient-to-br from-amber-500/15 to-yellow-500/10 border border-amber-500/20 hover:border-amber-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-accent" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <polygon points="24,4 4,40 44,40" />
-                  <line x1="24" y1="4" x2="24" y2="40" opacity="0.3" />
-                  <line x1="14" y1="40" x2="34" y2="40" />
-                  <circle cx="24" cy="22" r="4" opacity="0.4" />
-                </svg>
-              </GlobalCivSymbol>
-            </div>
-
-            <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.2s forwards' }}>
-              <GlobalCivSymbol label="Ancient Rome" onClick={() => onSelectCiv('rome')} color="bg-gradient-to-br from-sky-500/15 to-blue-500/10 border border-sky-500/20 hover:border-sky-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-cool-2" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="6" y="16" width="36" height="24" rx="2" />
-                  <path d="M6 16 L24 6 L42 16" />
-                  <line x1="12" y1="16" x2="12" y2="40" />
-                  <line x1="20" y1="16" x2="20" y2="40" />
-                  <line x1="28" y1="16" x2="28" y2="40" />
-                  <line x1="36" y1="16" x2="36" y2="40" />
-                  <path d="M10 28 Q16 22 24 28 Q32 22 38 28" strokeWidth="1" />
-                </svg>
-              </GlobalCivSymbol>
-            </div>
-
-            <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.3s forwards' }}>
-              <GlobalCivSymbol label="Maya Civilization" onClick={() => onSelectCiv('maya')} color="bg-gradient-to-br from-emerald-500/15 to-green-500/10 border border-emerald-500/20 hover:border-emerald-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-forest" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="12" y="36" width="24" height="4" />
-                  <rect x="15" y="30" width="18" height="6" />
-                  <rect x="18" y="24" width="12" height="6" />
-                  <rect x="21" y="18" width="6" height="6" />
-                  <line x1="24" y1="10" x2="24" y2="18" />
-                  <circle cx="24" cy="8" r="3" />
-                  <path d="M16 40 L12 44" strokeWidth="1" />
-                  <path d="M32 40 L36 44" strokeWidth="1" />
-                </svg>
-              </GlobalCivSymbol>
-            </div>
-
-            <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.4s forwards' }}>
-              <GlobalCivSymbol label="Taj Mahal" onClick={() => onSelectCiv('taj-mahal')} color="bg-gradient-to-br from-rose-500/15 to-pink-500/10 border border-rose-500/20 hover:border-rose-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-rose" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="10" y="28" width="28" height="12" rx="1" />
-                  <path d="M14 28 Q24 8 34 28" />
-                  <circle cx="24" cy="18" r="2" />
-                  <rect x="8" y="18" width="4" height="22" rx="1" />
-                  <rect x="36" y="18" width="4" height="22" rx="1" />
-                  <ellipse cx="24" cy="12" rx="1.5" ry="3" />
-                  <line x1="18" y1="32" x2="18" y2="36" opacity="0.4" />
-                  <line x1="30" y1="32" x2="30" y2="36" opacity="0.4" />
-                </svg>
-              </GlobalCivSymbol>
-            </div>
-
-            <div className="animate-on-scroll" style={{ opacity: 0, animation: 'fade-in-up 0.6s ease 0.5s forwards' }}>
-              <GlobalCivSymbol label="Petra" onClick={() => onSelectCiv('petra')} color="bg-gradient-to-br from-orange-500/15 to-red-500/10 border border-orange-500/20 hover:border-orange-500/40">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-accent-2" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M8 44 L8 12 L24 4 L40 12 L40 44" />
-                  <path d="M16 44 L16 28 L24 20 L32 28 L32 44" />
-                  <circle cx="24" cy="14" r="3" />
-                  <line x1="8" y1="24" x2="16" y2="24" opacity="0.3" />
-                  <line x1="32" y1="24" x2="40" y2="24" opacity="0.3" />
-                  <path d="M18 36 L24 30 L30 36" strokeWidth="1" />
-                </svg>
-              </GlobalCivSymbol>
-            </div>
-          </div>
-
-          {/* Decorative connecting line */}
-          <div className="hidden sm:block relative h-px max-w-3xl mx-auto mb-16">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-            <div className="absolute left-1/2 -translate-x-1/2 -top-3 w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-amber-400" />
-            </div>
-          </div>
-
-          {/* Exploration cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[
-              { id: 'egypt', title: 'Ancient Egypt', desc: 'Pyramids, pharaohs, and the secrets of the afterlife along the Nile.', icon: '▲', color: 'from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40' },
-              { id: 'rome', title: 'Ancient Rome', desc: 'Engineering marvels, law, and empire that shaped the Western world.', icon: '⬡', color: 'from-sky-500/10 to-sky-500/5 border-sky-500/20 hover:border-sky-500/40' },
-              { id: 'maya', title: 'Maya Civilization', desc: 'Rainforest cities, advanced mathematics, and celestial calendars.', icon: '◆', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40' },
-              { id: 'taj-mahal', title: 'Taj Mahal', desc: 'The crown jewel of Mughal architecture and eternal love.', icon: '❋', color: 'from-rose-500/10 to-rose-500/5 border-rose-500/20 hover:border-rose-500/40' },
-              { id: 'petra', title: 'Petra', desc: 'The rose-red city carved into cliff faces by the Nabateans.', icon: '◇', color: 'from-orange-500/10 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40' },
-            ].map((civ, i) => (
-              <button
-                key={civ.id}
-                onClick={() => onSelectCiv(civ.id)}
-                className={`animate-on-scroll text-left p-5 sm:p-6 rounded-2xl border bg-gradient-to-br ${civ.color} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer`}
-                style={{ opacity: 0, animation: `fade-in-up 0.6s ease ${0.1 + i * 0.1}s forwards` }}
-              >
-                <div className="text-2xl mb-2 opacity-60 group-hover:opacity-100 transition-opacity">{civ.icon}</div>
-                <h3 className="text-ink font-bold text-base sm:text-lg mb-1 group-hover:text-amber-300 transition-colors">{civ.title}</h3>
-                <p className="text-ink-2 text-xs sm:text-sm leading-relaxed">{civ.desc}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ TRANSITION ═══════════ */}
-      <div className="relative h-48 sm:h-64 overflow-hidden">
-        <div className="absolute inset-0 transition-bg" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center z-10 px-4">
-            <p className="text-accent/70 text-xs sm:text-sm tracking-[0.3em] uppercase mb-2">Discover</p>
-            <h3 className="text-2xl sm:text-4xl font-black text-ink" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              The UAE Heritage
-            </h3>
-            <div className="mt-3 flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-400/50" />
-              <svg className="w-4 h-4 text-accent/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-400/50" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════ SECTION 2: UAE DESERT SCENE ═══════════ */}
-      <section className="relative overflow-hidden">
-        {/* Sky */}
-        <div className="relative min-h-[85vh] sm:min-h-screen">
-          {/* Sky gradient */}
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(180deg, #1a6dd4 0%, #3a8feb 25%, #6ab4f5 45%, #a8d8f8 60%, #e8d5a0 75%, #d4a54a 85%, #c4903a 100%)'
-          }} />
-
-          {/* Clouds */}
-          <Cloud className="w-40 sm:w-56 opacity-70" style={{ top: '8%', left: '5%', animation: 'drift 25s linear infinite' }} />
-          <Cloud className="w-32 sm:w-44 opacity-60" style={{ top: '15%', left: '35%', animation: 'drift 30s linear infinite', animationDelay: '-8s' }} />
-          <Cloud className="w-48 sm:w-64 opacity-50" style={{ top: '5%', right: '25%', animation: 'drift 35s linear infinite', animationDelay: '-15s' }} />
-          <Cloud className="w-28 sm:w-36 opacity-65" style={{ top: '20%', right: '10%', animation: 'drift 28s linear infinite', animationDelay: '-5s' }} />
-          <Cloud className="w-36 sm:w-48 opacity-55" style={{ top: '12%', left: '55%', animation: 'drift 32s linear infinite', animationDelay: '-20s' }} />
+          <Cloud className="w-28 sm:w-36 opacity-80" style={{ top: '10%', left: '6%', animation: 'drift 34s linear infinite' }} />
+          <Cloud className="w-20 sm:w-28 opacity-60" style={{ top: '26%', left: '38%', animation: 'drift 44s linear infinite', animationDelay: '-14s' }} />
+          <Cloud className="w-24 sm:w-32 opacity-50" style={{ top: '6%', right: '32%', animation: 'drift 38s linear infinite', animationDelay: '-22s' }} />
 
           <Sun />
 
-          {/* Desert ground */}
-          <div className="absolute bottom-0 left-0 right-0 h-[35%]" style={{
-            background: 'linear-gradient(180deg, #d4a54a 0%, #c4903a 30%, #b8812e 60%, #a06c20 100%)'
-          }}>
-            {/* Sand dunes */}
-            <svg className="absolute top-0 left-0 w-full" viewBox="0 0 1200 120" preserveAspectRatio="none" style={{ transform: 'translateY(-60px)' }}>
-              <path d="M0 60 Q150 20 300 50 Q450 80 600 40 Q750 0 900 50 Q1050 100 1200 60 L1200 120 L0 120 Z" fill="#d4a54a" opacity="0.6" />
-              <path d="M0 80 Q200 40 400 70 Q600 100 800 60 Q1000 20 1200 80 L1200 120 L0 120 Z" fill="#c4903a" opacity="0.5" />
+          <div className="uae-strip-ground">
+            <svg className="uae-strip-dunes" viewBox="0 0 1200 120" preserveAspectRatio="none">
+              <path
+                d="M0 60 Q150 18 300 48 Q450 78 600 38 Q750 -2 900 48 Q1050 98 1200 58 L1200 120 L0 120 Z"
+                fill="#e8c47a"
+                opacity="0.85"
+              />
+              <path
+                d="M0 84 Q200 44 400 72 Q600 100 800 62 Q1000 24 1200 82 L1200 120 L0 120 Z"
+                fill="#cf9c45"
+                opacity="0.7"
+              />
             </svg>
-            {/* Sand texture dots */}
-            <div className="absolute inset-0 opacity-20">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 rounded-full bg-amber-700/40"
-                  style={{
-                    left: `${(i * 37 + 13) % 100}%`,
-                    top: `${(i * 23 + 7) % 80}%`,
-                  }}
-                />
-              ))}
-            </div>
           </div>
 
-          {/* Camels on the sand — rendered AFTER ground so they're on top */}
-          <Camel x={5} y={24} />
-          <Camel x={18} y={27} />
-          <Camel x={32} y={25} />
-          <Camel x={48} y={28} />
-          <Camel x={62} y={26} />
-          <Camel x={75} y={29} />
-          <Camel x={85} y={24} />
-          <Camel x={93} y={30} />
-          <Camel x={22} y={20} />
-          <Camel x={70} y={18} />
-          <Camel x={40} y={22} />
-          <Camel x={80} y={25} />
+          <PalmTree x={4} bottom={24} size={1.15} />
+          <PalmTree x={16} bottom={26} size={0.85} />
+          <PalmTree x={78} bottom={25} size={1.05} />
+          <PalmTree x={90} bottom={23} size={0.8} />
 
-          {/* Palm trees along the horizon */}
-          <PalmTree x={8} size={1.1} />
-          <PalmTree x={28} size={0.85} />
-          <PalmTree x={55} size={1.2} />
-          <PalmTree x={78} size={0.9} />
-          <PalmTree x={95} size={1} />
+          <Camel x={28} bottom={14} scale={0.5} />
+          <Camel x={36} bottom={9} scale={0.62} />
+          <Camel x={50} bottom={12} scale={0.46} />
+          <Camel x={58} bottom={7} scale={0.56} />
+          <Camel x={68} bottom={11} scale={0.4} />
+        </div>
 
-          {/* UAE Site Icons */}
-          <div className="absolute bottom-[12%] sm:bottom-[15%] left-0 right-0 z-30">
-            <div className="max-w-4xl mx-auto px-4">
-              <div className="bg-gradient-to-r from-amber-900/40 via-amber-800/50 to-amber-900/40 backdrop-blur-sm rounded-2xl border border-amber-500/20 p-6 sm:p-8">
-                <p className="text-center text-amber-200/80 text-xs sm:text-sm tracking-widest uppercase mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  Explore UAE Historical Sites
-                </p>
-                <div className="flex justify-center gap-6 sm:gap-10 flex-wrap">
-                  <UAEIcon
-                    label="Khor Fakkan Fort"
-                    onClick={() => onSelectCiv('khorfakkan')}
-                    icon={
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-amber-300" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <rect x="6" y="16" width="28" height="20" rx="1" />
-                        <rect x="10" y="12" width="4" height="4" />
-                        <rect x="18" y="12" width="4" height="4" />
-                        <rect x="26" y="12" width="4" height="4" />
-                        <rect x="15" y="24" width="10" height="12" rx="5" />
-                        <line x1="6" y1="12" x2="34" y2="12" />
-                      </svg>
-                    }
-                  />
-                  <UAEIcon
-                    label="Al-Jazirat Al-Hamra"
-                    onClick={() => onSelectCiv('al-jazirat-al-hamra')}
-                    icon={
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-amber-300" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <rect x="4" y="18" width="14" height="18" rx="1" />
-                        <rect x="22" y="14" width="14" height="22" rx="1" />
-                        <rect x="8" y="22" width="3" height="4" opacity="0.5" />
-                        <rect x="13" y="22" width="3" height="4" opacity="0.5" />
-                        <rect x="26" y="18" width="3" height="4" opacity="0.5" />
-                        <rect x="31" y="18" width="3" height="4" opacity="0.5" />
-                        <rect x="26" y="26" width="3" height="4" opacity="0.5" />
-                        <rect x="31" y="26" width="3" height="4" opacity="0.5" />
-                        <line x1="11" y1="14" x2="11" y2="8" strokeWidth="1" />
-                        <polygon points="11,8 9,11 13,11" fill="currentColor" opacity="0.3" />
-                      </svg>
-                    }
-                  />
-                  <UAEIcon
-                    label="Dhayah Fort"
-                    onClick={() => onSelectCiv('dhayah-fort')}
-                    icon={
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-amber-300" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M8 38 L8 14 L20 6 L32 14 L32 38" />
-                        <rect x="15" y="22" width="10" height="16" rx="5" />
-                        <rect x="10" y="18" width="4" height="4" opacity="0.5" />
-                        <rect x="26" y="18" width="4" height="4" opacity="0.5" />
-                        <line x1="20" y1="6" x2="20" y2="2" />
-                        <polygon points="20,2 18,5 22,5" fill="currentColor" opacity="0.4" />
-                      </svg>
-                    }
-                  />
+        {/* The three Emirati sites, in the same card language as the civ grid */}
+        <div className="civ-grid" style={{ marginTop: 28 }}>
+          {UAE_SITES.map((site) => (
+            <article
+              key={site.id}
+              className="civ-card animate-on-scroll"
+              style={{ '--accent': site.accent } as React.CSSProperties}
+            >
+              <div
+                className="art"
+                dangerouslySetInnerHTML={{ __html: CIV_ILLUSTRATIONS[site.id](`uae-${site.id}`) }}
+              />
+              <div className="body">
+                <span className="era">{site.era}</span>
+                <h3>{site.name}</h3>
+                <p>{site.blurb}</p>
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={() => onSelectCiv(site.id)}
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                      <path d="M3.3 7 12 12l8.7-5M12 22V12" />
+                    </svg>
+                    View in 3D
+                  </button>
+                  <a className="btn btn-outline btn-sm" href={`#/civ/${site.id}/info/overview`}>
+                    Learn more
+                  </a>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Bottom gradient into page bg */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-app to-transparent z-40" />
+            </article>
+          ))}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   )
 }

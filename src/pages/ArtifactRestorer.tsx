@@ -321,43 +321,48 @@ export default function ArtifactRestorer() {
   const renderConfirmPanel = () => {
     if (!confirming) return null
     return (
-      <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 animate-fade-in">
-        <p className="text-sm text-ink font-medium mb-1">
+      <div className="about-note" style={{ marginTop: 16 }}>
+        <p style={{ margin: '0 0 4px', fontWeight: 600, color: 'var(--ink)' }}>
           {DEV_MOCK_AI
             ? 'This run is free (mock mode — no OpenAI call). Continue?'
             : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
         </p>
-        <p className="text-xs text-ink-3 mb-3">
-          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'}{' '}
-          • Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
+        <p className="muted" style={{ margin: '0 0 10px', fontSize: '.86rem' }}>
+          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'} ·
+          Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
         </p>
+
         {confirming.large && (
-          <div className="mb-3">
-            <p className="text-xs text-accent mb-2">
+          <div style={{ marginBottom: 12 }}>
+            <p style={{ margin: '0 0 8px', fontSize: '.86rem', color: 'var(--danger)' }}>
               Large painted area. Results may look invented and this uses paid credit.
             </p>
-            <label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
+            <label className="switch">
               <input
                 type="checkbox"
                 checked={largeAck}
-                onChange={e => setLargeAck(e.target.checked)}
-                className="w-4 h-4 accent-amber-500"
+                onChange={(e) => setLargeAck(e.target.checked)}
               />
-              I understand — restore anyway
+              <span>
+                <strong>I understand — restore anyway</strong>
+              </span>
             </label>
           </div>
         )}
-        <div className="flex gap-3">
+
+        <div className="result-actions" style={{ marginTop: 12 }}>
           <button
+            type="button"
+            className="btn btn-gold btn-sm"
             onClick={doRestore}
             disabled={confirming.large && !largeAck}
-            className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Continue
           </button>
           <button
+            type="button"
+            className="btn btn-outline btn-sm"
             onClick={() => setConfirming(null)}
-            className="px-6 py-2.5 bg-panel-2 text-ink text-sm font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer"
           >
             Cancel
           </button>
@@ -429,327 +434,358 @@ export default function ArtifactRestorer() {
     [brushSize]
   )
 
+  const stepIndex = step === 'upload' ? 0 : step === 'result' ? 2 : 1
+  const stepClass = (i: number) => (i < stepIndex ? 'done' : i === stepIndex ? 'active' : '')
+
   return (
-    <div className="min-h-screen bg-app pt-20 pb-16 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10 animate-fade-in-up">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <button
-              onClick={() => setMode('manual')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
-                mode === 'manual'
-                  ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold shadow-sm'
-                  : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel hover:text-ink'
-              }`}
-            >
-              Manual
-            </button>
-            <button
-              onClick={() => setMode('auto')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
-                mode === 'auto'
-                  ? 'bg-[#d9a92e] text-[#1d1a16] font-semibold shadow-sm'
-                  : 'bg-panel-2 text-ink-2 border border-line hover:bg-panel hover:text-ink'
-              }`}
-            >
-              Auto Restorer
-            </button>
-          </div>
-          <p className="text-accent text-sm font-medium tracking-widest uppercase mb-3">
-            AI-Powered
-          </p>
-          <h1 className="text-4xl sm:text-5xl font-black text-ink mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Artifact Restorer
-          </h1>
-          <p className="text-ink-2 max-w-xl mx-auto">
-            {mode === 'auto'
-              ? 'Upload a photo of a damaged artifact. AI detects cracks and imperfections automatically and restores them. A price estimate is shown before generation.'
-              : 'Upload a photo of a broken or damaged artifact, paint over the damage, and AI will rebuild exactly what you marked.'}
-          </p>
-        </div>
+    <div className="container">
+      <div className="page-head" style={{ paddingBottom: 10 }}>
+        <span className="eyebrow">New feature</span>
+        <h1>AI Artifact Reconstruction</h1>
+        <p className="lead">
+          Upload a photo of a broken artifact, choose whether the AI should find the damage itself
+          or follow your brush, and confirm the price estimate before anything is generated.
+        </p>
+      </div>
 
-        {error && (
-          <div className="mb-6 p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm animate-fade-in">
-            {error}
-          </div>
-        )}
+      <ol className="stepper">
+        <li className={stepClass(0)}>
+          <span className="num">{stepIndex > 0 ? '✓' : '1'}</span>Upload broken artifact
+        </li>
+        <li className={stepClass(1)}>
+          <span className="num">{stepIndex > 1 ? '✓' : '2'}</span>AI processing
+        </li>
+        <li className={stepClass(2)}>
+          <span className="num">3</span>Reconstructed result
+        </li>
+      </ol>
 
-        {step === 'upload' && (
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <button
+      <div className="recon-layout">
+        <div>
+          {step === 'upload' && (
+            <section className="panel">
+              <h3>Upload broken artifact</h3>
+              <p className="sub">
+                Drag and drop, or choose a photo. For best results, photograph the object front-on
+                against a plain background.
+              </p>
+
+              <div
+                className="dropzone"
                 onClick={() => fileInputRef.current?.click()}
                 onDrop={handleDrop}
-                onDragOver={e => e.preventDefault()}
-                className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-amber-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
+                onDragOver={(e) => e.preventDefault()}
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                  <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                </div>
-                <p className="text-ink font-semibold mb-1">Upload Image</p>
-                <p className="text-ink-3 text-sm">Drag & drop or click to browse</p>
-                <p className="text-ink-4 text-xs mt-2">PNG or JPEG</p>
-              </button>
-
-              <button
-                onClick={startCamera}
-                className="group p-10 rounded-2xl border-2 border-dashed border-line-2 hover:border-teal-500/50 bg-panel hover:bg-panel-2 transition-all duration-300 cursor-pointer text-center"
-              >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-teal-500/10 flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
-                  <svg className="w-8 h-8 text-cool" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <p className="text-ink font-semibold mb-1">Take Photo</p>
-                <p className="text-ink-3 text-sm">Use your device camera</p>
-                <p className="text-ink-4 text-xs mt-2">Rear camera recommended</p>
-              </button>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg"
-              className="hidden"
-              onChange={handleFileInput}
-            />
-
-            {cameraActive && (
-              <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
-                <video ref={videoRef} className="max-w-full max-h-[70vh] rounded-2xl" autoPlay playsInline />
-                <div className="flex gap-4 mt-6">
-                  <button onClick={capturePhoto} className="px-8 py-3 bg-amber-500 text-black font-bold rounded-full hover:bg-amber-400 transition-colors cursor-pointer">
-                    Capture
-                  </button>
-                  <button onClick={stopCamera} className="px-8 py-3 bg-panel-2 text-ink font-medium rounded-full hover:bg-panel-2 transition-colors cursor-pointer">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {(step === 'preview' || step === 'restoring') && originalImage && (
-          <div className="animate-fade-in-up">
-            <div className="flex flex-wrap items-center justify-end gap-4 mb-6">
-              <button onClick={handleReset} className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer">
-                Start Over
-              </button>
-            </div>
-
-            {mode === 'manual' && (
-              <>
-                <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
-                  Paint thinly along the cracks, not over the whole face.
-                </p>
-
-                <div className="mb-4 p-4 rounded-xl bg-panel border border-line">
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-ink-2">Brush size:</span>
-                    <input
-                      type="range"
-                      min="2"
-                      max="80"
-                      value={brushSize}
-                      onChange={e => setBrushSize(Number(e.target.value))}
-                      className="flex-1 accent-amber-500"
-                    />
-                    <span className="text-base font-bold text-accent min-w-12 text-center tabular-nums px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                      {brushSize}px
-                    </span>
+                <div>
+                  <div className="dz-icon">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <path d="M17 8l-5-5-5 5" />
+                      <path d="M12 3v12" />
+                    </svg>
                   </div>
-                  <p className="text-xs text-ink-3 mt-2">
-                    Paint over the damaged areas (cracks, chips, missing pieces). White overlay shows where AI will restore.
+                  <strong>Upload image</strong>
+                  <p className="muted" style={{ margin: '4px 0 0' }}>
+                    Drag &amp; drop or click to browse · PNG, JPG
                   </p>
                 </div>
+              </div>
 
-                <div className="relative rounded-2xl overflow-hidden border border-line bg-panel mb-6">
-                  <img ref={imageRef} src={originalImage} alt="Uploaded artifact" className="w-full max-h-[60vh] object-contain" onLoad={initCanvas} />
-                  <canvas ref={canvasRef} className="absolute inset-0 w-full h-full cursor-crosshair" style={{ mixBlendMode: 'screen' }} onMouseDown={() => setIsDrawing(true)} onMouseUp={() => setIsDrawing(false)} onMouseLeave={() => setIsDrawing(false)} onMouseMove={e => isDrawing && draw(e)} onTouchStart={() => setIsDrawing(true)} onTouchEnd={() => setIsDrawing(false)} onTouchMove={e => { e.preventDefault(); draw(e) }} />
+              <div className="dz-actions">
+                <button type="button" className="btn btn-outline btn-sm" onClick={startCamera}>
+                  Take a photo instead
+                </button>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg"
+                hidden
+                onChange={handleFileInput}
+              />
+            </section>
+          )}
+
+          {(step === 'preview' || step === 'restoring') && originalImage && (
+            <section className="panel">
+              <h3>{mode === 'auto' ? 'Ready for automatic restoration' : 'Paint over the damage'}</h3>
+              <p className="sub">
+                {mode === 'auto'
+                  ? 'No brushing needed. The AI studies the whole photograph, detects cracks and imperfections, and rebuilds them.'
+                  : 'Paint thinly along the cracks, not over the whole object. The white overlay shows exactly what the AI will rebuild.'}
+              </p>
+
+              <div className="result-card" style={{ padding: 10 }}>
+                <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%' }}>
+                  <img
+                    ref={imageRef}
+                    src={originalImage}
+                    alt="Uploaded artifact"
+                    style={{ maxHeight: '60vh', width: 'auto', maxWidth: '100%', borderRadius: 8 }}
+                    onLoad={initCanvas}
+                  />
+                  {mode === 'manual' && (
+                    <canvas
+                      ref={canvasRef}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        cursor: 'crosshair',
+                        mixBlendMode: 'screen',
+                      }}
+                      onMouseDown={() => setIsDrawing(true)}
+                      onMouseUp={() => setIsDrawing(false)}
+                      onMouseLeave={() => setIsDrawing(false)}
+                      onMouseMove={(e) => isDrawing && draw(e)}
+                      onTouchStart={() => setIsDrawing(true)}
+                      onTouchEnd={() => setIsDrawing(false)}
+                      onTouchMove={(e) => {
+                        e.preventDefault()
+                        draw(e)
+                      }}
+                    />
+                  )}
                 </div>
-              </>
-            )}
+              </div>
 
-            {mode === 'auto' && (
-              <>
-                <p className="-mt-2 mb-5 text-sm text-accent animate-fade-in">
-                  AI will detect cracks and imperfections automatically and restore them.
-                </p>
-                <div className="mb-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div className="text-sm text-ink-2">
-                      <p className="font-medium text-accent mb-1">Auto Restorer</p>
-                      <p className="text-ink-3">
-                        No brushing needed. AI analyzes the full image, detects damaged areas,
-                        and restores them automatically. A price estimate is shown before generation.
-                      </p>
-                    </div>
+              <div className="result-actions">
+                <button type="button" className="btn btn-outline btn-sm" onClick={handleReset}>
+                  Start over
+                </button>
+              </div>
+            </section>
+          )}
+
+          {step === 'result' && originalImage && (
+            <section className="panel">
+              <h3>{result?.failed ? 'Restoration incomplete' : 'Reconstructed artifact'}</h3>
+              <p className="sub">
+                {result?.engine === 'ai'
+                  ? 'Restored with the AI image model.'
+                  : result?.engine === 'local'
+                    ? 'Restored with the basic local repair.'
+                    : 'The AI could not visibly repair this image.'}
+              </p>
+
+              <div className="result-grid">
+                <div className="result-card">
+                  <h3>Your uploaded artifact</h3>
+                  <div className="img-box">
+                    <img src={originalImage} alt="Original artifact" />
                   </div>
                 </div>
-              </>
-            )}
+                <div className="result-arrow">
+                  <svg viewBox="0 0 48 48">
+                    <path d="M8 24h30M28 14l10 10-10 10" />
+                  </svg>
+                </div>
+                <div className="result-card">
+                  <h3>AI reconstructed artifact</h3>
+                  <div className="img-box">
+                    {restoredImage ? (
+                      <img src={restoredImage} alt="Restored artifact" />
+                    ) : (
+                      <p className="muted">No visible repair was produced.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              {DEV_MOCK_AI && (
-                <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-teal-500/10 text-cool border-teal-500/30">
-                  Mock mode — $0, no OpenAI calls
+              <div className="about-note">
+                <strong>About this reconstruction.</strong>{' '}
+                {mode === 'auto'
+                  ? 'The AI analysed the full photograph and rebuilt the areas it identified as damaged.'
+                  : 'The AI rebuilt only the areas you painted, matching the surrounding material, texture and lighting.'}{' '}
+                Results are estimates for educational purposes and should be checked by an expert
+                before being used in research.
+                {result?.failed && result.error ? ` (${result.error})` : ''}
+                {result?.note ? ` ${result.note}` : ''}
+              </div>
+
+              <div className="result-actions">
+                <button type="button" className="btn btn-outline" onClick={handleReset}>
+                  Try another artifact
+                </button>
+                {(result?.failed || result?.weak || result?.engine === 'local') && (
+                  <button type="button" className="btn btn-outline" onClick={tryAgain}>
+                    Try again ({DEV_MOCK_AI ? 'free in mock mode' : 'uses credit again'})
+                  </button>
+                )}
+                {restoredImage && !result?.failed && (
+                  <button type="button" className="btn btn-primary" onClick={handleDownload}>
+                    <svg viewBox="0 0 24 24">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <path d="M7 10l5 5 5-5" />
+                      <path d="M12 15V3" />
+                    </svg>
+                    Download result
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <aside>
+          <section className="panel">
+            <h3>Settings</h3>
+
+            <div className="field">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={mode === 'auto'}
+                  onChange={(e) => setMode(e.target.checked ? 'auto' : 'manual')}
+                />
+                <span>
+                  <strong>Automatic detection</strong>
+                  <br />
+                  <span className="hint">
+                    Let the AI find cracks and imperfections itself. Turn off to paint the damage
+                    with a brush.
+                  </span>
                 </span>
-              )}
-              <span className="text-xs text-ink-3">
-                Session spend ≈ $
-                {spend.estimatedUsd < 0.01 ? spend.estimatedUsd.toFixed(3) : spend.estimatedUsd.toFixed(2)}
-                · {spend.imageCalls} image / {spend.visionCalls} vision
-              </span>
-              {(spend.imageCalls > 0 || spend.visionCalls > 0) && (
-                <button onClick={resetSpend} className="text-xs text-ink-3 hover:text-ink underline cursor-pointer">
-                  reset
-                </button>
-              )}
-              {import.meta.env.DEV && (
-                <button onClick={downloadDebug} className="text-xs text-ink-3 hover:text-ink underline cursor-pointer">
-                  Download debug PNGs
-                </button>
-              )}
+              </label>
             </div>
 
+            {mode === 'manual' && step !== 'upload' && (
+              <div className="field">
+                <label htmlFor="brush-size">Brush size: {brushSize}px</label>
+                <input
+                  id="brush-size"
+                  type="range"
+                  min={2}
+                  max={80}
+                  value={brushSize}
+                  onChange={(e) => setBrushSize(Number(e.target.value))}
+                />
+                <span className="hint">Paint over cracks, chips and missing pieces.</span>
+              </div>
+            )}
+
             <button
+              type="button"
+              className="btn btn-gold"
+              style={{ width: '100%' }}
+              disabled={!originalImage || step === 'restoring'}
               onClick={handleRestore}
-              disabled={step === 'restoring'}
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full text-lg hover:from-amber-400 hover:to-orange-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-3"
             >
               {step === 'restoring' ? (
-                <>
-                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Restoring...
-                </>
+                'Processing…'
               ) : (
                 <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+                    <path d="M19 3v4M17 5h4" />
                   </svg>
-                  {mode === 'auto' ? 'Auto Restore Artifact' : 'Restore Artifact'}
+                  Reconstruct artifact
                 </>
               )}
             </button>
+
+            {step === 'restoring' && (
+              <>
+                <div className="progress">
+                  <div style={{ width: '100%' }} />
+                </div>
+                <ul className="process-list">
+                  <li className="ok">
+                    <span className="dot">✓</span>Preparing image
+                  </li>
+                  <li className="ok">
+                    <span className="dot">✓</span>Uploading to the restoration service
+                  </li>
+                  <li className="run">
+                    <span className="dot" />
+                    Rebuilding the missing surface
+                  </li>
+                  <li>
+                    <span className="dot" />
+                    Checking the result
+                  </li>
+                </ul>
+              </>
+            )}
 
             {step !== 'restoring' && renderConfirmPanel()}
 
-            {step === 'restoring' && (
-              <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div className="text-sm text-ink-2">
-                    <p className="font-medium text-accent mb-1">AI is restoring your artifact...</p>
-                    <p>
-                      {mode === 'auto'
-                        ? 'The AI detects cracks and imperfections automatically and rebuilds them.'
-                        : 'The model rebuilds the areas you painted, matching the surrounding material, texture and lighting.'}
-                      This usually takes 5-20 seconds. Please don't close this page.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+            {error && <div className="error-box">{error}</div>}
 
-        {step === 'result' && originalImage && (restoredImage || result?.failed) && (
-          <div className="animate-fade-in-up">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-ink">{result?.failed ? 'Restoration Incomplete' : 'Restoration Complete'}</h2>
-                {result && !result.failed && (
-                  <>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${result.engine === 'ai' ? 'bg-amber-500/10 text-accent border-amber-500/30' : 'bg-teal-500/10 text-cool border-teal-500/30'}`}>
-                      {result.engine === 'ai' ? 'AI Restored' : 'Local Repair (basic)'}
-                    </span>
-                    {result.mock && (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-teal-500/10 text-cool border-teal-500/30">
-                        Mock
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-              <button onClick={handleReset} className="px-4 py-2 text-sm text-ink-2 hover:text-ink transition-colors cursor-pointer">
-                Restore Another
-              </button>
-            </div>
-            {result?.failed && (
-              <div className="mb-6 p-4 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm leading-relaxed animate-fade-in">
-                <p className="font-semibold mb-1">We couldn&apos;t visibly repair this image.</p>
-                <p>Paint over the damage more thoroughly and try again — wider strokes over each crack or missing piece give the AI more to rebuild.</p>
-                {result.error && (
-                  <p className="mt-2 text-xs opacity-80 break-words">({result.error})</p>
-                )}
-              </div>
-            )}
-            {!result?.failed && result?.engine === 'local' && result?.fallbackReason && (
-              <div className="mb-6 p-3 rounded-xl bg-accent/10 border border-accent/30 text-accent text-xs leading-relaxed animate-fade-in">
-                {result.fallbackReason}
-              </div>
-            )}
-            {!result?.failed && result?.engine === 'ai' && result?.weak && result?.note && (
-              <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-accent text-xs leading-relaxed animate-fade-in">
-                {result.note}
-              </div>
-            )}
-
-            <div className={`grid grid-cols-1 ${restoredImage ? 'md:grid-cols-2' : ''} gap-6 mb-8`}>
-              <div className="rounded-2xl overflow-hidden border border-line bg-panel">
-                <div className="p-3 border-b border-line-soft text-xs text-ink-3 font-medium">Original (Damaged)</div>
-                <img src={originalImage} alt="Original artifact" className="w-full max-h-[400px] object-contain" />
-              </div>
-              {restoredImage && (
-                <div className="rounded-2xl overflow-hidden border border-amber-500/20 bg-panel">
-                  <div className="p-3 border-b border-amber-500/10 text-xs text-accent font-medium">Restored</div>
-                  <img src={restoredImage} alt="Restored artifact" className="w-full max-h-[400px] object-contain" />
-                </div>
-              )}
-            </div>
-
-            {renderConfirmPanel()}
-
-            <div className="flex flex-wrap gap-4">
-              {(result?.failed || result?.weak || result?.engine === 'local') && (
-                <button onClick={tryAgain} className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer">
-                  Try again ({DEV_MOCK_AI ? 'free in mock' : 'uses credit again'})
+            <div className="field" style={{ marginBottom: 0 }}>
+              <span className="hint">
+                {DEV_MOCK_AI ? 'Mock mode — $0, no OpenAI calls. ' : ''}
+                Session spend ≈ $
+                {spend.estimatedUsd < 0.01 ? spend.estimatedUsd.toFixed(3) : spend.estimatedUsd.toFixed(2)}
+                {' · '}
+                {spend.imageCalls} image / {spend.visionCalls} vision
+              </span>
+              {(spend.imageCalls > 0 || spend.visionCalls > 0) && (
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  style={{ marginTop: 8 }}
+                  onClick={resetSpend}
+                >
+                  Reset counter
                 </button>
               )}
-              {!result?.failed && (
-                <button onClick={handleDownload} className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-black font-bold rounded-full hover:from-amber-400 hover:to-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download Restored Image
+              {import.meta.env.DEV && (
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  style={{ marginTop: 8, marginLeft: 8 }}
+                  onClick={downloadDebug}
+                >
+                  Debug PNGs
                 </button>
               )}
-              <button onClick={handleReset} className="px-6 py-3 bg-panel-2 text-ink font-medium rounded-full border border-line hover:bg-panel-2 transition-all cursor-pointer">
-                Restore Another Artifact
-              </button>
             </div>
-          </div>
-        )}
+          </section>
+
+          <section className="panel">
+            <h3>Tips for a good photo</h3>
+            <ul className="tips">
+              <li>Use a plain, light background that contrasts with the object.</li>
+              <li>Photograph straight on, with the object upright and centred.</li>
+              <li>Avoid strong shadows and reflections.</li>
+              <li>Include all remaining fragments in one photo.</li>
+            </ul>
+            <p className="muted" style={{ fontSize: '.82rem', margin: '12px 0 0' }}>
+              Your photo is only sent to the restoration service after you confirm the estimate.
+            </p>
+          </section>
+        </aside>
       </div>
 
-      <footer className="border-t border-line-soft py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 text-center text-ink-4 text-sm">
-          <img src="/logo/logo-light.png" alt="" className="h-8 w-auto mx-auto mb-3 opacity-90" />
-          <p>ACR — Ancient Civilization Reconstructor &copy; 2026. Educational & Research Project.</p>
-        </div>
-      </footer>
+      {cameraActive && (
+        <dialog className="vr-dialog" open>
+          <form method="dialog">
+            <div className="vr-dialog-head">
+              <h2>Take a photo</h2>
+              <button type="button" className="vr-close" aria-label="Close" onClick={stopCamera}>
+                ✕
+              </button>
+            </div>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{ width: '100%', borderRadius: 14, marginTop: 12 }}
+            />
+            <div className="result-actions">
+              <button type="button" className="btn btn-gold" onClick={capturePhoto}>
+                Capture
+              </button>
+              <button type="button" className="btn btn-outline" onClick={stopCamera}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </dialog>
+      )}
     </div>
   )
 }
