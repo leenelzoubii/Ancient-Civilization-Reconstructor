@@ -29,7 +29,22 @@ const CIV_ACCENTS: Record<string, string> = {
 }
 
 /** Civilizations that ship a hand-written WebGL scene. */
-const WEBGL_SCENES = new Set(['egypt', 'rome', 'maya'])
+const WEBGL_SCENES = new Set([
+  'egypt',
+  'rome',
+  'maya',
+  'taj-mahal',
+  'petra',
+  'khorfakkan',
+  'al-jazirat-al-hamra',
+  'dhayah-fort',
+])
+
+/** The five ancient-world sites shown in the main home grid. */
+const ANCIENT_IDS = ['egypt', 'rome', 'maya', 'taj-mahal', 'petra']
+
+/** The three Emirati sites, shown in their own heritage section. */
+const UAE_IDS = ['khorfakkan', 'al-jazirat-al-hamra', 'dhayah-fort']
 
 const getCiv = (id: string) => CIVS.find((c) => c.id === id)
 
@@ -290,10 +305,15 @@ function SiteFooter() {
         <nav aria-label="Footer">
           <a href="#/civilizations">Civilizations</a>
           <a href="#/reconstruct">Reconstruct Artifact</a>
-          <a href="#/about">About the project</a>
+          <a href="#/about">About &amp; credits</a>
         </nav>
         <p className="footer-note">
           Reconstructions are educational estimates based on historical and archaeological references.
+        </p>
+        <p className="footer-credits">
+          Built by Mahrah Alyammahi, Afraa Al Hamed, Hajar Alsaqqaf and Salama Alhadhrami ·
+          supervised by Ms. Ashjan Saleh · 3D scenes, illustrations and the AI restorer were made for
+          this project.
         </p>
       </div>
     </footer>
@@ -374,9 +394,9 @@ function HomePage() {
               Step inside the worlds of <em>ancient civilizations</em>
             </h1>
             <p className="lead">
-              Walk around digital reconstructions of Ancient Egypt, Rome, the Maya and the heritage
-              sites of the UAE, discover how people lived, and use AI to imagine how broken
-              artifacts once looked.
+              Walk around digital reconstructions of Ancient Egypt, Rome, the Maya, the Taj Mahal
+              and Petra, discover how people lived, and use AI to imagine how broken artifacts once
+              looked — then explore the forts, pearl villages and desert heritage of the UAE.
             </p>
             <div className="hero-actions">
               <a className="btn btn-gold" href="#/civilizations">
@@ -392,7 +412,7 @@ function HomePage() {
                 <span>Civilizations</span>
               </div>
               <div>
-                <strong>16</strong>
+                <strong>46</strong>
                 <span>3D landmarks</span>
               </div>
               <div>
@@ -436,25 +456,32 @@ function HomePage() {
         <div className="container">
           <div className="section-title">
             <div>
-              <span className="eyebrow">Choose a civilization</span>
+              <span className="eyebrow">The ancient world</span>
               <h2>Where would you like to travel?</h2>
+              <p className="section-lead">
+                Five ancient sites, each with a hand-built 3D scene, numbered landmarks and a
+                full walk-through in VR.
+              </p>
             </div>
             <a className="btn btn-outline btn-sm" href="#/civilizations">
               All civilizations <Ico name="arrowR" />
             </a>
           </div>
           <div className="civ-grid">
-            {CIVS.map((civ) => (
+            {CIVS.filter((civ) => ANCIENT_IDS.includes(civ.id)).map((civ) => (
               <CivCard key={civ.id} civ={civ} />
             ))}
           </div>
-          <FeatureBanner />
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <VisualScene onSelectCiv={(id) => go(`#/civ/${id}`)} />
+
+      <section className="section">
         <div className="container">
-          <div className="section-title">
+          <FeatureBanner />
+
+          <div className="section-title" style={{ marginTop: 52 }}>
             <div>
               <span className="eyebrow">How it works</span>
               <h2>Learning through reconstruction</h2>
@@ -463,25 +490,125 @@ function HomePage() {
           <div className="steps-row">
             <div className="step-card">
               <h3>Choose</h3>
-              <p>Select a civilization — Ancient Egypt, Rome, the Maya, the Taj Mahal, Petra or a UAE heritage site.</p>
+              <p>
+                Select a civilization — Ancient Egypt, Rome, the Maya, the Taj Mahal, Petra or one of
+                three UAE heritage sites.
+              </p>
             </div>
             <div className="step-card">
               <h3>Explore in 3D</h3>
-              <p>Rotate and zoom around a reconstructed city and jump to its most important landmarks.</p>
+              <p>
+                Rotate and zoom around a reconstructed city, then jump between its numbered
+                landmarks.
+              </p>
             </div>
             <div className="step-card">
               <h3>Learn</h3>
-              <p>Read about history, architecture, daily life and achievements, with key facts and a quiz.</p>
+              <p>
+                Read about history, architecture, daily life and achievements, with key facts and a
+                flashcard quiz.
+              </p>
             </div>
             <div className="step-card">
               <h3>Reconstruct</h3>
-              <p>Upload a broken artifact and let the AI estimate how it looked when it was complete.</p>
+              <p>
+                Upload a broken artifact and let the AI estimate how it looked when it was complete.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <VisualScene onSelectCiv={(id) => go(`#/civ/${id}`)} />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="section-title">
+            <div>
+              <span className="eyebrow">Why it works</span>
+              <h2>History you can walk through</h2>
+              <p className="section-lead">
+                Every part of the site is built to make an ancient place feel understandable — not
+                just readable.
+              </p>
+            </div>
+          </div>
+          <div className="feature-grid">
+            <article className="feature-card">
+              <span className="feature-ico" aria-hidden="true">3D</span>
+              <h3>Numbered landmarks</h3>
+              <p>
+                Each reconstruction has five or six numbered points. Click a number to fly to that
+                spot and read what makes it important.
+              </p>
+            </article>
+            <article className="feature-card">
+              <span className="feature-ico" aria-hidden="true">VR</span>
+              <h3>VR &amp; walk-in view</h3>
+              <p>
+                Stand at eye level beside a pyramid or inside a fort — with a headset, a phone
+                viewer, or no headset at all.
+              </p>
+            </article>
+            <article className="feature-card">
+              <span className="feature-ico" aria-hidden="true">AI</span>
+              <h3>Spend-safe AI restorer</h3>
+              <p>
+                Paint the damage or let the AI detect it. You always see the price and confirm before
+                anything is generated.
+              </p>
+            </article>
+            <article className="feature-card">
+              <span className="feature-ico" aria-hidden="true">✦</span>
+              <h3>Learn and test yourself</h3>
+              <p>
+                Seven information sections and a flashcard deck for every civilization, from daily
+                life to economy and achievements.
+              </p>
+            </article>
+          </div>
+
+          <div className="stat-band">
+            <div>
+              <strong>8</strong>
+              <span>Civilizations</span>
+            </div>
+            <div>
+              <strong>46</strong>
+              <span>Numbered landmarks</span>
+            </div>
+            <div>
+              <strong>3</strong>
+              <span>UAE heritage sites</span>
+            </div>
+            <div>
+              <strong>4,800</strong>
+              <span>Years of history</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="cta-panel">
+            <div>
+              <span className="eyebrow">Start exploring</span>
+              <h2>Pick a civilization and step inside</h2>
+              <p>
+                No downloads and no plugins: every scene runs in your browser, and every landmark is
+                one click away.
+              </p>
+            </div>
+            <div className="cta-actions">
+              <a className="btn btn-gold" href="#/civilizations">
+                Browse all civilizations <Ico name="arrowR" />
+              </a>
+              <a className="btn btn-outline" href="#/reconstruct">
+                <Ico name="sparkle" /> Restore an artifact
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
@@ -501,11 +628,33 @@ function CivilizationsPage() {
           architecture, daily life and achievements.
         </p>
       </div>
+      <div className="section-title" style={{ marginTop: 8 }}>
+        <div>
+          <span className="eyebrow">Ancient world</span>
+          <h2>Five ancient sites</h2>
+        </div>
+      </div>
       <div className="civ-grid">
-        {CIVS.map((civ) => (
+        {CIVS.filter((civ) => ANCIENT_IDS.includes(civ.id)).map((civ) => (
           <CivCard key={civ.id} civ={civ} detailed />
         ))}
       </div>
+
+      <div className="section-title" style={{ marginTop: 52 }}>
+        <div>
+          <span className="eyebrow">UAE heritage</span>
+          <h2>Three Emirati sites</h2>
+          <p className="section-lead">
+            Forts, a pearl-diving village and a hilltop stronghold on the UAE's east coast.
+          </p>
+        </div>
+      </div>
+      <div className="civ-grid">
+        {CIVS.filter((civ) => UAE_IDS.includes(civ.id)).map((civ) => (
+          <CivCard key={civ.id} civ={civ} detailed />
+        ))}
+      </div>
+
       <FeatureBanner />
       <div style={{ height: 56 }} />
     </div>
@@ -818,9 +967,12 @@ function CivPage({ civ }: { civ: Civ }) {
                       <button
                         key={point.name}
                         className={i === poi ? 'active' : ''}
-                        aria-label={point.name}
+                        aria-label={`Landmark ${i + 1}: ${point.name}`}
+                        aria-current={i === poi ? 'true' : undefined}
                         onClick={() => goPoi.current(i)}
-                      />
+                      >
+                        {i + 1}
+                      </button>
                     ))}
                   </div>
                 </div>

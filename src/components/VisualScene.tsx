@@ -1,18 +1,42 @@
-import { useEffect, useRef } from 'react'
+import type { CSSProperties } from 'react'
 import { CIV_ILLUSTRATIONS } from '../illustrations'
 
 /* =====================================================================
    The UAE Heritage — our extra section on the home page.
 
-   It keeps the desert artwork (sun, clouds, camels, palms) but presents
-   it the way the supervisor's site presents content: a full-width strip
-   followed by the same `.civ-card` grid used for the civilizations.
+   A desert panorama (sky, sun, clouds, dunes, camels and palms) followed
+   by the three Emirati sites, presented with the same `.civ-card` grid the
+   supervisor's site uses for the ancient civilizations.
    ===================================================================== */
 
-function Cloud({ className, style }: { className?: string; style?: React.CSSProperties }) {
+const UAE_SITES = [
+  {
+    id: 'khorfakkan',
+    name: 'Khor Fakkan Fort',
+    era: '16th century · East coast',
+    accent: '#23466b',
+    text: 'A Portuguese-era fort of coral stone and round bastions, built to watch the trade routes through the Gulf of Oman.',
+  },
+  {
+    id: 'al-jazirat-al-hamra',
+    name: 'Al-Jazirat Al-Hamra',
+    era: 'Pearl-diving village · Ras Al Khaimah',
+    accent: '#a4502f',
+    text: 'Courtyard houses and barjeel wind towers in a red-soil village that lived from pearling, fishing and the sea.',
+  },
+  {
+    id: 'dhayah-fort',
+    name: 'Dhayah Fort',
+    era: '18th century · Ras Al Khaimah',
+    accent: '#b8862b',
+    text: "The UAE's only surviving hilltop fort, guarding the palm groves and coast from a rocky summit.",
+  },
+]
+
+function Cloud({ style }: { style?: CSSProperties }) {
   return (
-    <div className={`absolute ${className}`} style={style}>
-      <svg viewBox="0 0 200 80" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <div className="uae-cloud" style={style} aria-hidden="true">
+      <svg viewBox="0 0 200 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="60" cy="50" rx="60" ry="28" opacity="0.9" />
         <ellipse cx="110" cy="45" rx="50" ry="32" opacity="0.85" />
         <ellipse cx="85" cy="38" rx="40" ry="25" opacity="0.95" />
@@ -25,34 +49,44 @@ function Cloud({ className, style }: { className?: string; style?: React.CSSProp
 
 function Sun() {
   return (
-    <div className="absolute top-6 right-[12%] z-10">
-      <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-        <div
-          className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-200 via-amber-300 to-orange-400 animate-pulse"
-          style={{ animationDuration: '4s' }}
-        />
-        <div className="absolute inset-0 rounded-full bg-yellow-300/40 blur-xl" style={{ transform: 'scale(2.2)' }} />
-        <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-2xl" style={{ transform: 'scale(3)' }} />
-      </div>
+    <div className="uae-sun" aria-hidden="true">
+      <span className="uae-sun-core" />
+      <span className="uae-sun-glow" />
+      <span className="uae-sun-halo" />
     </div>
   )
 }
 
-function Camel({ x, bottom, scale = 0.5 }: { x: number; bottom: number; scale?: number }) {
+function Camel({
+  x,
+  y,
+  scale = 1,
+  flip = false,
+  delay = 0,
+}: {
+  x: number
+  y: number
+  scale?: number
+  flip?: boolean
+  delay?: number
+}) {
   return (
     <div
-      className="absolute z-20 animate-float"
+      className="uae-camel"
       style={{
         left: `${x}%`,
-        bottom: `${bottom}%`,
-        transform: `scale(${scale})`,
-        transformOrigin: 'bottom left',
-        animationDuration: '6s',
-        animationDelay: `${(x % 7) * 0.6}s`,
-        pointerEvents: 'none',
+        bottom: `${y}%`,
+        width: 150 * scale,
+        animationDelay: `${delay}s`,
       }}
+      aria-hidden="true"
     >
-      <svg width="140" height="130" viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        viewBox="0 0 140 130"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={flip ? { transform: 'scaleX(-1)' } : undefined}
+      >
         <ellipse cx="70" cy="65" rx="34" ry="20" fill="#8B6914" />
         <ellipse cx="70" cy="63" rx="30" ry="16" fill="#A0791A" />
         <ellipse cx="50" cy="48" rx="12" ry="10" fill="#8B6914" />
@@ -83,19 +117,14 @@ function Camel({ x, bottom, scale = 0.5 }: { x: number; bottom: number; scale?: 
   )
 }
 
-function PalmTree({ x, bottom = 26, size = 1 }: { x: number; bottom?: number; size?: number }) {
+function PalmTree({ x, size = 1, bottom = 6 }: { x: number; size?: number; bottom?: number }) {
   return (
     <div
-      className="absolute z-10"
-      style={{ left: `${x}%`, bottom: `${bottom}%`, pointerEvents: 'none' }}
+      className="uae-palm"
+      style={{ left: `${x}%`, bottom: `${bottom}%`, width: 80 * size }}
+      aria-hidden="true"
     >
-      <svg
-        width={70 * size}
-        height={120 * size}
-        viewBox="0 0 80 140"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg viewBox="0 0 80 140" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M38 140 Q36 110 37 85 Q38 65 40 50" stroke="#8B6514" strokeWidth="7" strokeLinecap="round" fill="none" />
         <path d="M39 140 Q37 110 38 85 Q39 65 41 50" stroke="#A0791A" strokeWidth="4" strokeLinecap="round" fill="none" />
         <line x1="36" y1="120" x2="42" y2="120" stroke="#6B4E0D" strokeWidth="1" opacity="0.5" />
@@ -119,138 +148,112 @@ function PalmTree({ x, bottom = 26, size = 1 }: { x: number; bottom?: number; si
   )
 }
 
-const UAE_SITES = [
-  {
-    id: 'khorfakkan',
-    name: 'Khor Fakkan Fort',
-    era: '16th century',
-    blurb: 'A Portuguese coastal fort above the Gulf of Oman, built to guard the anchorage and the trade road inland.',
-    accent: '#23466b',
-  },
-  {
-    id: 'al-jazirat-al-hamra',
-    name: 'Al-Jazirat Al-Hamra',
-    era: 'Several centuries',
-    blurb: 'A pearl-diving village of coral-stone houses, wind towers and narrow lanes on the Ras Al Khaimah coast.',
-    accent: '#2f6b55',
-  },
-  {
-    id: 'dhayah-fort',
-    name: 'Dhayah Fort',
-    era: '18th century',
-    blurb: 'A hilltop fortress above the palm gardens of Ras Al Khaimah, the last stand against the British in 1819.',
-    accent: '#b8862b',
-  },
-]
+function Dunes() {
+  return (
+    <svg className="uae-dunes" viewBox="0 0 1200 170" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M0 84 Q150 30 300 62 Q450 94 600 48 Q750 6 900 58 Q1050 110 1200 70 L1200 170 L0 170 Z"
+        fill="#dcb268"
+        opacity="0.8"
+      />
+      <path
+        d="M0 112 Q200 64 400 94 Q600 124 800 80 Q1000 36 1200 98 L1200 170 L0 170 Z"
+        fill="#c18c39"
+        opacity="0.75"
+      />
+    </svg>
+  )
+}
 
 export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string) => void }) {
-  const sectionRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('animate-visible')
-        })
-      },
-      { threshold: 0.1 },
-    )
-
-    const els = sectionRef.current?.querySelectorAll('.animate-on-scroll')
-    els?.forEach((el) => observer.observe(el))
-    return () => els?.forEach((el) => observer.unobserve(el))
-  }, [])
-
   return (
-    <section className="section" id="uae-heritage" ref={sectionRef}>
+    <section className="uae-section" id="uae-heritage" aria-labelledby="uae-title">
       <div className="container">
         <div className="section-title">
           <div>
-            <span className="eyebrow">Discover</span>
-            <h2>The UAE Heritage</h2>
+            <span className="eyebrow">UAE heritage</span>
+            <h2 id="uae-title">Our own desert, camels and coastal forts</h2>
+            <p className="section-lead">
+              Long before the skyscrapers, the Emirates were a land of pearl divers, camel caravans,
+              palm groves and watchtowers. Three of those places are reconstructed in 3D below.
+            </p>
           </div>
           <a className="btn btn-outline btn-sm" href="#/civilizations">
-            All civilizations
+            All eight sites
           </a>
         </div>
-        <p className="lead" style={{ marginBottom: 0 }}>
-          From the Portuguese fort at Khor Fakkan to the wind-tower houses of Al-Jazirat Al-Hamra
-          and the hilltop defences of Dhayah, the Emirates keep a deep record of trade, pearl diving
-          and desert life. Choose a site below to explore it in 3D.
-        </p>
+      </div>
 
-        {/* Decorative desert strip — sun, clouds, camels and palms */}
-        <div className="uae-strip" aria-hidden="true">
-          <div className="uae-strip-sky" />
+      <div className="uae-panorama" aria-hidden="true">
+        <div className="uae-sky" />
+        <Sun />
+        <Cloud style={{ top: '8%', left: '4%', width: 'clamp(90px, 14vw, 170px)', animationDelay: '-4s' }} />
+        <Cloud style={{ top: '16%', left: '32%', width: 'clamp(70px, 11vw, 140px)', animationDelay: '-16s' }} />
+        <Cloud style={{ top: '5%', right: '24%', width: 'clamp(110px, 17vw, 200px)', animationDelay: '-10s' }} />
+        <Cloud style={{ top: '21%', right: '8%', width: 'clamp(60px, 9vw, 120px)', animationDelay: '-22s' }} />
+        <Dunes />
+        <div className="uae-sand" />
 
-          <Cloud className="w-28 sm:w-36 opacity-80" style={{ top: '10%', left: '6%', animation: 'drift 34s linear infinite' }} />
-          <Cloud className="w-20 sm:w-28 opacity-60" style={{ top: '26%', left: '38%', animation: 'drift 44s linear infinite', animationDelay: '-14s' }} />
-          <Cloud className="w-24 sm:w-32 opacity-50" style={{ top: '6%', right: '32%', animation: 'drift 38s linear infinite', animationDelay: '-22s' }} />
+        <Camel x={3} y={13} scale={0.62} delay={0.2} />
+        <Camel x={13} y={17} scale={0.52} flip delay={1.4} />
+        <Camel x={22} y={12} scale={0.58} delay={2.1} />
+        <Camel x={31} y={16} scale={0.48} flip delay={0.8} />
+        <Camel x={39} y={11} scale={0.6} delay={2.8} />
+        <Camel x={48} y={15} scale={0.5} flip delay={1.9} />
+        <Camel x={56} y={10} scale={0.64} delay={0.4} />
+        <Camel x={65} y={14} scale={0.54} flip delay={2.5} />
+        <Camel x={73} y={11} scale={0.58} delay={1.1} />
+        <Camel x={81} y={16} scale={0.5} flip delay={3.1} />
+        <Camel x={88} y={12} scale={0.6} delay={0.6} />
+        <Camel x={94} y={17} scale={0.46} flip delay={2.2} />
 
-          <Sun />
+        <PalmTree x={6} size={1.05} bottom={9} />
+        <PalmTree x={27} size={0.8} bottom={7} />
+        <PalmTree x={52} size={1.15} bottom={8} />
+        <PalmTree x={74} size={0.85} bottom={6} />
+        <PalmTree x={92} size={1} bottom={9} />
+      </div>
 
-          <div className="uae-strip-ground">
-            <svg className="uae-strip-dunes" viewBox="0 0 1200 120" preserveAspectRatio="none">
-              <path
-                d="M0 60 Q150 18 300 48 Q450 78 600 38 Q750 -2 900 48 Q1050 98 1200 58 L1200 120 L0 120 Z"
-                fill="#e8c47a"
-                opacity="0.85"
-              />
-              <path
-                d="M0 84 Q200 44 400 72 Q600 100 800 62 Q1000 24 1200 82 L1200 120 L0 120 Z"
-                fill="#cf9c45"
-                opacity="0.7"
-              />
-            </svg>
-          </div>
-
-          <PalmTree x={4} bottom={24} size={1.15} />
-          <PalmTree x={16} bottom={26} size={0.85} />
-          <PalmTree x={78} bottom={25} size={1.05} />
-          <PalmTree x={90} bottom={23} size={0.8} />
-
-          <Camel x={28} bottom={14} scale={0.5} />
-          <Camel x={36} bottom={9} scale={0.62} />
-          <Camel x={50} bottom={12} scale={0.46} />
-          <Camel x={58} bottom={7} scale={0.56} />
-          <Camel x={68} bottom={11} scale={0.4} />
+      <div className="container">
+        <div className="civ-grid uae-sites">
+          {UAE_SITES.map((site) => {
+            const art = CIV_ILLUSTRATIONS[site.id]
+            return (
+              <article
+                className="civ-card"
+                key={site.id}
+                style={{ '--accent': site.accent } as CSSProperties}
+              >
+                <div className="art">{art ? <span dangerouslySetInnerHTML={{ __html: art('uae') }} /> : null}</div>
+                <div className="body">
+                  <span className="era">{site.era}</span>
+                  <h3>{site.name}</h3>
+                  <p>{site.text}</p>
+                  <div className="actions">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => onSelectCiv(site.id)}
+                    >
+                      View in 3D
+                    </button>
+                    <a className="btn btn-outline btn-sm" href={`#/civ/${site.id}/info/overview`}>
+                      Learn more
+                    </a>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
         </div>
 
-        {/* The three Emirati sites, in the same card language as the civ grid */}
-        <div className="civ-grid" style={{ marginTop: 28 }}>
-          {UAE_SITES.map((site) => (
-            <article
-              key={site.id}
-              className="civ-card animate-on-scroll"
-              style={{ '--accent': site.accent } as React.CSSProperties}
-            >
-              <div
-                className="art"
-                dangerouslySetInnerHTML={{ __html: CIV_ILLUSTRATIONS[site.id](`uae-${site.id}`) }}
-              />
-              <div className="body">
-                <span className="era">{site.era}</span>
-                <h3>{site.name}</h3>
-                <p>{site.blurb}</p>
-                <div className="actions">
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => onSelectCiv(site.id)}
-                  >
-                    <svg viewBox="0 0 24 24">
-                      <path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                      <path d="M3.3 7 12 12l8.7-5M12 22V12" />
-                    </svg>
-                    View in 3D
-                  </button>
-                  <a className="btn btn-outline btn-sm" href={`#/civ/${site.id}/info/overview`}>
-                    Learn more
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
+        <div className="uae-chips" aria-label="Themes of the UAE heritage section">
+          <span>Desert &amp; oases</span>
+          <span>Camel caravans</span>
+          <span>Pearl diving</span>
+          <span>Wind towers</span>
+          <span>Hilltop forts</span>
+          <span>Gulf trade routes</span>
         </div>
       </div>
     </section>

@@ -441,8 +441,15 @@ async function callRestore(
 
   const res = await fetch('/api/restore', { method: 'POST', body: form })
   const quality = res.headers.get('x-image-quality')
+  const format = (res.headers.get('x-image-format') ?? 'png').toLowerCase()
+  const mime =
+    format === 'jpeg' || format === 'jpg'
+      ? 'image/jpeg'
+      : format === 'webp'
+        ? 'image/webp'
+        : 'image/png'
   const text = await res.text()
-  logRestore({ restoreStatus: res.status, quality })
+  logRestore({ restoreStatus: res.status, quality, format })
 
   if (!res.ok) {
     throw new Error(extractError(text, res.status))
@@ -452,11 +459,14 @@ async function callRestore(
   try {
     data = JSON.parse(text)
   } catch {
-    throw new Error(`restore returned invalid JSON (${res.status})`)
+    throw new Error(
+      `The restoration service returned an incomplete response (${res.status}, ` +
+        `${Math.round(text.length / 1000)}k characters). Please try again.`
+    )
   }
   const b64 = data.data?.[0]?.b64_json
   if (!b64) throw new Error('restore returned 200 without image data')
-  return { blob: base64ToBlob(b64, 'image/png'), quality }
+  return { blob: base64ToBlob(b64, mime), quality }
 }
 
 function extractError(text: string, status: number): string {

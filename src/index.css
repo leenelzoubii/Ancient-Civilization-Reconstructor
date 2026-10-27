@@ -181,47 +181,503 @@ main#app {
   aspect-ratio: 400 / 260;
 }
 
+/* The landmark dots carry numbers now, so they need to be readable
+   buttons instead of 9px dots. Extra specificity beats styles.css. */
+.poi-text .poi-dots {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.poi-text .poi-dots button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2, #d8cbb2);
+  background: var(--paper);
+  color: var(--ink-3);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--body);
+  display: grid;
+  place-items: center;
+  transition: background 0.18s, color 0.18s, transform 0.18s, border-color 0.18s;
+}
+
+.poi-text .poi-dots button:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.poi-text .poi-dots button.active {
+  width: 28px;
+  border-radius: 50%;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #f3e7cc;
+}
+
 /* ---------------------------------------------------------------------
-   UAE heritage strip (home page extra): a slim desert panorama that
-   carries the sun, clouds, camels and palms.
+   Home page: section intros, feature grid, stat band and closing CTA.
    --------------------------------------------------------------------- */
-.uae-strip {
-  position: relative;
-  overflow: hidden;
-  height: clamp(190px, 26vw, 280px);
-  margin-top: 30px;
+.section-lead {
+  max-width: 62ch;
+  margin: 10px 0 0;
+  color: var(--ink-3);
+  font-size: 1rem;
+}
+
+.section-title h2 + .section-lead {
+  margin-top: 8px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-card h3 {
+  font-size: 1.22rem;
+  margin-bottom: 0.35em;
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.93rem;
+}
+
+.feature-ico {
+  display: inline-grid;
+  place-items: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 10px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, var(--gold-2), var(--gold));
+  color: #fffdf8;
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  box-shadow: 0 6px 16px rgba(184, 134, 43, 0.24);
+}
+
+.stat-band {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 34px;
+  padding: 26px 28px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
+  background: linear-gradient(135deg, #1d1a16 0%, #332c22 100%);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-band div {
+  text-align: center;
+}
+
+.stat-band strong {
+  display: block;
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold-2);
+}
+
+.stat-band span {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d8cbb2;
+}
+
+.cta-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 38px 40px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: radial-gradient(120% 140% at 0% 0%, #fffdf8 0%, var(--sand) 60%, #e2d3b4 100%);
   box-shadow: var(--shadow);
 }
 
-.uae-strip-sky {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #2c74c4 0%, #64a6e2 42%, #b6d8f2 68%, #e9d6a5 100%);
+.cta-panel h2 {
+  margin: 0 0 0.25em;
 }
 
-.uae-strip-ground {
+.cta-panel p {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--ink-2);
+}
+
+.cta-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------
+   About page: "what's inside" grid, scene-steps list and credits.
+   --------------------------------------------------------------------- */
+.inside-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
+  margin-top: 14px;
+}
+
+.inside-grid strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.inside-grid p {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.scene-steps {
+  counter-reset: scene-step;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.scene-steps li {
+  position: relative;
+  padding-left: 40px;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
+.scene-steps li::before {
+  counter-increment: scene-step;
+  content: counter(scene-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sand);
+  border: 1px solid var(--line);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.credits {
+  border-top: 1px solid var(--line);
+  padding-top: 48px;
+}
+
+.credit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.credit-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 22px 24px;
+  box-shadow: var(--shadow);
+}
+
+.credit-card h3 {
+  margin-bottom: 0.6em;
+  color: var(--gold);
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.credit-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.credit-card li {
+  font-size: 0.89rem;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+
+.credit-note {
+  margin: 26px 0 0;
+  padding: 18px 22px;
+  border-left: 3px solid var(--gold-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--sand);
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+.footer-credits {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 4px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #b7a98e;
+}
+
+/* ---------------------------------------------------------------------
+   UAE heritage section: full desert panorama plus the three site cards.
+   --------------------------------------------------------------------- */
+.uae-section {
+  position: relative;
+  padding: 56px 0 64px;
+  background: linear-gradient(180deg, var(--papyrus) 0%, #f2e6cd 42%, #f7f2e8 100%);
+  overflow: hidden;
+}
+
+.uae-panorama {
+  position: relative;
+  height: clamp(240px, 34vw, 400px);
+  margin: 8px 0 40px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.uae-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #2c74c4 0%, #64a6e2 38%, #a9d0ee 62%, #e9d6a5 88%, #f0dcae 100%);
+}
+
+.uae-sun {
+  position: absolute;
+  top: 8%;
+  right: 14%;
+  width: clamp(74px, 9vw, 128px);
+  aspect-ratio: 1;
+  z-index: 2;
+}
+
+.uae-sun-core,
+.uae-sun-glow,
+.uae-sun-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.uae-sun-core {
+  background: radial-gradient(circle at 38% 34%, #fff8dc 0%, #ffe89a 38%, #f4c04a 74%, #e8a52c 100%);
+  animation: sunPulse 4.5s ease-in-out infinite;
+}
+
+.uae-sun-glow {
+  background: radial-gradient(circle, rgba(255, 226, 138, 0.55) 0%, rgba(255, 214, 110, 0.18) 46%, transparent 72%);
+  transform: scale(2.4);
+}
+
+.uae-sun-halo {
+  border: 1px solid rgba(255, 240, 200, 0.5);
+  transform: scale(3.4);
+  animation: sunHalo 9s ease-in-out infinite;
+}
+
+.uae-cloud {
+  position: absolute;
+  color: #fffdf8;
+  opacity: 0.82;
+  z-index: 1;
+  animation: cloudDrift 34s linear infinite;
+}
+
+.uae-cloud svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.uae-dunes {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 46%;
+  z-index: 3;
+}
+
+.uae-sand {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 42%;
-  background: linear-gradient(180deg, #dcb268 0%, #c08a35 55%, #9d6f26 100%);
+  height: 24%;
+  z-index: 4;
+  background: linear-gradient(180deg, #d9ab5c 0%, #c8933c 55%, #b07c2a 100%);
 }
 
-.uae-strip-dunes {
+.uae-camel,
+.uae-palm {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -46px;
+  z-index: 5;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 6px 6px rgba(93, 64, 16, 0.22));
+  animation: camelStep 7s ease-in-out infinite;
+}
+
+.uae-camel svg,
+.uae-palm svg {
   width: 100%;
-  height: 60px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.uae-palm {
+  z-index: 6;
+  animation: palmSway 6.5s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+.uae-sites {
+  margin-top: 0;
+}
+
+.uae-sites .art {
+  background: var(--sand);
+}
+
+.uae-sites .art > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.uae-sites .art svg {
+  width: 100%;
+  height: 100%;
+}
+
+.uae-sites .btn-primary {
+  border: 0;
+  cursor: pointer;
+}
+
+.uae-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 34px;
+}
+
+.uae-chips span {
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(29, 26, 22, 0.04);
+}
+
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes sunHalo {
+  0%, 100% { transform: scale(3.2); opacity: 0.55; }
+  50% { transform: scale(3.7); opacity: 0.25; }
+}
+
+@keyframes cloudDrift {
+  from { transform: translateX(-6%); }
+  to { transform: translateX(24%); }
+}
+
+@keyframes camelStep {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes palmSway {
+  0%, 100% { transform: rotate(-1.1deg); }
+  50% { transform: rotate(1.1deg); }
+}
+
+@media (max-width: 1000px) {
+  .feature-grid,
+  .credit-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-band {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 20px;
+  }
+}
+
+@media (max-width: 820px) {
+  .inside-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-panel {
+    padding: 28px 24px;
+  }
 }
 
 @media (max-width: 560px) {
-  .uae-strip {
-    height: 170px;
+  .feature-grid,
+  .credit-grid,
+  .stat-band {
+    grid-template-columns: 1fr;
+  }
+
+  .uae-panorama {
+    height: 240px;
+  }
+
+  .uae-section {
+    padding: 40px 0 48px;
   }
 }
 

@@ -14,6 +14,9 @@ import type { RestoreResult } from '../services/restoreService'
 type Mode = 'manual' | 'auto'
 type Step = 'upload' | 'preview' | 'restoring' | 'result'
 
+/** Brush overlay colour: warm red reads on light stone, pottery and paper. */
+const BRUSH_COLOR = 'rgba(206, 68, 44, 0.72)'
+
 export default function ArtifactRestorer() {
   const [mode, setMode] = useState<Mode>('manual')
   const [step, setStep] = useState<Step>('upload')
@@ -42,6 +45,8 @@ export default function ArtifactRestorer() {
   const maskRef = useRef<HTMLCanvasElement | null>(null)
   const paintedRef = useRef(false)
   const imgMapRef = useRef({ scale: 1, offX: 0, offY: 0 })
+  /** Last point of the current stroke, in display and mask coordinates. */
+  const strokeRef = useRef<{ x: number; y: number; ix: number; iy: number } | null>(null)
 
   const [cameraActive, setCameraActive] = useState(false)
 
@@ -322,19 +327,6 @@ export default function ArtifactRestorer() {
     setSpend(getSessionSpend())
   }, [])
 
-  const downloadDebug = useCallback(() => {
-    const mask = getMaskDataUrl()
-    const files: { url: string; name: string }[] = []
-    if (originalImage) files.push({ url: originalImage, name: 'debug-image.png' })
-    if (mask) files.push({ url: mask, name: 'debug-mask.png' })
-    files.forEach(f => {
-      const a = document.createElement('a')
-      a.href = f.url
-      a.download = f.name
-      a.click()
-    })
-  }, [originalImage, getMaskDataUrl])
-
   const renderConfirmPanel = () => {
     if (!confirming) return null
     return (
@@ -422,38 +414,81 @@ export default function ArtifactRestorer() {
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')!
       const rect = canvas.getBoundingClientRect()
+      // The bitmap matches the rendered size, but scale anyway so the stroke
+      // always lands under the pointer even on a zoomed page.
+      const kx = canvas.width / (rect.width || 1)
+      const ky = canvas.height / (rect.height || 1)
 
       let x: number, y: number
       if ('touches' in e) {
-        x = e.touches[0].clientX - rect.left
-        y = e.touches[0].clientY - rect.top
+        x = (e.touches[0].clientX - rect.left) * kx
+        y = (e.touches[0].clientY - rect.top) * ky
       } else {
-        x = e.clientX - rect.left
-        y = e.clientY - rect.top
+        x = (e.clientX - rect.left) * kx
+        y = (e.clientY - rect.top) * ky
       }
 
+      // Visible overlay: warm red with normal blending, so it reads on light
+      // stone and pottery. The width scales with the bitmap so the stroke is
+      // equally visible on small photos and on 1024px uploads.
+      const prev = strokeRef.current
+      const lw = Math.max(6, brushSize * (canvas.width / 600))
       ctx.globalCompositeOperation = 'source-over'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+      ctx.globalAlpha = 1
+      ctx.strokeStyle = BRUSH_COLOR
+      ctx.fillStyle = BRUSH_COLOR
+      ctx.lineWidth = lw
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
       ctx.beginPath()
-      ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2)
-      ctx.fill()
+      if (prev) {
+        ctx.moveTo(prev.x, prev.y)
+        ctx.lineTo(x, y)
+        ctx.stroke()
+      } else {
+        ctx.arc(x, y, lw / 2, 0, Math.PI * 2)
+        ctx.fill()
+      }
 
       const mask = maskRef.current
+      let ix = x
+      let iy = y
       if (mask) {
         const { scale, offX, offY } = imgMapRef.current
-        const ix = (x - offX) / scale
-        const iy = (y - offY) / scale
+        ix = (x - offX) / scale
+        iy = (y - offY) / scale
         const mctx = mask.getContext('2d')!
         mctx.globalCompositeOperation = 'source-over'
+        mctx.strokeStyle = '#ffffff'
         mctx.fillStyle = '#ffffff'
+        mctx.lineWidth = Math.max(1, lw / scale)
+        mctx.lineCap = 'round'
+        mctx.lineJoin = 'round'
         mctx.beginPath()
-        mctx.arc(ix, iy, brushSize / 2 / scale, 0, Math.PI * 2)
-        mctx.fill()
+        if (prev) {
+          mctx.moveTo(prev.ix, prev.iy)
+          mctx.lineTo(ix, iy)
+          mctx.stroke()
+        } else {
+          mctx.arc(ix, iy, lw / 2 / scale, 0, Math.PI * 2)
+          mctx.fill()
+        }
         paintedRef.current = true
       }
+
+      strokeRef.current = { x, y, ix, iy }
     },
     [brushSize]
   )
+
+  const clearMask = useCallback(() => {
+    strokeRef.current = null
+    const mask = maskRef.current
+    if (mask) mask.getContext('2d')!.clearRect(0, 0, mask.width, mask.height)
+    const canvas = canvasRef.current
+    if (canvas) canvas.getContext('2d')!.clearRect(0, 0, canvas.width, canvas.height)
+    paintedRef.current = false
+  }, [])
 
   const stepIndex = step === 'upload' ? 0 : step === 'result' ? 2 : 1
   const stepClass = (i: number) => (i < stepIndex ? 'done' : i === stepIndex ? 'active' : '')
@@ -534,7 +569,7 @@ export default function ArtifactRestorer() {
               <p className="sub">
                 {mode === 'auto'
                   ? 'No brushing needed. The AI studies the whole photograph, detects cracks and imperfections, and rebuilds them.'
-                  : 'Paint thinly along the cracks, not over the whole object. The white overlay shows exactly what the AI will rebuild.'}
+                  : 'Paint thinly along the cracks, not over the whole object. The red overlay shows exactly what the AI will rebuild.'}
               </p>
 
               <div className="result-card" style={{ padding: 10 }}>
@@ -555,14 +590,31 @@ export default function ArtifactRestorer() {
                         width: '100%',
                         height: '100%',
                         cursor: 'crosshair',
-                        mixBlendMode: 'screen',
+                        touchAction: 'none',
                       }}
-                      onMouseDown={() => setIsDrawing(true)}
-                      onMouseUp={() => setIsDrawing(false)}
-                      onMouseLeave={() => setIsDrawing(false)}
+                      onMouseDown={(e) => {
+                        setIsDrawing(true)
+                        strokeRef.current = null
+                        draw(e)
+                      }}
+                      onMouseUp={() => {
+                        setIsDrawing(false)
+                        strokeRef.current = null
+                      }}
+                      onMouseLeave={() => {
+                        setIsDrawing(false)
+                        strokeRef.current = null
+                      }}
                       onMouseMove={(e) => isDrawing && draw(e)}
-                      onTouchStart={() => setIsDrawing(true)}
-                      onTouchEnd={() => setIsDrawing(false)}
+                      onTouchStart={(e) => {
+                        setIsDrawing(true)
+                        strokeRef.current = null
+                        draw(e)
+                      }}
+                      onTouchEnd={() => {
+                        setIsDrawing(false)
+                        strokeRef.current = null
+                      }}
                       onTouchMove={(e) => {
                         e.preventDefault()
                         draw(e)
@@ -584,11 +636,13 @@ export default function ArtifactRestorer() {
             <section className="panel">
               <h3>{result?.failed ? 'Restoration incomplete' : 'Reconstructed artifact'}</h3>
               <p className="sub">
-                {result?.engine === 'ai'
-                  ? 'Restored with the AI image model.'
-                  : result?.engine === 'local'
-                    ? 'Restored with the basic local repair.'
-                    : 'The AI could not visibly repair this image.'}
+                {result?.failed
+                  ? 'The restoration service did not return an image.'
+                  : result?.engine === 'ai'
+                    ? 'Restored with the AI image model.'
+                    : result?.engine === 'local'
+                      ? 'Restored with the basic local repair.'
+                      : 'The AI could not visibly repair this image.'}
               </p>
 
               <div className="result-grid">
@@ -609,7 +663,13 @@ export default function ArtifactRestorer() {
                     {restoredImage ? (
                       <img src={restoredImage} alt="Restored artifact" />
                     ) : (
-                      <p className="muted">No visible repair was produced.</p>
+                      <div style={{ padding: 18, textAlign: 'center' }}>
+                        <p style={{ margin: 0, fontWeight: 600 }}>No image was returned.</p>
+                        <p className="muted" style={{ margin: '6px 0 0', fontSize: '.86rem' }}>
+                          {result?.error ??
+                            'The restoration service did not send an image. Try again or use the manual brush.'}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -684,6 +744,14 @@ export default function ArtifactRestorer() {
                   onChange={(e) => setBrushSize(Number(e.target.value))}
                 />
                 <span className="hint">Paint over cracks, chips and missing pieces.</span>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  style={{ marginTop: 10 }}
+                  onClick={clearMask}
+                >
+                  Clear painting
+                </button>
               </div>
             )}
 
@@ -751,16 +819,6 @@ export default function ArtifactRestorer() {
                   onClick={resetSpend}
                 >
                   Reset counter
-                </button>
-              )}
-              {import.meta.env.DEV && (
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  style={{ marginTop: 8, marginLeft: 8 }}
-                  onClick={downloadDebug}
-                >
-                  Debug PNGs
                 </button>
               )}
             </div>

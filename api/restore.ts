@@ -124,7 +124,7 @@ export async function POST(request: Request): Promise<Response> {
         mock: true,
         data: [{ b64_json: b64 }],
       },
-      { headers: { 'x-image-quality': 'mock' } }
+      { headers: { 'x-image-quality': 'mock', 'x-image-format': 'png' } }
     )
   }
 
@@ -133,6 +133,12 @@ export async function POST(request: Request): Promise<Response> {
   outbound.append('prompt', prompt)
   outbound.append('size', 'auto')
   outbound.append('quality', IMAGE_QUALITY)
+  // The model returns a ~1024px image. As PNG that is a 4-5MB base64 body,
+  // which can exceed Vercel's 4.5MB response limit and arrive truncated (the
+  // browser then shows no image at all). JPEG at 85 keeps the body ~300KB.
+  outbound.append('background', 'opaque')
+  outbound.append('output_format', 'jpeg')
+  outbound.append('output_compression', '85')
   outbound.append('image[]', image, 'image.png')
   if (mask instanceof Blob && mask.size > 0) {
     outbound.append('mask', mask, 'mask.png')
@@ -160,6 +166,7 @@ export async function POST(request: Request): Promise<Response> {
     headers: {
       'content-type': 'application/json',
       'x-image-quality': IMAGE_QUALITY,
+      'x-image-format': 'jpeg',
     },
   })
 }

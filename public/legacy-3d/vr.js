@@ -247,6 +247,12 @@
         if (b.dataset.v === 'prev') this.go(this.index - 1);
         if (b.dataset.v === 'panel') this.panelOn = !this.panelOn;
       }));
+      // Start the session first: entering fullscreen can take a moment (or be
+      // blocked), and the viewer must not stay in a half-open state.
+      this._done = false;
+      this.active = true;
+      this.go(0);
+      this.frame = (now, dt) => this.screenFrame(dt);
       try { if (host.requestFullscreen) await host.requestFullscreen(); } catch (e) { /* CSS full-screen fallback */ }
       if (this.mode === 'stereo') { try { await screen.orientation.lock('landscape'); } catch (e) { } }
       this.fsHandler = () => { if (!document.fullscreenElement && this.active && this.wasFullscreen) this.exit(); this.wasFullscreen = !!document.fullscreenElement; };
@@ -287,9 +293,6 @@
         setTimeout(() => { const t = document.getElementById('vr-toast'); if (t) t.textContent = this.gyro ? 'Move your head to look around · Tap to go to the next landmark' : 'Motion sensors unavailable — drag to look around · Tap for the next landmark'; }, 1600);
         setTimeout(() => { const t = document.getElementById('vr-toast'); if (t) t.classList.add('hide'); }, 6000);
       }
-      this.active = true;
-      this.go(0);
-      this.frame = (now, dt) => this.screenFrame(dt);
     }
 
     deviceQuat() {
@@ -352,7 +355,7 @@
       session.updateRenderState({ baseLayer: layer, depthNear: 0.1, depthFar: 10000 });
       try { this.ref = await session.requestReferenceSpace('local-floor'); this.floorY = 0; }
       catch (e) { this.ref = await session.requestReferenceSpace('local'); this.floorY = -EYE; }
-      v.immersive = this; this.frame = null; this.active = true;
+      v.immersive = this; this.frame = null; this.active = true; this._done = false;
       this.panel.place(0, this.floorY + 1.05, -2.3, 1.6, 0.8);
       this.go(0);
       session.addEventListener('select', (e) => this.go(this.index + (e.inputSource.handedness === 'left' ? -1 : 1)));
@@ -401,7 +404,9 @@
       this.finish();
     }
     finish() {
-      if (!this.active) return;
+      if (this._done) return;
+      this._done = true;
+      const wasActive = this.active;
       this.active = false;
       const v = this.viewer, host = v.container;
       if (this.overlay) this.overlay.remove();
@@ -415,7 +420,7 @@
       this.panel.dispose();
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
       v.immersive = null; v.orbit.disabled = false; v.dirty = true;
-      this.onExit(this.index);
+      if (wasActive) this.onExit(this.index);
     }
   }
 
