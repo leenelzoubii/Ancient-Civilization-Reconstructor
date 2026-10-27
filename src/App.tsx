@@ -975,7 +975,9 @@ function RichText({ text, list = false }: { text: string; list?: boolean }) {
 function InfoPage({ civ, section }: { civ: Civ; section: string }) {
   const valid: string[] = [...SECTIONS, 'flashcards']
   const active = valid.includes(section) ? section : 'overview'
-  const art = FIGURE_ART[civ.id] ?? CIV_ILLUSTRATIONS[civ.id]
+  const art = (FIGURE_ART[civ.id] ?? CIV_ILLUSTRATIONS[civ.id]) as
+    | ((id?: string) => string)
+    | undefined
 
   useEffect(() => {
     markVisited(civ.id)
