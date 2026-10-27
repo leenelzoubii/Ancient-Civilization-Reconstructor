@@ -201,11 +201,14 @@ export default function ArtifactRestorer() {
   }, [])
 
   useEffect(() => {
-    if (step === 'preview') {
+    if (step === 'preview' && mode === 'manual') {
+      // Runs on step change AND when the brush canvas mounts (e.g. the user
+      // switches Auto → Manual after uploading), otherwise the mask canvas
+      // would never exist and painting would be a no-op.
       const timer = setTimeout(initCanvas, 200)
       return () => clearTimeout(timer)
     }
-  }, [step, initCanvas])
+  }, [step, mode, initCanvas])
 
   const getMaskDataUrl = useCallback((): string | null => {
     const mask = maskRef.current
@@ -217,17 +220,26 @@ export default function ArtifactRestorer() {
     return null
   }, [])
 
-  // Build a full-coverage mask (all transparent = edit everything) for auto mode
-  const getFullImageMask = useCallback((): string | null => {
+  // Auto mode: mark the whole photograph as damaged. The mask must be the
+  // image's exact size, and coverage is the ALPHA channel (opaque = damage),
+  // so we fill an opaque canvas at naturalWidth x naturalHeight.
+  const getFullImageMask = useCallback(async (): Promise<string | null> => {
     if (!originalBase64) return null
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image()
+      i.onload = () => resolve(i)
+      i.onerror = () => reject(new Error('Could not read the image.'))
+      i.src = `data:image/png;base64,${originalBase64}`
+    })
+    const w = img.naturalWidth || img.width
+    const h = img.naturalHeight || img.height
+    if (!w || !h) return null
     const mask = document.createElement('canvas')
-    const img = new Image()
-    // We need dimensions; create a reasonable mask based on original
-    // Use a small canvas that will be resized by preflight
-    mask.width = 512
-    mask.height = 512
+    mask.width = w
+    mask.height = h
     const ctx = mask.getContext('2d')!
-    ctx.clearRect(0, 0, 512, 512) // fully transparent = edit all
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, w, h) // opaque alpha = 100% coverage
     return mask.toDataURL('image/png')
   }, [originalBase64])
 
@@ -239,13 +251,18 @@ export default function ArtifactRestorer() {
 
     let mask: string | null
     if (mode === 'auto') {
-      mask = getFullImageMask()
+      try {
+        mask = await getFullImageMask()
+      } catch {
+        mask = null
+      }
       if (!mask) {
-        setError('Unable to prepare auto-restore mask.')
+        setError('Unable to prepare auto-restore mask. Try another photo.')
         return
       }
       setPendingMask(mask)
-      setLastFraction(1) // full image = large area
+      setLastFraction(1) // whole photograph
+      setLargeAck(false)
       setConfirming({ large: true, fraction: 1 })
     } else {
       mask = getMaskDataUrl()
@@ -328,14 +345,18 @@ export default function ArtifactRestorer() {
             : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
         </p>
         <p className="muted" style={{ margin: '0 0 10px', fontSize: '.86rem' }}>
-          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'} ·
-          Painted area: {(confirming.fraction * 100).toFixed(1)}% of the image.
+          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'} ·{' '}
+          {mode === 'auto'
+            ? 'Coverage: the whole photograph.'
+            : `Painted area: ${(confirming.fraction * 100).toFixed(1)}% of the image.`}
         </p>
 
         {confirming.large && (
           <div style={{ marginBottom: 12 }}>
             <p style={{ margin: '0 0 8px', fontSize: '.86rem', color: 'var(--danger)' }}>
-              Large painted area. Results may look invented and this uses paid credit.
+              {mode === 'auto'
+                ? 'The whole photo will be redrawn, so results may look invented and this uses paid credit.'
+                : 'Large painted area. Results may look invented and this uses paid credit.'}
             </p>
             <label className="switch">
               <input
