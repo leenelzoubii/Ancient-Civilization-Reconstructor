@@ -16,6 +16,14 @@ import { analyzeArtifact } from '../services/analysis'
 import type { ArtifactAnalysis } from '../services/analysis'
 import { detectDamage } from '../services/damage'
 import type { DetectedDamage } from '../services/damage'
+import {
+  MAX_HISTORY,
+  clearHistory,
+  deleteHistoryEntry,
+  listHistory,
+  saveHistory,
+} from '../services/history'
+import type { HistoryEntry } from '../services/history'
 import ReconstructionResult from '../components/ReconstructionResult'
 
 type Mode = 'manual' | 'auto'
@@ -34,6 +42,19 @@ function loadImageEl(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(new Error('This image could not be opened.'))
     img.src = src
   })
+}
+
+function formatAttemptDate(ts: number): string {
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(new Date(ts))
+  } catch {
+    return new Date(ts).toLocaleString()
+  }
 }
 
 export default function ArtifactRestorer() {
@@ -61,6 +82,10 @@ export default function ArtifactRestorer() {
   const [spend, setSpend] = useState(getSessionSpend)
   const [detecting, setDetecting] = useState(false)
   const [autoDamage, setAutoDamage] = useState<DetectedDamage | null>(null)
+  const [fromHistory, setFromHistory] = useState(false)
+  const [history, setHistory] = useState<HistoryEntry[]>([])
+  const [historyReady, setHistoryReady] = useState(false)
+  const [confirmClear, setConfirmClear] = useState(false)
   const inFlightRef = useRef(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -94,6 +119,16 @@ export default function ArtifactRestorer() {
   useEffect(() => {
     return () => stopCamera()
   }, [stopCamera])
+
+  const refreshHistory = useCallback(async () => {
+    const rows = await listHistory()
+    setHistory(rows)
+    setHistoryReady(true)
+  }, [])
+
+  useEffect(() => {
+    void refreshHistory()
+  }, [refreshHistory])
 
   const prepareFile = useCallback(async (file: File): Promise<{ dataUrl: string; b64: string }> => {
     const rawUrl = await new Promise<string>((resolve, reject) => {
@@ -159,6 +194,7 @@ export default function ArtifactRestorer() {
         setResult(null)
         setPrediction(null)
         setAnalysis(null)
+        setFromHistory(false)
         setStep('preview')
       } catch {
         setError('Could not read that image file. Please try another image.')
@@ -462,16 +498,36 @@ export default function ArtifactRestorer() {
         setAnalysis(null)
       }
 
-      setElapsedMs(performance.now() - started)
+      const elapsed = performance.now() - started
+      setElapsedMs(elapsed)
       setSpend(getSessionSpend())
+
+      // Save a compressed copy on this device. This never blocks the result
+      // page and never sends the photo anywhere else.
+      if (restoredUrl) {
+        void saveHistory({
+          originalUrl: originalImage,
+          restoredUrl,
+          mode,
+          result: res,
+          prediction: pred,
+          analysis: ana,
+          elapsedMs: elapsed,
+          maskFraction: lastFraction,
+        }).then((rows) => {
+          if (rows.length) setHistory(rows)
+        })
+      }
+
+      setFromHistory(false)
       setStep('result')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Restoration failed. Please try again.')
+      setError(err instanceof Error ? err.message : 'Repair failed. Please try again.')
       setStep('preview')
     } finally {
       inFlightRef.current = false
     }
-  }, [originalBase64, pendingMask, originalImage, mode])
+  }, [originalBase64, pendingMask, originalImage, mode, lastFraction])
 
   const tryAgain = useCallback(() => {
     if (inFlightRef.current) return
@@ -483,6 +539,63 @@ export default function ArtifactRestorer() {
     })
     setStep('preview')
   }, [lastFraction])
+
+  const viewHistoryEntry = useCallback(async (entry: HistoryEntry) => {
+    // History images are JPEG; convert the original back to PNG so the brush
+    // and the mask pre-flight still work if the user wants to repair it again.
+    let originalUrl = entry.originalUrl
+    let b64: string | null = null
+    try {
+      const img = await loadImageEl(entry.originalUrl)
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.drawImage(img, 0, 0)
+        const png = canvas.toDataURL('image/png')
+        originalUrl = png
+        b64 = png.split(',')[1] ?? null
+      }
+    } catch {
+      /* keep the saved JPEG; viewing still works */
+    }
+
+    setMode(entry.mode)
+    setOriginalImage(originalUrl)
+    setOriginalBase64(b64)
+    setRestoredImage(entry.restoredUrl)
+    setResult(entry.result)
+    setPrediction(entry.prediction)
+    setAnalysis(entry.analysis)
+    setElapsedMs(entry.elapsedMs)
+    setLastFraction(entry.maskFraction)
+    setError(null)
+    setConfirming(null)
+    setPendingMask(null)
+    setLargeAck(false)
+    setFromHistory(true)
+    maskRef.current = null
+    paintedRef.current = false
+    undoRef.current = []
+    setPainted(false)
+    setCanUndo(false)
+    setStep('result')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const removeHistoryEntry = useCallback(async (id: string) => {
+    const ok = await deleteHistoryEntry(id)
+    if (ok) setHistory((rows) => rows.filter((row) => row.id !== id))
+  }, [])
+
+  const clearAllHistory = useCallback(async () => {
+    const ok = await clearHistory()
+    if (ok) {
+      setHistory([])
+      setConfirmClear(false)
+    }
+  }, [])
 
   const resetSpend = useCallback(() => {
     resetSessionSpend()
@@ -570,6 +683,8 @@ export default function ArtifactRestorer() {
     setConfirming(null)
     setPendingMask(null)
     setLargeAck(false)
+    setFromHistory(false)
+    setConfirmClear(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
     maskRef.current = null
     paintedRef.current = false
@@ -790,7 +905,14 @@ export default function ArtifactRestorer() {
         analysis={analysis}
         elapsedMs={elapsedMs}
         mode={mode}
-        onBack={() => setStep('preview')}
+        fromHistory={fromHistory}
+        onBack={() => {
+          if (fromHistory) {
+            handleReset()
+          } else {
+            setStep('preview')
+          }
+        }}
         onReset={handleReset}
         onTryAgain={tryAgain}
         onDownload={handleDownload}
@@ -1101,6 +1223,102 @@ export default function ArtifactRestorer() {
           </section>
         </aside>
       </div>
+
+      {step !== 'restoring' && (
+        <section className="panel history-panel">
+          <div className="history-head">
+            <div>
+              <h3>Previous attempts</h3>
+              <p className="sub">
+                Saved on this device only. Up to {MAX_HISTORY} repairs — reopen or delete any of them.
+              </p>
+            </div>
+            {history.length > 0 ? (
+              confirmClear ? (
+                <div className="history-confirm">
+                  <span>Delete all {history.length} attempts?</span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-gold"
+                    onClick={() => void clearAllHistory()}
+                  >
+                    Delete all
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline"
+                    onClick={() => setConfirmClear(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline"
+                  onClick={() => setConfirmClear(true)}
+                >
+                  Clear history
+                </button>
+              )
+            ) : null}
+          </div>
+
+          {!historyReady ? (
+            <p className="muted" style={{ margin: 0 }}>
+              Loading your previous attempts…
+            </p>
+          ) : history.length === 0 ? (
+            <p className="history-empty">
+              No repairs yet. Finished attempts will appear here, and you can reopen or delete them at
+              any time.
+            </p>
+          ) : (
+            <div className="history-grid">
+              {history.map((entry) => (
+                <article className="history-card" key={entry.id}>
+                  <button
+                    type="button"
+                    className="history-thumb"
+                    onClick={() => void viewHistoryEntry(entry)}
+                    aria-label={`Open repair from ${formatAttemptDate(entry.createdAt)}`}
+                  >
+                    <img src={entry.thumbnailUrl} alt="" />
+                    <span className="history-mode">
+                      {entry.mode === 'auto' ? 'Auto' : 'Manual'}
+                    </span>
+                  </button>
+                  <div className="history-body">
+                    <strong>{entry.prediction?.name ?? 'Artifact repair'}</strong>
+                    <span className="history-date">{formatAttemptDate(entry.createdAt)}</span>
+                    <span className="history-meta">
+                      {entry.analysis
+                        ? `${entry.analysis.restoredPct.toFixed(1)}% of the object repaired`
+                        : 'Repair complete'}
+                    </span>
+                    <div className="history-actions">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline"
+                        onClick={() => void viewHistoryEntry(entry)}
+                      >
+                        View
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline history-delete"
+                        onClick={() => void removeHistoryEntry(entry.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {cameraActive && (
         <dialog className="vr-dialog" open>
