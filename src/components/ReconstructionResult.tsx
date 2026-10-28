@@ -5,6 +5,7 @@ import { CIV_ILLUSTRATIONS } from '../illustrations'
 import type { ArtifactAnalysis } from '../services/analysis'
 import type { Prediction } from '../services/predictService'
 import type { RestoreResult } from '../services/restoreService'
+import { referenceImages } from '../references'
 
 type Civ = (typeof civilizations.civilizations)[number]
 
@@ -262,6 +263,7 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
   const art = CIV_ILLUSTRATIONS[civ.id]
   const pct = Math.round(prediction.probability * 100)
   const accent = CIV_ACCENTS[civ.id] ?? '#b8862b'
+  const refs = referenceImages(civ.id)
   const ranked = prediction.ranked.length
     ? prediction.ranked
     : [{ id: civ.id, name: civ.name, probability: prediction.probability }]
@@ -309,6 +311,29 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
           ))}
         </ul>
       </div>
+      {refs.length ? (
+        <details className="ref-details">
+          <summary>
+            <span>Reference artifacts used for this match</span>
+            <span className="ref-count">{refs.length} images</span>
+          </summary>
+          <p className="ref-note">
+            These clean reference artifacts are only used for the colour-and-shape comparison.
+            They are never sent to the repair model.
+          </p>
+          <div className="ref-strip">
+            {refs.map((src, i) => (
+              <figure key={src}>
+                <img
+                  src={src}
+                  alt={`${civ.name} reference artifact ${i + 1}`}
+                  loading="lazy"
+                />
+              </figure>
+            ))}
+          </div>
+        </details>
+      ) : null}
     </section>
   )
 }
