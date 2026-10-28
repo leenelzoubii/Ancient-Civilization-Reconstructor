@@ -118,7 +118,7 @@ function cleanAnswer(answer: VisionAnswer | null): Prediction | null {
   const topName = byId.get(top.id)?.name ?? top.name
   const filler = [
     `Overall colour and shape most similar to ${topName}`,
-    `Decoration matches the ${topName} reference set`,
+    `Decoration matches known ${topName} examples`,
     `Silhouette proportions closest to ${topName} pottery`,
   ]
   while (reasons.length < 3) reasons.push(filler[reasons.length])
@@ -311,7 +311,7 @@ async function samplePhoto(dataUrl: string): Promise<Sample> {
 function fallbackReasons(civId: string, colourShare: number, aspect: number, confidence: number): string[] {
   const civ = referenceCiv(civId)
   const name = byId.get(civId)?.name ?? civ?.name ?? 'this civilization'
-  const cue = civ?.cue ?? 'the reference colours'
+  const cue = civ?.cue ?? 'the colours typical of this civilization'
   const shape =
     aspect >= 1.15
       ? `Wide, open bowl profile typical of ${name} tableware`
@@ -321,7 +321,7 @@ function fallbackReasons(civId: string, colourShare: number, aspect: number, con
   return [
     `Colours closest to ${cue}`,
     shape,
-    `${Math.round(Math.min(1, colourShare) * 100)}% of the sampled surface sits inside the ${name} reference palette (${Math.round(
+    `${Math.round(Math.min(1, colourShare) * 100)}% of the sampled surface sits inside the known ${name} palette (${Math.round(
       confidence * 100
     )}% confidence)`,
   ]

@@ -962,6 +962,23 @@ main#app {
   color: var(--ink);
 }
 
+.pred-note {
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--gold);
+  background: rgba(184, 134, 43, 0.08);
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.analysis-note {
+  margin: 14px 0 0;
+  color: var(--ink-3);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
 .compare {
   display: block;
   width: 100%;

@@ -443,16 +443,15 @@ export default function ArtifactRestorer() {
         pred = null
       }
 
+      let ana: ArtifactAnalysis | null = null
       if (restoredUrl) {
         try {
-          const ana = await analyzeArtifact({
+          ana = await analyzeArtifact({
             originalUrl: originalImage,
             restoredUrl,
-            mode,
-            civId: pred?.civId ?? 'maya',
-            // Both modes now have a real mask canvas: manual = brush,
-            // auto = locally detected cracks. The analysis must measure the
-            // area that was actually repaired, not a symmetry guess.
+            // Both modes have a real mask canvas: manual = brush,
+            // auto = locally detected cracks. The analysis measures the area
+            // that was actually repaired, not a symmetry guess.
             paintedMask: maskRef.current,
           })
           setAnalysis(ana)
@@ -805,23 +804,24 @@ export default function ArtifactRestorer() {
   return (
     <div className="container">
       <div className="page-head" style={{ paddingBottom: 10 }}>
-        <span className="eyebrow">New feature</span>
-        <h1>AI Artifact Reconstruction</h1>
+        <span className="eyebrow">Repair studio</span>
+        <h1>AI Artifact Repair</h1>
         <p className="lead">
-          Upload a photo of a broken artifact, choose whether the AI should find the damage itself
-          or follow your brush, and confirm the price estimate before anything is generated.
+          Upload a photo of a damaged artifact, choose whether the detector finds the damage itself
+          or follow your brush, and confirm the price estimate before anything is generated. Only the
+          marked damage is repaired — every other pixel stays exactly as it was.
         </p>
       </div>
 
       <ol className="stepper">
         <li className={stepClass(0)}>
-          <span className="num">{stepIndex > 0 ? '✓' : '1'}</span>Upload broken artifact
+          <span className="num">{stepIndex > 0 ? '✓' : '1'}</span>Upload photo
         </li>
         <li className={stepClass(1)}>
-          <span className="num">{stepIndex > 1 ? '✓' : '2'}</span>AI processing
+          <span className="num">{stepIndex > 1 ? '✓' : '2'}</span>Repair damage
         </li>
         <li className={stepClass(2)}>
-          <span className="num">3</span>Reconstructed result
+          <span className="num">3</span>Repaired result
         </li>
       </ol>
 
@@ -1027,7 +1027,7 @@ export default function ArtifactRestorer() {
                     <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
                     <path d="M19 3v4M17 5h4" />
                   </svg>
-                  Reconstruct artifact
+                  Repair artifact
                 </>
               )}
             </button>
@@ -1046,15 +1046,15 @@ export default function ArtifactRestorer() {
                   </li>
                   <li className="run">
                     <span className="dot" />
-                    Rebuilding the missing surface
+                    Repairing the damaged surface
                   </li>
                   <li>
                     <span className="dot" />
-                    Predicting the civilization
+                    Adding optional context
                   </li>
                   <li>
                     <span className="dot" />
-                    Measuring the restored areas
+                    Measuring the repaired area
                   </li>
                 </ul>
               </>
