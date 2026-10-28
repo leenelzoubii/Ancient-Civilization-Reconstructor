@@ -922,6 +922,11 @@ main#app {
   letter-spacing: 0.02em;
 }
 
+/* The artwork is positioned, so badges need a stacking order of their own. */
+.civ-card .badge {
+  z-index: 6;
+}
+
 /* ---------- 4. Result page ---------- */
 .result-page .page-head {
   padding-top: 36px;
