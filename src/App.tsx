@@ -432,21 +432,21 @@ function CivCard({
 
 function FeatureStrip() {
   return (
-    <section className="feature-strip" aria-label="AI Artifact Reconstruction">
+    <section className="feature-strip" aria-label="AI Artifact Repair">
       <div className="container feature-strip-inner">
         <div className="feature-strip-art" aria-hidden="true">
           <Svg html={ARTIFACT_ILLUSTRATION()} />
         </div>
         <div className="feature-strip-copy">
           <span className="tag">NEW · AI FEATURE</span>
-          <h2>AI Artifact Reconstruction</h2>
+          <h2>AI Artifact Repair</h2>
           <p>
-            Upload a broken artifact, we predict its civilization and restore it — with a price
-            estimate before anything is generated.
+            Upload a damaged artifact, mark the cracks with a brush or let the detector find them,
+            and repair only those pixels — with a price estimate before anything is generated.
           </p>
         </div>
         <a className="btn btn-gold" href="#/reconstruct">
-          <Ico name="sparkle" /> Reconstruct an artifact
+          <Ico name="sparkle" /> Repair an artifact
         </a>
       </div>
     </section>
@@ -506,17 +506,118 @@ function Reveal({
   )
 }
 
-/** All eight worlds, in the order they appear on the civilizations page. */
-const HOME_PREVIEW_IDS = [
-  'egypt',
-  'rome',
-  'maya',
-  'taj-mahal',
-  'petra',
-  'khorfakkan',
-  'al-jazirat-al-hamra',
-  'dhayah-fort',
-]
+/** Stylized slowly spinning globe with a pin for every destination. */
+function GlobeHero() {
+  return (
+    <div className="hero-globe" aria-hidden="true">
+      <span className="globe-halo" />
+      <div className="globe-sphere">
+        <svg viewBox="0 0 400 400" className="globe-svg" role="presentation">
+          <defs>
+            <radialGradient id="globeOcean" cx="34%" cy="26%" r="82%">
+              <stop offset="0" stopColor="#73c4c4" />
+              <stop offset="0.45" stopColor="#2f8491" />
+              <stop offset="0.78" stopColor="#175469" />
+              <stop offset="1" stopColor="#0a2b3d" />
+            </radialGradient>
+            <radialGradient id="globeShade" cx="32%" cy="24%" r="78%">
+              <stop offset="0" stopColor="#ffffff" stopOpacity="0.34" />
+              <stop offset="0.46" stopColor="#ffffff" stopOpacity="0" />
+              <stop offset="0.82" stopColor="#03141f" stopOpacity="0.28" />
+              <stop offset="1" stopColor="#03141f" stopOpacity="0.62" />
+            </radialGradient>
+            <clipPath id="globeClip">
+              <circle cx="200" cy="200" r="174" />
+            </clipPath>
+            <g id="globeLandShapes">
+              <path
+                d="M42 132 q28-30 62-22 q26 6 34 26 q10 24-6 44 q-18 22-42 18 q-26-4-38-24 q-14-24-10-42z"
+                fill="#8fbd73"
+              />
+              <path
+                d="M112 218 q20-18 44-10 q20 8 24 30 q4 24-12 40 q-18 18-40 8 q-22-10-24-34 q-2-20 8-34z"
+                fill="#7caf65"
+              />
+              <path
+                d="M178 116 q30-22 66-12 q28 8 34 34 q6 28-12 48 q-18 20-46 14 q-30-6-42-30 q-12-28 0-54z"
+                fill="#94c07a"
+              />
+              <path
+                d="M258 198 q26-16 52-6 q24 10 26 34 q2 24-16 38 q-20 14-44 4 q-22-10-24-34 q-2-22 6-36z"
+                fill="#83b56b"
+              />
+              <path
+                d="M316 274 q18-12 36-4 q16 8 16 24 q0 18-16 24 q-18 6-32-6 q-12-12-10-26 q2-8 6-12z"
+                fill="#8fbd73"
+              />
+              <path
+                d="M170 76 q16-12 34-4 q14 8 12 22 q-2 14-16 18 q-16 4-28-6 q-10-10-8-20 q2-6 6-10z"
+                fill="#a6cd88"
+              />
+              <circle cx="86" cy="266" r="9" fill="#8fbd73" />
+              <circle cx="292" cy="120" r="6" fill="#a6cd88" />
+              <circle cx="242" cy="330" r="7" fill="#83b56b" />
+            </g>
+          </defs>
+          <circle cx="200" cy="200" r="174" fill="url(#globeOcean)" />
+          <g clipPath="url(#globeClip)">
+            <g className="globe-land-track">
+              <use href="#globeLandShapes" />
+              <use href="#globeLandShapes" x="400" />
+            </g>
+            <g className="globe-grid" fill="none" stroke="#e2f5ee" strokeOpacity="0.16">
+              <ellipse cx="200" cy="200" rx="174" ry="58" />
+              <ellipse cx="200" cy="200" rx="174" ry="116" />
+              <ellipse cx="200" cy="200" rx="58" ry="174" />
+              <ellipse cx="200" cy="200" rx="116" ry="174" />
+              <line x1="200" y1="26" x2="200" y2="374" />
+              <line x1="26" y1="200" x2="374" y2="200" />
+            </g>
+          </g>
+          <circle cx="200" cy="200" r="174" fill="url(#globeShade)" />
+          <circle
+            cx="200"
+            cy="200"
+            r="174"
+            fill="none"
+            stroke="#f6e7c2"
+            strokeOpacity="0.55"
+            strokeWidth="1.6"
+          />
+        </svg>
+      </div>
+
+      <div className="globe-pins">
+        <span className="globe-pin gp-giza">
+          <i />
+          <b>Giza</b>
+        </span>
+        <span className="globe-pin gp-rome">
+          <i />
+          <b>Rome</b>
+        </span>
+        <span className="globe-pin gp-petra">
+          <i />
+          <b>Petra</b>
+        </span>
+        <span className="globe-pin gp-taj">
+          <i />
+          <b>Taj Mahal</b>
+        </span>
+        <span className="globe-pin gp-maya">
+          <i />
+          <b>Chichén Itzá</b>
+        </span>
+        <span className="globe-pin gp-uae">
+          <i />
+          <b>Ras Al Khaimah</b>
+        </span>
+      </div>
+
+      <span className="globe-caption">8 worlds · 46 landmarks</span>
+    </div>
+  )
+}
 
 function HomePage() {
   const session = readSession()
@@ -535,15 +636,16 @@ function HomePage() {
             </h1>
             <p className="lead">
               Walk around digital reconstructions of Ancient Egypt, Rome, the Maya, the Taj Mahal
-              and Petra, discover how people lived, and use AI to imagine how broken artifacts once
-              looked — then explore the forts, pearl villages and desert heritage of the UAE.
+              and Petra, discover how people lived, and repair cracks in photos of your own
+              artifacts with AI — then explore the forts, pearl villages and desert heritage of the
+              UAE.
             </p>
             <div className="hero-actions">
               <a className="btn btn-gold" href="#/civilizations">
                 Explore now <Ico name="arrowR" />
               </a>
               <a className="btn btn-light" href="#/reconstruct">
-                <Ico name="sparkle" /> Reconstruct an artifact
+                <Ico name="sparkle" /> Repair an artifact
               </a>
             </div>
             <div className="hero-stats">
@@ -572,28 +674,7 @@ function HomePage() {
             </button>
           </div>
 
-          <div className="hero-collage" aria-hidden="true">
-            <figure className="c1">
-              <Svg html={HERO_ILLUSTRATIONS.egypt('h1')} />
-              <figcaption>Giza, Egypt</figcaption>
-            </figure>
-            <figure className="c2">
-              <Svg html={HERO_ILLUSTRATIONS.rome('h2')} />
-              <figcaption>Rome, Italy</figcaption>
-            </figure>
-            <figure className="c3">
-              <Svg html={HERO_ILLUSTRATIONS.uae('h3')} />
-              <figcaption>Al Jahili Fort, UAE</figcaption>
-            </figure>
-            <figure className="c4">
-              <Svg html={HERO_ILLUSTRATIONS.taj('h4')} />
-              <figcaption>Taj Mahal, India</figcaption>
-            </figure>
-            <figure className="c5">
-              <Svg html={HERO_ILLUSTRATIONS.petra('h5')} />
-              <figcaption>Petra, Jordan</figcaption>
-            </figure>
-          </div>
+          <GlobeHero />
         </div>
       </section>
 
@@ -649,20 +730,28 @@ function HomePage() {
             </div>
           </Reveal>
 
-          <Reveal className="home-stack" delay={140}>
-            <figure className="hs1">
+          <Reveal className="home-collage" delay={140}>
+            <figure className="hc hc-1">
               <Svg html={HERO_ILLUSTRATIONS.egypt('hs1')} />
               <figcaption>Giza, Egypt</figcaption>
             </figure>
-            <figure className="hs2">
+            <figure className="hc hc-2">
               <Svg html={HERO_ILLUSTRATIONS.rome('hs2')} />
               <figcaption>Rome, Italy</figcaption>
             </figure>
-            <figure className="hs3">
+            <figure className="hc hc-3">
               <Svg html={HERO_ILLUSTRATIONS.uae('hs3')} />
               <figcaption>Al Jahili Fort, UAE</figcaption>
             </figure>
-            <span className="home-stack-badge">8 worlds · 46 landmarks</span>
+            <figure className="hc hc-4">
+              <Svg html={HERO_ILLUSTRATIONS.taj('hs4')} />
+              <figcaption>Taj Mahal, India</figcaption>
+            </figure>
+            <figure className="hc hc-5">
+              <Svg html={HERO_ILLUSTRATIONS.petra('hs5')} />
+              <figcaption>Petra, Jordan</figcaption>
+            </figure>
+            <span className="home-collage-badge">8 worlds · 46 landmarks</span>
           </Reveal>
         </div>
       </section>
@@ -704,10 +793,10 @@ function HomePage() {
               </p>
             </div>
             <div className="step-card">
-              <h3>Reconstruct an artifact</h3>
+              <h3>Repair an artifact</h3>
               <p>
-                Upload a photo of a broken object, mark the damage and repair it with AI — with the
-                price shown before anything is generated.
+                Upload a photo of a damaged object, mark the cracks and repair only those pixels with
+                AI — with the price shown before anything is generated.
               </p>
             </div>
           </Reveal>
@@ -716,47 +805,18 @@ function HomePage() {
 
       <section className="section" id="home-worlds">
         <div className="container">
-          <Reveal>
-            <div className="section-title">
-              <div>
-                <span className="eyebrow">The civilizations</span>
-                <h2>Eight worlds, one scroll</h2>
-                <p className="section-lead">
-                  Five ancient civilizations and three Emirati heritage sites — from the pyramids of
-                  Giza to a hilltop fort in Ras Al Khaimah.
-                </p>
-              </div>
-              <a className="btn btn-outline btn-sm" href="#/civilizations">
-                All eight worlds <Ico name="arrowR" />
-              </a>
+          <Reveal className="world-cta">
+            <div>
+              <span className="eyebrow">The civilizations</span>
+              <h2>Eight worlds, one click away</h2>
+              <p>
+                Five ancient civilizations and three Emirati heritage sites are waiting on their own
+                page — with 3D scenes, written guides and flashcards.
+              </p>
             </div>
-          </Reveal>
-          <Reveal stagger className="civ-preview-grid">
-            {HOME_PREVIEW_IDS.map((id) => {
-              const civ = getCiv(id)
-              const art = CIV_ILLUSTRATIONS[id]
-              if (!civ) return null
-              return (
-                <a
-                  className="civ-preview"
-                  key={id}
-                  href={`#/civ/${id}`}
-                  style={{ '--accent': accentOf(id) } as CSSProperties}
-                >
-                  <span className="civ-preview-art" aria-hidden="true">
-                    {art ? <Svg html={art(`pv-${id}`)} /> : null}
-                  </span>
-                  <span className="civ-preview-body">
-                    <span className="civ-preview-era">{civ.era}</span>
-                    <strong>{civ.name}</strong>
-                    <span className="civ-preview-tag">{taglineOf(civ)}.</span>
-                    <span className="civ-preview-open">
-                      Open in 3D <Ico name="arrowR" />
-                    </span>
-                  </span>
-                </a>
-              )
-            })}
+            <a className="btn btn-gold" href="#/civilizations">
+              Browse all civilizations <Ico name="arrowR" />
+            </a>
           </Reveal>
         </div>
       </section>
@@ -803,7 +863,7 @@ function HomePage() {
             </ol>
             <div className="hero-actions">
               <a className="btn btn-gold" href="#/reconstruct">
-                <Ico name="sparkle" /> Reconstruct an artifact
+                <Ico name="sparkle" /> Repair an artifact
               </a>
             </div>
           </Reveal>
@@ -896,7 +956,7 @@ function HomePage() {
                 Browse all civilizations <Ico name="arrowR" />
               </a>
               <a className="btn btn-outline" href="#/reconstruct">
-                <Ico name="sparkle" /> Restore an artifact
+                <Ico name="sparkle" /> Repair an artifact
               </a>
             </div>
           </div>
