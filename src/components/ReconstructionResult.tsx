@@ -229,6 +229,11 @@ export default function ReconstructionResult({
           {analysis ? (
             <section className="panel">
               <h3>Repair analysis</h3>
+              <AnalysisBody
+                analysis={analysis}
+                confidence={prediction?.confidence ?? null}
+                elapsedMs={elapsedMs}
+              />
               <p className="analysis-note">
                 Only your photo and the damage mask were sent to the image model. No reference images
                 were used.
@@ -312,6 +317,19 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
 /* Analysis body                                                       */
 /* ------------------------------------------------------------------ */
 
+function AnalysisBody({
+  analysis,
+  confidence,
+  elapsedMs,
+}: {
+  analysis: ArtifactAnalysis
+  confidence: number | null
+  elapsedMs: number
+}) {
+  const clamped = confidence === null ? null : Math.max(0, Math.min(1, confidence))
+  const level = clamped === null ? null : clamped >= 0.72 ? 'high' : clamped >= 0.5 ? 'medium' : 'low'
+  const tone = level === 'high' ? '#1d5a40' : level === 'medium' ? '#7a5410' : '#8a2a1e'
+
   return (
     <>
       <div className="stat-grid">
@@ -332,6 +350,52 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
           <span>photo used — no references</span>
         </div>
       </div>
+
+      {clamped !== null && level ? (
+        <div className="confidence-block">
+          <div className="confidence">
+            <span className={`pill ${level}`}>
+              {level[0].toUpperCase() + level.slice(1)} confidence
+            </span>
+            <div className="bar">
+              <div style={{ width: `${Math.round(clamped * 100)}%`, background: tone }} />
+            </div>
+            <strong>{Math.round(clamped * 100)}%</strong>
+          </div>
+          <p className="confidence-note">
+            Confidence in the civilization match above ({Math.round(clamped * 100)}%). It is a
+            separate score from the repair and does not describe how good the repaired pixels look.
+          </p>
+        </div>
+      ) : (
+        <p className="confidence-note muted">
+          No civilization match was run for this repair, so there is no match confidence to show.
+        </p>
+      )}
+
+      <details className="analysis-how">
+        <summary>How is confidence calculated?</summary>
+        <div className="analysis-how-body">
+          <p>
+            <strong>With the vision model:</strong> the uploaded photo is compared with known
+            examples of each civilization. The model returns its top three guesses, a short reason
+            for each, and one confidence score for its best answer. That score is shown here,
+            clamped to 0–100%.
+          </p>
+          <p>
+            <strong>With the local fallback:</strong> if the vision model is unavailable, the photo
+            is sampled in the browser. 78% of the score is the share of the object's colours that
+            fall inside a civilization's reference palette, and 22% is how closely the object's
+            width-to-height ratio matches that civilization's typical vessels. The result is
+            deliberately capped at 78% so the fallback never claims the certainty of the vision
+            model.
+          </p>
+          <p>
+            Either way the score is only about the civilization guess. It never measures how good
+            the repaired pixels look.
+          </p>
+        </div>
+      </details>
 
       <div className="legend">
         <span>

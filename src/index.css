@@ -1145,6 +1145,69 @@ main#app {
   content: '↔';
 }
 
+/* ---------- 4.0 Match confidence and reference photos ---------- */
+.confidence-block {
+  margin: 14px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--papyrus);
+}
+
+.confidence-block .confidence {
+  margin: 0 0 6px;
+}
+
+.confidence-block .confidence strong {
+  min-width: 42px;
+  text-align: right;
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+
+.confidence-note {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.confidence-note.muted {
+  margin: 12px 0 0;
+}
+
+.analysis-how {
+  margin: 14px 0 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.analysis-how summary {
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.analysis-how summary:hover {
+  color: var(--ink);
+}
+
+.analysis-how-body {
+  padding: 8px 0 2px;
+}
+
+.analysis-how-body p {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.analysis-how-body p:last-child {
+  margin-bottom: 0;
+}
+
   display: block;
   width: 100%;
   height: 100%;
