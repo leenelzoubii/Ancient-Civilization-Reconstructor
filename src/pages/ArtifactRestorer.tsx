@@ -24,6 +24,8 @@ import {
   saveHistory,
 } from '../services/history'
 import type { HistoryEntry } from '../services/history'
+import { EXAMPLE_ARTIFACTS, exampleToFile } from '../examples'
+import type { ExampleArtifact } from '../examples'
 import ReconstructionResult from '../components/ReconstructionResult'
 
 type Mode = 'manual' | 'auto'
@@ -82,6 +84,7 @@ export default function ArtifactRestorer() {
   const [spend, setSpend] = useState(getSessionSpend)
   const [detecting, setDetecting] = useState(false)
   const [autoDamage, setAutoDamage] = useState<DetectedDamage | null>(null)
+  const [exampleLoading, setExampleLoading] = useState<string | null>(null)
   const [fromHistory, setFromHistory] = useState(false)
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [historyReady, setHistoryReady] = useState(false)
@@ -219,6 +222,26 @@ export default function ArtifactRestorer() {
       if (file) handleFile(file)
     },
     [handleFile]
+  )
+
+  const loadExample = useCallback(
+    async (example: ExampleArtifact) => {
+      if (exampleLoading) return
+      setExampleLoading(example.id)
+      setError(null)
+      // The examples are built to have detectable damage, so automatic mode
+      // gives the user the same one-click flow as a real photo.
+      setMode('auto')
+      try {
+        const file = await exampleToFile(example)
+        await handleFile(file)
+      } catch {
+        setError('Could not open that example. Please try another one.')
+      } finally {
+        setExampleLoading(null)
+      }
+    },
+    [exampleLoading, handleFile]
   )
 
   const startCamera = useCallback(async () => {
@@ -991,6 +1014,41 @@ export default function ArtifactRestorer() {
                 hidden
                 onChange={handleFileInput}
               />
+
+              <div className="example-picker">
+                <div className="example-head">
+                  <strong>No photo handy? Try an example</strong>
+                  <span className="hint">
+                    Bundled damaged artifacts · automatic detection switches on
+                  </span>
+                </div>
+                <div className="example-grid">
+                  {EXAMPLE_ARTIFACTS.map((example) => (
+                    <button
+                      key={example.id}
+                      type="button"
+                      className="example-card"
+                      onClick={() => void loadExample(example)}
+                      disabled={exampleLoading !== null}
+                      aria-busy={exampleLoading === example.id}
+                    >
+                      <span
+                        className="example-art"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{ __html: example.svg }}
+                      />
+                      <span className="example-meta">
+                        <strong>{example.name}</strong>
+                        <span className="example-origin">{example.origin}</span>
+                        <span className="example-note">{example.note}</span>
+                      </span>
+                      <span className="example-cta">
+                        {exampleLoading === example.id ? 'Opening…' : 'Try this example'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </section>
           )}
 
