@@ -472,7 +472,7 @@ const heroPetra = (id = 'hp') => `
   </svg>`
 
 const heroUae = (id = 'hu') => `
-  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Al Jahili Fort in the United Arab Emirates">
+  <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Al Jahili Fort in the United Arab Emirates">
     <defs>
       <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ec6d4"/><stop offset=".65" stop-color="#f0dfc0"/><stop offset="1" stop-color="#f7eeda"/></linearGradient>
       <linearGradient id="${id}wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3c296"/><stop offset="1" stop-color="#c99a68"/></linearGradient>
@@ -502,9 +502,14 @@ const heroUae = (id = 'hu') => `
       <rect x="278" y="102" width="8" height="8"/><rect x="302" y="102" width="8" height="8"/>
       <rect x="180" y="92" width="8" height="8"/><rect x="212" y="92" width="8" height="8"/>
     </g>
-    <path d="M334 78 v-44" stroke="#6b4a2f" stroke-width="3"/>
-    <path d="M334 36 h34 v22 h-34z" fill="#c0392b"/>
-    <path d="M334 36 h12 v22 h-12z" fill="#2f6b55"/>
+    <path d="M330 78 v-66" stroke="#6b4a2f" stroke-width="3"/>
+    <g transform="translate(333 12)">
+      <rect width="42" height="30" fill="#FFFFFF"/>
+      <rect width="42" height="10" fill="#00732F"/>
+      <rect y="10" width="42" height="10" fill="#FFFFFF"/>
+      <rect y="20" width="42" height="10" fill="#000000"/>
+      <rect width="13" height="30" fill="#FF0000"/>
+    </g>
     <path d="M0 214 Q200 200 400 214 V260 H0 Z" fill="#d8b98c"/>
     <g fill="#4f7a3c">
       <rect x="42" y="176" width="5" height="40" fill="#7a5a38"/><path d="M44 176 q-26-14-30 6 q22 6 30-6z"/><path d="M44 176 q26-14 30 6 q-22 6-30-6z"/>
