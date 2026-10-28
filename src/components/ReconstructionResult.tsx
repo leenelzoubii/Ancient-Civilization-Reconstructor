@@ -229,7 +229,6 @@ export default function ReconstructionResult({
           {analysis ? (
             <section className="panel">
               <h3>Repair analysis</h3>
-              <AnalysisBody analysis={analysis} elapsedMs={elapsedMs} />
               <p className="analysis-note">
                 Only your photo and the damage mask were sent to the image model. No reference images
                 were used.
@@ -313,7 +312,6 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
 /* Analysis body                                                       */
 /* ------------------------------------------------------------------ */
 
-function AnalysisBody({ analysis, elapsedMs }: { analysis: ArtifactAnalysis; elapsedMs: number }) {
   return (
     <>
       <div className="stat-grid">
@@ -362,6 +360,9 @@ function AnalysisBody({ analysis, elapsedMs }: { analysis: ArtifactAnalysis; ela
 function CompareSlider({ before, after }: { before: string; after: string | null }) {
   const [pos, setPos] = useState(0.5)
   const [dragging, setDragging] = useState(false)
+  // The stage takes the uploaded photo's own aspect ratio. Both images then
+  // fill that one box, so the split line always sits on the same pixels.
+  const [ratio, setRatio] = useState(4 / 3)
   const ref = useRef<HTMLDivElement>(null)
 
   const move = useCallback((clientX: number) => {
@@ -376,6 +377,12 @@ function CompareSlider({ before, after }: { before: string; after: string | null
     <div
       className="compare"
       ref={ref}
+      style={
+        {
+          aspectRatio: String(ratio),
+          maxWidth: `calc(520px * ${ratio})`,
+        } as CSSProperties
+      }
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         setDragging(true)
@@ -387,7 +394,18 @@ function CompareSlider({ before, after }: { before: string; after: string | null
       onPointerUp={() => setDragging(false)}
       onPointerCancel={() => setDragging(false)}
     >
-      <img className="compare-before" src={before} alt="Your uploaded artifact" draggable={false} />
+      <img
+        className="compare-before"
+        src={before}
+        alt="Your uploaded artifact"
+        draggable={false}
+        onLoad={(e) => {
+          const img = e.currentTarget
+          if (img.naturalWidth && img.naturalHeight) {
+            setRatio(img.naturalWidth / img.naturalHeight)
+          }
+        }}
+      />
       {after ? (
         <div className="after" style={{ clipPath: `inset(0 0 0 ${pos * 100}%)` }}>
           <img src={after} alt="Your photo with the damage repaired" draggable={false} />

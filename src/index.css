@@ -1108,29 +1108,48 @@ main#app {
 }
 
 .compare {
+  position: relative;
   display: block;
   width: 100%;
   max-width: 100%;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sand);
+  box-shadow: var(--shadow);
+  user-select: none;
+  touch-action: none;
   cursor: ew-resize;
 }
 
-.compare .compare-before {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 520px;
-  object-fit: contain;
-}
-
+/* Both images fill the exact same box, so the split line is always on the
+   same pixel of the photo and of the repaired copy. */
+.compare .compare-before,
 .compare .after img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  max-height: none;
+  object-fit: cover;
+}
+
+.compare .after {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 
 .compare .handle::after {
   content: '↔';
+}
+
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 }
 
 /* ---------- 4.1 Device-local repair history ---------- */
