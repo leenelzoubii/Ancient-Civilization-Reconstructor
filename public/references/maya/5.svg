@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="The Maya reference artifact 5">
+  <rect width="360" height="300" fill="#eee6d2"/>
+  <circle cx="292" cy="52" r="58" fill="#e6ddc4" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#3b3226" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#c98b4a"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#3b3226" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#e6ddc4" opacity=".55"/>
+    <rect x="120.54440301842988" y="80.54440301842988" width="22.91119396314025" height="22.91119396314025" rx="3" fill="#a3412e"/><circle cx="180" cy="92" r="8.083572199568152" fill="#a3412e"/><rect x="213.94154749065638" y="77.94154749065638" width="28.11690501868725" height="28.11690501868725" rx="3" fill="#a3412e"/><rect x="117.36552429944277" y="119.36552429944277" width="29.268951401114464" height="29.268951401114464" rx="3" fill="#a3412e"/><rect x="169.69159821234643" y="123.69159821234643" width="20.61680357530713" height="20.61680357530713" rx="3" fill="#a3412e"/><rect x="213.9913725964725" y="119.9913725964725" width="28.017254807054996" height="28.017254807054996" rx="3" fill="#a3412e"/><circle cx="132" cy="176" r="15.50852631777525" fill="#a3412e"/><rect x="169.43489804305136" y="165.43489804305136" width="21.130203913897276" height="21.130203913897276" rx="3" fill="#a3412e"/><circle cx="228" cy="176" r="12.97254485450685" fill="#a3412e"/><rect x="122.95947752334177" y="208.95947752334177" width="18.08104495331645" height="18.08104495331645" rx="3" fill="#a3412e"/><circle cx="180" cy="218" r="9.888557266443968" fill="#a3412e"/><rect x="219.97843618318439" y="209.97843618318439" width="16.04312763363123" height="16.04312763363123" rx="3" fill="#a3412e"/>
+    <path d="M86 240 h188" stroke="#3b3226" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

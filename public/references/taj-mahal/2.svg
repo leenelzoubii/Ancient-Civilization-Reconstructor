@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Mughal Empire reference artifact 2">
+  <rect width="360" height="300" fill="#f5efe2"/>
+  <circle cx="292" cy="52" r="58" fill="#fffdf8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#8a6a3c" opacity=".14"/>
+  <g>
+    <path d="M158 48 h44 l3 22 q28 22 28 78 q0 56-30 84 l-6 46 h-30 l-6-46 q-30-28-30-84 q0-56 28-78z" fill="#efe6d2"/>
+    <path d="M158 48 h22 l-5 22 q-20 22-20 78 q0 56 22 84 l-6 46 h-8 l-6-46 q-30-28-30-84 q0-56 28-78z" fill="#fffdf8" opacity=".3"/>
+    <path d="M158 58 q-30-6-34 22 q-2 24 20 26" stroke="#d9a92e" stroke-width="8" fill="none"/>
+    <path d="M202 58 q30-6 34 22 q2 24-20 26" stroke="#d9a92e" stroke-width="8" fill="none"/>
+    <path d="M142 128 q38-12 76 0" stroke="#d9a92e" stroke-width="10" fill="none"/>
+    <path d="M146 160 q34-8 68 0" stroke="#8a6a3c" stroke-width="4" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v2)" opacity=".35"/>
+  <defs><linearGradient id="v2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

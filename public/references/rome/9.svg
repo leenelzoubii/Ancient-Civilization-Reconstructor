@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Ancient Rome reference artifact 9">
+  <rect width="360" height="300" fill="#f3e8d6"/>
+  <circle cx="292" cy="52" r="58" fill="#efe3c8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#7c3a1f" opacity=".14"/>
+  <g>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="#b5623a"/>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="none" stroke="#7c3a1f" stroke-width="5"/>
+    <rect x="128" y="82" width="107.49706785101444" height="8" rx="4" fill="#4a2f22" opacity="0.6346581629477441"/><rect x="128" y="108" width="110.28381977882236" height="8" rx="4" fill="#4a2f22" opacity="0.7204387065954507"/><rect x="128" y="134" width="119.14051763527095" height="8" rx="4" fill="#4a2f22" opacity="0.876848121918738"/><rect x="128" y="160" width="116.02484969049692" height="8" rx="4" fill="#4a2f22" opacity="0.6374186244793236"/><rect x="128" y="186" width="134.48214512504637" height="8" rx="4" fill="#4a2f22" opacity="0.6535489823669196"/><rect x="128" y="212" width="132.61261041276157" height="8" rx="4" fill="#4a2f22" opacity="0.8611335336230697"/>
+    <path d="M120 68 q60-14 120 0" stroke="#7c3a1f" stroke-width="5" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v9)" opacity=".35"/>
+  <defs><linearGradient id="v9" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Dhayah Fort reference artifact 5">
+  <rect width="360" height="300" fill="#f4e4cf"/>
+  <circle cx="292" cy="52" r="58" fill="#e8d5b2" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#4a2a1d" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#c98f63"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#4a2a1d" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#e8d5b2" opacity=".55"/>
+    <circle cx="132" cy="92" r="12.08545721322298" fill="#2f6b55"/><circle cx="180" cy="92" r="8.170041646808386" fill="#2f6b55"/><rect x="213.23746871761978" y="77.23746871761978" width="29.525062564760447" height="29.525062564760447" rx="3" fill="#2f6b55"/><rect x="118.04510869830847" y="120.04510869830847" width="27.909782603383064" height="27.909782603383064" rx="3" fill="#2f6b55"/><rect x="164.21996871754527" y="118.21996871754527" width="31.560062564909458" height="31.560062564909458" rx="3" fill="#2f6b55"/><circle cx="228" cy="134" r="10.317555567249656" fill="#2f6b55"/><circle cx="132" cy="176" r="13.777638722211123" fill="#2f6b55"/><rect x="165.16308156587183" y="161.16308156587183" width="29.67383686825633" height="29.67383686825633" rx="3" fill="#2f6b55"/><circle cx="228" cy="176" r="11.323155077174306" fill="#2f6b55"/><rect x="118.49986114166677" y="204.49986114166677" width="27.00027771666646" height="27.00027771666646" rx="3" fill="#2f6b55"/><circle cx="180" cy="218" r="13.467905797064304" fill="#2f6b55"/><circle cx="228" cy="218" r="12.882534263655543" fill="#2f6b55"/>
+    <path d="M86 240 h188" stroke="#4a2a1d" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Khor Fakkan reference artifact 5">
+  <rect width="360" height="300" fill="#e8ece6"/>
+  <circle cx="292" cy="52" r="58" fill="#f7f2e8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#6b4a2f" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#d9c9a6"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#6b4a2f" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#f7f2e8" opacity=".55"/>
+    <rect x="121.11988192610443" y="81.11988192610443" width="21.760236147791147" height="21.760236147791147" rx="3" fill="#2f6f8f"/><rect x="171.01738053746521" y="83.01738053746521" width="17.96523892506957" height="17.96523892506957" rx="3" fill="#2f6f8f"/><rect x="216.12324285134673" y="80.12324285134673" width="23.753514297306538" height="23.753514297306538" rx="3" fill="#2f6f8f"/><rect x="121.28627805970609" y="123.28627805970609" width="21.427443880587816" height="21.427443880587816" rx="3" fill="#2f6f8f"/><rect x="166.54321623407304" y="120.54321623407304" width="26.913567531853914" height="26.913567531853914" rx="3" fill="#2f6f8f"/><circle cx="228" cy="134" r="8.610981738194823" fill="#2f6f8f"/><circle cx="132" cy="176" r="14.422149321064353" fill="#2f6f8f"/><rect x="168.3511684909463" y="164.3511684909463" width="23.297663018107414" height="23.297663018107414" rx="3" fill="#2f6f8f"/><circle cx="228" cy="176" r="15.975372284650803" fill="#2f6f8f"/><circle cx="132" cy="218" r="12.10007593780756" fill="#2f6f8f"/><circle cx="180" cy="218" r="15.879030024632812" fill="#2f6f8f"/><rect x="212.2852418757975" y="202.2852418757975" width="31.42951624840498" height="31.42951624840498" rx="3" fill="#2f6f8f"/>
+    <path d="M86 240 h188" stroke="#6b4a2f" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

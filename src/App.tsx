@@ -320,16 +320,61 @@ function SiteFooter() {
   )
 }
 
-function CivCard({ civ, detailed = false }: { civ: Civ; detailed?: boolean }) {
+function CivCard({
+  civ,
+  detailed = false,
+  spotlight = false,
+}: {
+  civ: Civ
+  detailed?: boolean
+  spotlight?: boolean
+}) {
   const visited = readSession().visited.includes(civ.id)
   const art = CIV_ILLUSTRATIONS[civ.id]
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, gx: 50, gy: 40 })
 
   return (
-    <article className="civ-card" style={{ '--accent': accentOf(civ.id) } as CSSProperties}>
+    <article
+      className={`civ-card${spotlight ? ' civ-card-spotlight' : ''}`}
+      style={{ '--accent': accentOf(civ.id) } as CSSProperties}
+    >
       {visited ? <span className="badge">Visited</span> : null}
-      <div className="art">{art ? <Svg html={art(`${civ.id}${detailed ? 'd' : 'c'}`)} /> : null}</div>
+      {spotlight ? <span className="badge badge-rak">Ras Al Khaimah</span> : null}
+      <div
+        className="art"
+        onPointerMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect()
+          if (!rect.width || !rect.height) return
+          const px = (e.clientX - rect.left) / rect.width
+          const py = (e.clientY - rect.top) / rect.height
+          setTilt({
+            rx: (0.5 - py) * 10,
+            ry: (px - 0.5) * 14,
+            gx: Math.round(px * 100),
+            gy: Math.round(py * 100),
+          })
+        }}
+        onPointerLeave={() => setTilt({ rx: 0, ry: 0, gx: 50, gy: 40 })}
+      >
+        <div
+          className="art-3d"
+          style={
+            {
+              '--rx': `${tilt.rx}deg`,
+              '--ry': `${tilt.ry}deg`,
+              '--gx': `${tilt.gx}%`,
+              '--gy': `${tilt.gy}%`,
+            } as CSSProperties
+          }
+        >
+          {art ? <Svg html={art(`${civ.id}${detailed ? 'd' : 'c'}`)} /> : null}
+          <span className="art-glare" aria-hidden="true" />
+        </div>
+      </div>
       <div className="body">
-        <span className="era">{civ.era}</span>
+        <span className="era">
+          {civ.name} · {civ.era}
+        </span>
         <h3>{civ.name}</h3>
         <p>{taglineOf(civ)}.</p>
         {detailed ? (
@@ -350,6 +395,29 @@ function CivCard({ civ, detailed = false }: { civ: Civ; detailed?: boolean }) {
         </div>
       </div>
     </article>
+  )
+}
+
+function FeatureStrip() {
+  return (
+    <section className="feature-strip" aria-label="AI Artifact Reconstruction">
+      <div className="container feature-strip-inner">
+        <div className="feature-strip-art" aria-hidden="true">
+          <Svg html={ARTIFACT_ILLUSTRATION()} />
+        </div>
+        <div className="feature-strip-copy">
+          <span className="tag">NEW · AI FEATURE</span>
+          <h2>AI Artifact Reconstruction</h2>
+          <p>
+            Upload a broken artifact, we predict its civilization and restore it — with a price
+            estimate before anything is generated.
+          </p>
+        </div>
+        <a className="btn btn-gold" href="#/reconstruct">
+          <Ico name="sparkle" /> Reconstruct an artifact
+        </a>
+      </div>
+    </section>
   )
 }
 
@@ -386,6 +454,8 @@ function HomePage() {
 
   return (
     <div>
+      <FeatureStrip />
+
       <section className="hero">
         <div className="container hero-inner">
           <div>
@@ -432,8 +502,16 @@ function HomePage() {
               <figcaption>Rome, Italy</figcaption>
             </figure>
             <figure className="c3">
-              <Svg html={HERO_ILLUSTRATIONS.maya('h3')} />
-              <figcaption>Chichén Itzá, Mexico</figcaption>
+              <Svg html={HERO_ILLUSTRATIONS.uae('h3')} />
+              <figcaption>Al Jahili Fort, UAE</figcaption>
+            </figure>
+            <figure className="c4">
+              <Svg html={HERO_ILLUSTRATIONS.taj('h4')} />
+              <figcaption>Taj Mahal, India</figcaption>
+            </figure>
+            <figure className="c5">
+              <Svg html={HERO_ILLUSTRATIONS.petra('h5')} />
+              <figcaption>Petra, Jordan</figcaption>
             </figure>
           </div>
         </div>
@@ -451,29 +529,6 @@ function HomePage() {
           </div>
         </div>
       ) : null}
-
-      <section className="section">
-        <div className="container">
-          <div className="section-title">
-            <div>
-              <span className="eyebrow">The ancient world</span>
-              <h2>Where would you like to travel?</h2>
-              <p className="section-lead">
-                Five ancient sites, each with a hand-built 3D scene, numbered landmarks and a
-                full walk-through in VR.
-              </p>
-            </div>
-            <a className="btn btn-outline btn-sm" href="#/civilizations">
-              All civilizations <Ico name="arrowR" />
-            </a>
-          </div>
-          <div className="civ-grid">
-            {CIVS.filter((civ) => ANCIENT_IDS.includes(civ.id)).map((civ) => (
-              <CivCard key={civ.id} civ={civ} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       <VisualScene onSelectCiv={(id) => go(`#/civ/${id}`)} />
 
@@ -640,17 +695,34 @@ function CivilizationsPage() {
         ))}
       </div>
 
+      {/* Ras Al Khaimah spotlight — one card, easy to remove. */}
+      <div className="section-title rak-title" style={{ marginTop: 52 }}>
+        <div>
+          <span className="eyebrow">Ras Al Khaimah</span>
+          <h2>Featured Emirati heritage</h2>
+          <p className="section-lead">
+            Dhayah Fort is the emirate&rsquo;s last hilltop stronghold — climb it in 3D and walk
+            through its towers.
+          </p>
+        </div>
+      </div>
+      <div className="civ-grid rak-grid">
+        {CIVS.filter((civ) => civ.id === 'dhayah-fort').map((civ) => (
+          <CivCard key={civ.id} civ={civ} detailed spotlight />
+        ))}
+      </div>
+
       <div className="section-title" style={{ marginTop: 52 }}>
         <div>
           <span className="eyebrow">UAE heritage</span>
-          <h2>Three Emirati sites</h2>
+          <h2>Emirati sites</h2>
           <p className="section-lead">
-            Forts, a pearl-diving village and a hilltop stronghold on the UAE's east coast.
+            A Portuguese fort and a pearl-diving village on the UAE&rsquo;s east coast.
           </p>
         </div>
       </div>
       <div className="civ-grid">
-        {CIVS.filter((civ) => UAE_IDS.includes(civ.id)).map((civ) => (
+        {CIVS.filter((civ) => UAE_IDS.includes(civ.id) && civ.id !== 'dhayah-fort').map((civ) => (
           <CivCard key={civ.id} civ={civ} detailed />
         ))}
       </div>

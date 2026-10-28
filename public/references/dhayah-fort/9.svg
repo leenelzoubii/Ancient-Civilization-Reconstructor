@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Dhayah Fort reference artifact 9">
+  <rect width="360" height="300" fill="#f4e4cf"/>
+  <circle cx="292" cy="52" r="58" fill="#e8d5b2" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#4a2a1d" opacity=".14"/>
+  <g>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="#c98f63"/>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="none" stroke="#4a2a1d" stroke-width="5"/>
+    <rect x="128" y="82" width="107.96703766286373" height="8" rx="4" fill="#2f6b55" opacity="0.7069718065671623"/><rect x="128" y="108" width="119.70350538473576" height="8" rx="4" fill="#2f6b55" opacity="0.7762559574097395"/><rect x="128" y="134" width="99.08449113089591" height="8" rx="4" fill="#2f6b55" opacity="0.6112171346321702"/><rect x="128" y="160" width="118.22772012278438" height="8" rx="4" fill="#2f6b55" opacity="0.7000283409841359"/><rect x="128" y="186" width="122.6269575227052" height="8" rx="4" fill="#2f6b55" opacity="0.6177154802717268"/><rect x="128" y="212" width="122.5391452088952" height="8" rx="4" fill="#2f6b55" opacity="0.7138475599698723"/>
+    <path d="M120 68 q60-14 120 0" stroke="#4a2a1d" stroke-width="5" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v9)" opacity=".35"/>
+  <defs><linearGradient id="v9" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

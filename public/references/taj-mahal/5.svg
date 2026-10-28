@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Mughal Empire reference artifact 5">
+  <rect width="360" height="300" fill="#f5efe2"/>
+  <circle cx="292" cy="52" r="58" fill="#fffdf8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#8a6a3c" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#efe6d2"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#8a6a3c" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#fffdf8" opacity=".55"/>
+    <circle cx="132" cy="92" r="10.513537531718612" fill="#d9a92e"/><circle cx="180" cy="92" r="12.804188806563616" fill="#d9a92e"/><rect x="219.41795677877963" y="83.41795677877963" width="17.164086442440748" height="17.164086442440748" rx="3" fill="#d9a92e"/><circle cx="132" cy="134" r="13.387416603043675" fill="#d9a92e"/><circle cx="180" cy="134" r="10.645925717428327" fill="#d9a92e"/><rect x="214.3500214572996" y="120.35002145729959" width="27.29995708540082" height="27.29995708540082" rx="3" fill="#d9a92e"/><circle cx="132" cy="176" r="9.55481100641191" fill="#d9a92e"/><rect x="165.70113481767476" y="161.70113481767476" width="28.597730364650488" height="28.597730364650488" rx="3" fill="#d9a92e"/><rect x="212.43230760656297" y="160.43230760656297" width="31.135384786874056" height="31.135384786874056" rx="3" fill="#d9a92e"/><rect x="121.23759359307587" y="207.23759359307587" width="21.524812813848257" height="21.524812813848257" rx="3" fill="#d9a92e"/><circle cx="180" cy="218" r="15.175540398806334" fill="#d9a92e"/><rect x="219.15943755023181" y="209.15943755023181" width="17.68112489953637" height="17.68112489953637" rx="3" fill="#d9a92e"/>
+    <path d="M86 240 h188" stroke="#8a6a3c" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

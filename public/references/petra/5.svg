@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Petra reference artifact 5">
+  <rect width="360" height="300" fill="#f2ddc9"/>
+  <circle cx="292" cy="52" r="58" fill="#f0cfb2" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#4a2a1d" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#b3745a"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#4a2a1d" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#f0cfb2" opacity=".55"/>
+    <rect x="123.03840589895844" y="83.03840589895844" width="17.92318820208311" height="17.92318820208311" rx="3" fill="#8d4f3d"/><rect x="169.62756760790944" y="81.62756760790944" width="20.744864784181118" height="20.744864784181118" rx="3" fill="#8d4f3d"/><circle cx="228" cy="92" r="8.394080067053437" fill="#8d4f3d"/><rect x="122.49456856772304" y="124.49456856772304" width="19.01086286455393" height="19.01086286455393" rx="3" fill="#8d4f3d"/><circle cx="180" cy="134" r="8.901379466056824" fill="#8d4f3d"/><rect x="212.5131212491542" y="118.51312124915421" width="30.97375750169158" height="30.97375750169158" rx="3" fill="#8d4f3d"/><circle cx="132" cy="176" r="9.190669175237417" fill="#8d4f3d"/><circle cx="180" cy="176" r="12.262287942692637" fill="#8d4f3d"/><rect x="215.82802029140294" y="163.82802029140294" width="24.343959417194128" height="24.343959417194128" rx="3" fill="#8d4f3d"/><circle cx="132" cy="218" r="9.89510957710445" fill="#8d4f3d"/><rect x="168.38550377078354" y="206.38550377078354" width="23.228992458432913" height="23.228992458432913" rx="3" fill="#8d4f3d"/><rect x="213.50941482372582" y="203.50941482372582" width="28.98117035254836" height="28.98117035254836" rx="3" fill="#8d4f3d"/>
+    <path d="M86 240 h188" stroke="#4a2a1d" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

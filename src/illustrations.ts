@@ -404,11 +404,122 @@ const heroMaya = (id = 'hm') => `
     <g fill="#2f5a2a"><circle cx="16" cy="212" r="30"/><circle cx="58" cy="222" r="26"/><circle cx="350" cy="214" r="30"/><circle cx="392" cy="222" r="26"/></g>
   </svg>`
 
+const heroTaj = (id = 'ht') => `
+  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Taj Mahal with its dome and reflecting pool">
+    <defs>
+      <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7c9a0"/><stop offset=".6" stop-color="#f6e6cd"/><stop offset="1" stop-color="#fbf3e4"/></linearGradient>
+      <linearGradient id="${id}stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#efe6d2"/><stop offset=".5" stop-color="#fffdf8"/><stop offset="1" stop-color="#e2d5bd"/></linearGradient>
+    </defs>
+    <rect width="400" height="260" fill="url(#${id}sky)"/>
+    <circle cx="316" cy="54" r="26" fill="#f7dfae" opacity=".8"/>
+    <g fill="#cbbfa6">
+      <rect x="44" y="150" width="18" height="62" rx="2"/><rect x="338" y="150" width="18" height="62" rx="2"/>
+      <rect x="40" y="142" width="26" height="10" rx="3"/><rect x="334" y="142" width="26" height="10" rx="3"/>
+    </g>
+    <rect x="86" y="168" width="228" height="46" fill="url(#${id}stone)"/>
+    <path d="M86 168 L200 128 L314 168 Z" fill="#f7f0e2"/>
+    <rect x="112" y="124" width="176" height="46" fill="url(#${id}stone)"/>
+    <path d="M140 124 q60-52 120 0z" fill="#fffdf8"/>
+    <path d="M176 88 q24-38 48 0z" fill="#f4ecd9"/>
+    <path d="M200 44 l3 12 h-6z" fill="#d9a92e"/>
+    <g fill="#efe6d2">
+      <rect x="112" y="104" width="16" height="66"/><rect x="272" y="104" width="16" height="66"/>
+    </g>
+    <g fill="#d9a92e" opacity=".85">
+      <rect x="158" y="142" width="16" height="28" rx="8"/><rect x="192" y="142" width="16" height="28" rx="8"/><rect x="226" y="142" width="16" height="28" rx="8"/>
+    </g>
+    <rect x="86" y="214" width="228" height="8" fill="#cbbfa6"/>
+    <rect x="60" y="222" width="280" height="38" fill="#d8ccb4"/>
+    <rect x="150" y="228" width="100" height="26" rx="10" fill="#a9c6c8"/>
+    <rect x="196" y="226" width="8" height="30" fill="#e9dcc2" opacity=".6"/>
+    <g fill="#6f8a52">
+      <rect x="70" y="196" width="4" height="26" fill="#7a5a38"/><circle cx="72" cy="194" r="12"/>
+      <rect x="330" y="196" width="4" height="26" fill="#7a5a38"/><circle cx="332" cy="194" r="12"/>
+    </g>
+  </svg>`
+
+const heroPetra = (id = 'hp') => `
+  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Petra treasury carved into rose-red cliffs">
+    <defs>
+      <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb6cc"/><stop offset="1" stop-color="#f0d9c2"/></linearGradient>
+      <linearGradient id="${id}rock" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c98a6c"/><stop offset=".55" stop-color="#b3745a"/><stop offset="1" stop-color="#8d4f3d"/></linearGradient>
+      <linearGradient id="${id}face" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b396"/><stop offset="1" stop-color="#b3745a"/></linearGradient>
+    </defs>
+    <rect width="400" height="260" fill="url(#${id}sky)"/>
+    <path d="M0 0 h120 l-18 96 l22 164 H0 Z" fill="url(#${id}rock)"/>
+    <path d="M400 0 h-118 l16 100 l-20 160 h122 Z" fill="url(#${id}rock)"/>
+    <path d="M120 0 h160 l-12 74 l10 186 h-156 l10-186 z" fill="#a8674f"/>
+    <rect x="132" y="52" width="136" height="150" fill="url(#${id}face)"/>
+    <path d="M132 52 L200 22 L268 52 Z" fill="#c98a6c"/>
+    <rect x="140" y="44" width="120" height="12" fill="#e8bd9f"/>
+    <g fill="#8d4f3d">
+      <rect x="146" y="82" width="12" height="120"/><rect x="172" y="82" width="12" height="120"/>
+      <rect x="198" y="82" width="12" height="120"/><rect x="224" y="82" width="12" height="120"/>
+      <rect x="250" y="82" width="12" height="120"/>
+    </g>
+    <g fill="#e6b396">
+      <rect x="158" y="82" width="14" height="120"/><rect x="184" y="82" width="14" height="120"/>
+      <rect x="210" y="82" width="14" height="120"/><rect x="236" y="82" width="14" height="120"/>
+    </g>
+    <rect x="140" y="68" width="120" height="10" fill="#e8bd9f"/>
+    <path d="M168 74 h64 l-6 14 h-52 z" fill="#8d4f3d"/>
+    <path d="M190 40 q10-14 20 0z" fill="#8d4f3d"/>
+    <rect x="188" y="190" width="24" height="12" fill="#6b3a2a"/>
+    <path d="M120 202 h160 v10 H120 Z" fill="#c98a6c"/>
+    <path d="M0 218 Q200 200 400 218 V260 H0 Z" fill="#d9b393"/>
+    <path d="M150 218 l30 42 h40 l30-42z" fill="#c9a184" opacity=".7"/>
+    <g fill="#8a5c46"><path d="M46 218 l10-34 l10 34z"/><path d="M348 218 l9-30 l9 30z"/></g>
+  </svg>`
+
+const heroUae = (id = 'hu') => `
+  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Al Jahili Fort in the United Arab Emirates">
+    <defs>
+      <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ec6d4"/><stop offset=".65" stop-color="#f0dfc0"/><stop offset="1" stop-color="#f7eeda"/></linearGradient>
+      <linearGradient id="${id}wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3c296"/><stop offset="1" stop-color="#c99a68"/></linearGradient>
+    </defs>
+    <rect width="400" height="260" fill="url(#${id}sky)"/>
+    <circle cx="76" cy="52" r="24" fill="#f7dfae" opacity=".75"/>
+    <rect x="96" y="96" width="208" height="118" fill="url(#${id}wall)"/>
+    <rect x="96" y="96" width="208" height="12" fill="#e8cba2"/>
+    <g fill="#c99a68">
+      <rect x="86" y="70" width="40" height="144" rx="4"/><rect x="274" y="70" width="40" height="144" rx="4"/>
+      <rect x="176" y="62" width="48" height="152" rx="4"/>
+    </g>
+    <g fill="#e8cba2">
+      <rect x="86" y="70" width="40" height="10"/><rect x="274" y="70" width="40" height="10"/><rect x="176" y="62" width="48" height="10"/>
+    </g>
+    <g fill="#8f6a45">
+      ${Array.from({ length: 8 }, (_, i) => `<rect x="${100 + i * 25}" y="88" width="14" height="9"/>`).join('')}
+      ${Array.from({ length: 8 }, (_, i) => `<rect x="${100 + i * 25}" y="204" width="14" height="9"/>`).join('')}
+    </g>
+    <path d="M188 214 v-52 q0-20 12-20 q12 0 12 20 v52z" fill="#5a3c26"/>
+    <g fill="#7a5535">
+      <rect x="110" y="146" width="16" height="22" rx="7"/><rect x="142" y="146" width="16" height="22" rx="7"/>
+      <rect x="242" y="146" width="16" height="22" rx="7"/><rect x="274" y="146" width="16" height="22" rx="7"/>
+    </g>
+    <g fill="#8f6a45">
+      <rect x="90" y="102" width="8" height="8"/><rect x="114" y="102" width="8" height="8"/>
+      <rect x="278" y="102" width="8" height="8"/><rect x="302" y="102" width="8" height="8"/>
+      <rect x="180" y="92" width="8" height="8"/><rect x="212" y="92" width="8" height="8"/>
+    </g>
+    <path d="M334 78 v-44" stroke="#6b4a2f" stroke-width="3"/>
+    <path d="M334 36 h34 v22 h-34z" fill="#c0392b"/>
+    <path d="M334 36 h12 v22 h-12z" fill="#2f6b55"/>
+    <path d="M0 214 Q200 200 400 214 V260 H0 Z" fill="#d8b98c"/>
+    <g fill="#4f7a3c">
+      <rect x="42" y="176" width="5" height="40" fill="#7a5a38"/><path d="M44 176 q-26-14-30 6 q22 6 30-6z"/><path d="M44 176 q26-14 30 6 q-22 6-30-6z"/>
+      <rect x="356" y="180" width="5" height="36" fill="#7a5a38"/><path d="M358 180 q-24-12-28 6 q20 6 28-6z"/><path d="M358 180 q24-12 28 6 q-20 6-28-6z"/>
+    </g>
+  </svg>`
+
 /** Tall 400x260 artwork for the home-page collage. */
 export const HERO_ILLUSTRATIONS = {
   egypt: heroEgypt,
   rome: heroRome,
   maya: heroMaya,
+  taj: heroTaj,
+  petra: heroPetra,
+  uae: heroUae,
 }
 
 export const CIV_ILLUSTRATIONS: Record<string, (id?: string) => string> = {

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Ancient Egypt reference artifact 7">
+  <rect width="360" height="300" fill="#f4ead4"/>
+  <circle cx="292" cy="52" r="58" fill="#f7f2e8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#7a5a32" opacity=".14"/>
+  <g>
+    <path d="M180 50 q74 0 74 84 q0 92-74 124 q-74-32-74-124 q0-84 74-84z" fill="#d8b878"/>
+    <path d="M180 50 q-74 0-74 84 q0 92 74 124 q-18-30-18-84 q0-64 18-124z" fill="#f7f2e8" opacity=".3"/>
+    <path d="M124 66 q56-22 112 0 l-8 18 q-48-18-96 0z" fill="#23466b"/>
+    <ellipse cx="152" cy="122" rx="18" ry="11" fill="#7a5a32"/>
+    <ellipse cx="208" cy="122" rx="18" ry="11" fill="#7a5a32"/>
+    <path d="M180 128 v34 l-14 8" stroke="#7a5a32" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M152 200 q28 12 56 0" stroke="#23466b" stroke-width="8" fill="none" stroke-linecap="round"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v7)" opacity=".35"/>
+  <defs><linearGradient id="v7" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

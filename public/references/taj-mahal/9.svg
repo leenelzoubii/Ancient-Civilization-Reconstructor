@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Mughal Empire reference artifact 9">
+  <rect width="360" height="300" fill="#f5efe2"/>
+  <circle cx="292" cy="52" r="58" fill="#fffdf8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#8a6a3c" opacity=".14"/>
+  <g>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="#efe6d2"/>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="none" stroke="#8a6a3c" stroke-width="5"/>
+    <rect x="128" y="82" width="113.04126779083163" height="8" rx="4" fill="#d9a92e" opacity="0.5986320917494595"/><rect x="128" y="108" width="138.98119185026735" height="8" rx="4" fill="#d9a92e" opacity="0.7634320095181466"/><rect x="128" y="134" width="108.3327108733356" height="8" rx="4" fill="#d9a92e" opacity="0.7465025217272342"/><rect x="128" y="160" width="131.32113995216787" height="8" rx="4" fill="#d9a92e" opacity="0.6189476098865271"/><rect x="128" y="186" width="120.5555058568716" height="8" rx="4" fill="#d9a92e" opacity="0.7018398462794722"/><rect x="128" y="212" width="134.06323294341564" height="8" rx="4" fill="#d9a92e" opacity="0.6818760479800403"/>
+    <path d="M120 68 q60-14 120 0" stroke="#8a6a3c" stroke-width="5" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v9)" opacity=".35"/>
+  <defs><linearGradient id="v9" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

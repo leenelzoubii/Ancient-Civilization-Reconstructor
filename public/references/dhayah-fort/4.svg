@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Dhayah Fort reference artifact 4">
+  <rect width="360" height="300" fill="#f4e4cf"/>
+  <circle cx="292" cy="52" r="58" fill="#e8d5b2" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#4a2a1d" opacity=".14"/>
+  <g>
+    <path d="M146 56 h68 l6 30 q40 26 40 84 q0 56-48 74 h-64 q-48-18-48-74 q0-58 40-84z" fill="#c98f63"/>
+    <path d="M146 56 h34 l-8 30 q-30 26-30 84 q0 56 36 74 h-14 q-48-18-48-74 q0-58 40-84z" fill="#e8d5b2" opacity=".32"/>
+    <rect x="140" y="46" width="80" height="14" rx="6" fill="#4a2a1d" opacity=".75"/>
+    <path d="M126 122 q54-16 108 0" stroke="#2f6b55" stroke-width="9" fill="none"/>
+    <circle cx="180" cy="164" r="20" fill="none" stroke="#2f6b55" stroke-width="7"/>
+    <path d="M136 204 q44-10 88 0" stroke="#4a2a1d" stroke-width="5" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v4)" opacity=".35"/>
+  <defs><linearGradient id="v4" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

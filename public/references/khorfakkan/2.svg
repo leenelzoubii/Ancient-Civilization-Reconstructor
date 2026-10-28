@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Khor Fakkan reference artifact 2">
+  <rect width="360" height="300" fill="#e8ece6"/>
+  <circle cx="292" cy="52" r="58" fill="#f7f2e8" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#6b4a2f" opacity=".14"/>
+  <g>
+    <path d="M158 48 h44 l3 22 q28 22 28 78 q0 56-30 84 l-6 46 h-30 l-6-46 q-30-28-30-84 q0-56 28-78z" fill="#d9c9a6"/>
+    <path d="M158 48 h22 l-5 22 q-20 22-20 78 q0 56 22 84 l-6 46 h-8 l-6-46 q-30-28-30-84 q0-56 28-78z" fill="#f7f2e8" opacity=".3"/>
+    <path d="M158 58 q-30-6-34 22 q-2 24 20 26" stroke="#2f6f8f" stroke-width="8" fill="none"/>
+    <path d="M202 58 q30-6 34 22 q2 24-20 26" stroke="#2f6f8f" stroke-width="8" fill="none"/>
+    <path d="M142 128 q38-12 76 0" stroke="#2f6f8f" stroke-width="10" fill="none"/>
+    <path d="M146 160 q34-8 68 0" stroke="#6b4a2f" stroke-width="4" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v2)" opacity=".35"/>
+  <defs><linearGradient id="v2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

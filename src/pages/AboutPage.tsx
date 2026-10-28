@@ -38,9 +38,13 @@ const TECHNOLOGIES = [
   'React',
   'TypeScript',
   'Vite',
+  'CSS',
+  'HTML',
+  'JavaScript',
   'WebGL 3D rendering',
   'WebXR virtual reality',
   'Serverless AI image editing',
+  'AI civilization prediction',
   'Canvas image processing',
   'Sketchfab photogrammetry',
 ]

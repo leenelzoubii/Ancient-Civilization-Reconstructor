@@ -83,6 +83,16 @@ export function resetSessionSpend(): void {
   sessionSpendUsd = 0
 }
 
+/**
+ * Adds one billable vision call (civilization classification) to the running
+ * session totals. Called only after the server confirms a real OpenAI answer,
+ * never for the $0 mock path or the local fallback.
+ */
+export function recordVisionCall(): void {
+  sessionVisionCalls += 1
+  sessionSpendUsd += COST_PER_VISION_USD
+}
+
 const DIFF_THRESHOLD = 10 // mean abs diff over 0-255 scale
 const MASK_DILATE_PX = 6
 const MASK_FEATHER_PX = 3

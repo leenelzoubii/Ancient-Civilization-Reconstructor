@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Petra reference artifact 9">
+  <rect width="360" height="300" fill="#f2ddc9"/>
+  <circle cx="292" cy="52" r="58" fill="#f0cfb2" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#4a2a1d" opacity=".14"/>
+  <g>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="#b3745a"/>
+    <path d="M112 54 h136 l10 22 v168 h-156 v-168z" fill="none" stroke="#4a2a1d" stroke-width="5"/>
+    <rect x="128" y="82" width="126.82456770539284" height="8" rx="4" fill="#8d4f3d" opacity="0.946285559423268"/><rect x="128" y="108" width="114.34090720303357" height="8" rx="4" fill="#8d4f3d" opacity="0.6533705227077008"/><rect x="128" y="134" width="131.61103563196957" height="8" rx="4" fill="#8d4f3d" opacity="0.8703348534181714"/><rect x="128" y="160" width="131.05148280784488" height="8" rx="4" fill="#8d4f3d" opacity="0.8446052189916373"/><rect x="128" y="186" width="134.6752550350502" height="8" rx="4" fill="#8d4f3d" opacity="0.8704284441657365"/><rect x="128" y="212" width="136.52805564645678" height="8" rx="4" fill="#8d4f3d" opacity="0.7613724346272648"/>
+    <path d="M120 68 q60-14 120 0" stroke="#4a2a1d" stroke-width="5" fill="none" opacity=".5"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v9)" opacity=".35"/>
+  <defs><linearGradient id="v9" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

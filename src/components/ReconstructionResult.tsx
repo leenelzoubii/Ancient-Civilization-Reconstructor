@@ -1,0 +1,502 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
+import civilizations from '../../data/civilizations.json'
+import { CIV_ILLUSTRATIONS } from '../illustrations'
+import { referenceImages } from '../references'
+import type { ArtifactAnalysis } from '../services/analysis'
+import type { Prediction } from '../services/predictService'
+import type { RestoreResult } from '../services/restoreService'
+
+type Civ = (typeof civilizations.civilizations)[number]
+
+const CIVS: Civ[] = civilizations.civilizations
+
+const CIV_ACCENTS: Record<string, string> = {
+  egypt: '#b8862b',
+  rome: '#a4502f',
+  maya: '#2f6b55',
+  'taj-mahal': '#d9a92e',
+  khorfakkan: '#23466b',
+  petra: '#a4502f',
+  'al-jazirat-al-hamra': '#2f6b55',
+  'dhayah-fort': '#b8862b',
+}
+
+type Tab = 'side' | 'compare' | 'restored'
+
+/**
+ * One-decimal percentages that add up: the two legend rows always sum to the
+ * restored figure shown in the stat tile, even after rounding.
+ */
+function splitPcts(analysis: ArtifactAnalysis) {
+  const restored = Math.round(analysis.restoredPct * 10) / 10
+  const mirrored = Math.min(restored, Math.round(analysis.mirroredPct * 10) / 10)
+  return {
+    restored: restored.toFixed(1),
+    mirrored: mirrored.toFixed(1),
+    inferred: Math.max(0, restored - mirrored).toFixed(1),
+  }
+}
+
+export type ReconstructionResultProps = {
+  originalUrl: string
+  restoredUrl: string | null
+  result: RestoreResult
+  prediction: Prediction | null
+  analysis: ArtifactAnalysis | null
+  /** Wall-clock duration of the whole pipeline, in milliseconds. */
+  elapsedMs: number
+  mode: 'manual' | 'auto'
+  onBack: () => void
+  onReset: () => void
+  onTryAgain: () => void
+  onDownload: () => void
+}
+
+export default function ReconstructionResult({
+  originalUrl,
+  restoredUrl,
+  result,
+  prediction,
+  analysis,
+  elapsedMs,
+  mode,
+  onBack,
+  onReset,
+  onTryAgain,
+  onDownload,
+}: ReconstructionResultProps) {
+  const [tab, setTab] = useState<Tab>('side')
+  const [lightbox, setLightbox] = useState<{ src: string; index: number } | null>(null)
+
+  const predictedCiv = prediction ? CIVS.find((c) => c.id === prediction.civId) ?? null : null
+  const refs = prediction ? referenceImages(prediction.civId) : []
+
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightbox])
+
+  return (
+    <div className="container result-page">
+      <div className="page-head" style={{ paddingBottom: 10 }}>
+        <a
+          className="back"
+          href="#/reconstruct"
+          onClick={(e) => {
+            e.preventDefault()
+            onBack()
+          }}
+        >
+          ← Back to upload
+        </a>
+        <span className="eyebrow">AI Artifact Reconstruction</span>
+        <h1>Reconstruction Result</h1>
+      </div>
+
+      <ol className="stepper">
+        <li className="done">
+          <span className="num">✓</span>Upload broken artifact
+        </li>
+        <li className="done">
+          <span className="num">✓</span>AI processing
+        </li>
+        <li className="active">
+          <span className="num">3</span>Reconstructed result
+        </li>
+      </ol>
+
+      {prediction && predictedCiv ? (
+        <PredictionCard prediction={prediction} civ={predictedCiv} />
+      ) : null}
+
+      <div className="recon-layout">
+        <div>
+          <div className="tabs" role="tablist" aria-label="Result views">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'side'}
+              onClick={() => setTab('side')}
+            >
+              Side by side
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'compare'}
+              onClick={() => setTab('compare')}
+            >
+              Compare slider
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'restored'}
+              onClick={() => setTab('restored')}
+            >
+              Restored areas
+            </button>
+          </div>
+
+          {tab === 'side' && (
+            <div className="result-grid">
+              <div className="result-card">
+                <h3>Your uploaded artifact</h3>
+                <div className="img-box">
+                  <img src={originalUrl} alt="Your uploaded artifact" />
+                </div>
+              </div>
+              <div className="result-arrow" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <path d="M8 24h30M28 14l10 10-10 10" />
+                </svg>
+              </div>
+              <div className="result-card">
+                <h3>AI reconstructed artifact</h3>
+                {predictedCiv ? (
+                  <p className="result-predicted">
+                    Predicted: <strong>{predictedCiv.name}</strong>
+                  </p>
+                ) : null}
+                <div className="img-box">
+                  {restoredUrl ? (
+                    <img src={restoredUrl} alt="AI reconstructed artifact" />
+                  ) : (
+                    <div style={{ padding: 18, textAlign: 'center' }}>
+                      <p style={{ margin: 0, fontWeight: 600 }}>No image was returned.</p>
+                      <p className="muted" style={{ margin: '6px 0 0', fontSize: '.86rem' }}>
+                        {result.error ??
+                          'The restoration service did not send an image. Try again or use the manual brush.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'compare' && (
+            <div className="result-card">
+              <CompareSlider before={originalUrl} after={restoredUrl} />
+              <p className="muted" style={{ margin: '10px 0 0', fontSize: '.88rem' }}>
+                Drag the handle to compare your photo with the reconstruction.
+              </p>
+            </div>
+          )}
+
+          {tab === 'restored' && (
+            <div className="result-card">
+              <h3>Restored areas highlighted</h3>
+              <div className="img-box">
+                {analysis?.overlayUrl || restoredUrl ? (
+                  <img
+                    src={analysis?.overlayUrl ?? (restoredUrl as string)}
+                    alt="Reconstructed artifact with the rebuilt areas highlighted"
+                  />
+                ) : (
+                  <p className="muted" style={{ margin: 0 }}>
+                    The highlighted version is not available for this result.
+                  </p>
+                )}
+              </div>
+              {analysis ? (
+                <div className="legend" style={{ textAlign: 'left' }}>
+                  <span>
+                    <i style={{ background: '#e8a734' }} />
+                    Rebuilt by mirroring the matching side ({splitPcts(analysis).mirrored}%)
+                  </span>
+                  <span>
+                    <i style={{ background: '#d65c42' }} />
+                    Inferred from surrounding colours ({splitPcts(analysis).inferred}%)
+                  </span>
+                </div>
+              ) : null}
+            </div>
+          )}
+
+          <div className="about-note">
+            <strong>About this reconstruction.</strong>{' '}
+            {mode === 'auto'
+              ? 'The AI analysed the full photograph'
+              : 'The AI rebuilt only the areas you painted'}{' '}
+            and used {analysis?.references ?? 9} reference images to estimate the complete
+            appearance of the piece. Missing areas were rebuilt by mirroring the matching side of the
+            object and filling the remaining gaps from surrounding colours. The predicted
+            civilization compares the artifact&rsquo;s colours and shape with typical pottery of each
+            civilization. Results are estimates for educational purposes and should be checked by an
+            expert before being used in research.
+            {result.note ? ` ${result.note}` : ''}
+          </div>
+
+          <div className="result-actions">
+            <button type="button" className="btn btn-outline" onClick={onReset}>
+              Try another artifact
+            </button>
+            {(result.failed || result.weak || result.engine === 'local') && (
+              <button type="button" className="btn btn-outline" onClick={onTryAgain}>
+                Try again
+              </button>
+            )}
+            {restoredUrl && !result.failed ? (
+              <button type="button" className="btn btn-primary" onClick={onDownload}>
+                <svg viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <path d="M7 10l5 5 5-5" />
+                  <path d="M12 15V3" />
+                </svg>
+                Download result
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <aside>
+          {analysis ? (
+            <section className="panel">
+              <h3>Analysis</h3>
+              <AnalysisBody analysis={analysis} confidence={prediction?.confidence ?? 0.5} elapsedMs={elapsedMs} />
+              {refs.length ? (
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Reference images</label>
+                  <div className="ref-grid">
+                    {refs.map((src, i) => (
+                      <button
+                        key={src}
+                        type="button"
+                        className="ref-thumb"
+                        onClick={() => setLightbox({ src, index: i + 1 })}
+                        aria-label={`Enlarge reference image ${i + 1}`}
+                      >
+                        <img src={src} alt={`${predictedCiv?.name ?? 'Civilization'} reference ${i + 1}`} />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="hint">9 samples bundled with the project — click to enlarge.</span>
+                </div>
+              ) : null}
+            </section>
+          ) : (
+            <section className="panel">
+              <h3>Analysis</h3>
+              <p className="muted" style={{ margin: 0, fontSize: '.9rem' }}>
+                The analysis could not be computed for this photo. The reconstruction itself is
+                still available.
+              </p>
+            </section>
+          )}
+        </aside>
+      </div>
+
+      {lightbox ? (
+        <div
+          className="ref-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Reference image ${lightbox.index}`}
+          onClick={() => setLightbox(null)}
+        >
+          <figure onClick={(e) => e.stopPropagation()}>
+            <img src={lightbox.src} alt={`Reference artifact ${lightbox.index}`} />
+            <figcaption>
+              Reference image {lightbox.index} of {refs.length}
+            </figcaption>
+            <button type="button" className="ref-lightbox-close" onClick={() => setLightbox(null)} aria-label="Close">
+              ✕
+            </button>
+          </figure>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Predicted civilization card                                         */
+/* ------------------------------------------------------------------ */
+
+function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ }) {
+  const art = CIV_ILLUSTRATIONS[civ.id]
+  const pct = Math.round(prediction.probability * 100)
+  const accent = CIV_ACCENTS[civ.id] ?? '#b8862b'
+  const ranked = prediction.ranked.length ? prediction.ranked : [{ id: civ.id, name: civ.name, probability: prediction.probability }]
+
+  return (
+    <section className="prediction" style={{ '--accent': accent } as CSSProperties}>
+      <div className="pred-art" dangerouslySetInnerHTML={{ __html: art ? art('pr') : '' }} />
+      <div className="pred-body">
+        <span className="eyebrow">Predicted civilization</span>
+        <h2>
+          {civ.name} <span className="pred-pct">{pct}% match</span>
+        </h2>
+        <p className="muted" style={{ margin: '0 0 14px' }}>
+          {civ.era} · {civ.region}
+        </p>
+        <div className="pred-bars">
+          {ranked.map((entry, i) => {
+            const width = Math.max(2, Math.round(entry.probability * 100))
+            return (
+              <div key={entry.id} className={`pred-row${i === 0 ? ' top' : ''}`}>
+                <span>{entry.name}</span>
+                <div className="bar">
+                  <div
+                    style={{
+                      width: `${width}%`,
+                      background: i === 0 ? '#2f6b55' : '#a4502f',
+                    }}
+                  />
+                </div>
+                <strong>{width}%</strong>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+      <div className="pred-why">
+        <h3>Why the AI thinks so</h3>
+        <ul className="checklist">
+          {prediction.reasons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Analysis body                                                       */
+/* ------------------------------------------------------------------ */
+
+function AnalysisBody({
+  analysis,
+  confidence,
+  elapsedMs,
+}: {
+  analysis: ArtifactAnalysis
+  confidence: number
+  elapsedMs: number
+}) {
+  const clamped = Math.max(0, Math.min(1, confidence))
+  const level = clamped >= 0.72 ? 'high' : clamped >= 0.5 ? 'medium' : 'low'
+  const confCol = { high: '#2f6b55', medium: '#c48a1e', low: '#b03a2e' }[level]
+  const pct = Math.round(clamped * 100)
+
+  return (
+    <>
+      <div className="confidence">
+        <span className={`pill ${level}`}>{level[0].toUpperCase() + level.slice(1)} confidence</span>
+        <div className="bar">
+          <div style={{ width: `${pct}%`, background: confCol }} />
+        </div>
+        <strong>{pct}%</strong>
+      </div>
+
+      <div className="stat-grid">
+        <div className="stat">
+          <strong>{splitPcts(analysis).restored}%</strong>
+          <span>of the object restored</span>
+        </div>
+        <div className="stat">
+          <strong>{Math.round(analysis.symmetryPct)}%</strong>
+          <span>symmetry match</span>
+        </div>
+        <div className="stat">
+          <strong>{analysis.references}</strong>
+          <span>reference images</span>
+        </div>
+        <div className="stat">
+          <strong>{(elapsedMs / 1000).toFixed(1)}s</strong>
+          <span>processing time</span>
+        </div>
+      </div>
+
+      <div className="legend">
+        <span>
+          <i style={{ background: '#e8a734' }} />
+          Rebuilt by mirroring the matching side ({splitPcts(analysis).mirrored}%)
+        </span>
+        <span>
+          <i style={{ background: '#d65c42' }} />
+          Inferred from surrounding colours ({splitPcts(analysis).inferred}%)
+        </span>
+      </div>
+
+      <div className="field" style={{ marginBottom: 0 }}>
+        <label>Colour palette</label>
+        <div className="swatches">
+          {analysis.palette.map((colour) => (
+            <span key={colour} title={colour} style={{ background: colour }} />
+          ))}
+        </div>
+        <span className="hint">Learned from {analysis.paletteSource}.</span>
+      </div>
+    </>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Compare slider                                                      */
+/* ------------------------------------------------------------------ */
+
+function CompareSlider({ before, after }: { before: string; after: string | null }) {
+  const [pos, setPos] = useState(0.5)
+  const [dragging, setDragging] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const move = useCallback((clientX: number) => {
+    const el = ref.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    if (!rect.width) return
+    setPos(Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)))
+  }, [])
+
+  return (
+    <div
+      className="compare"
+      ref={ref}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture(e.pointerId)
+        setDragging(true)
+        move(e.clientX)
+      }}
+      onPointerMove={(e) => {
+        if (dragging) move(e.clientX)
+      }}
+      onPointerUp={() => setDragging(false)}
+      onPointerCancel={() => setDragging(false)}
+    >
+      <img className="compare-before" src={before} alt="Your uploaded artifact" draggable={false} />
+      {after ? (
+        <div className="after" style={{ clipPath: `inset(0 0 0 ${pos * 100}%)` }}>
+          <img src={after} alt="AI reconstructed artifact" draggable={false} />
+        </div>
+      ) : null}
+      <span className="lbl" style={{ left: 10 }}>
+        Before
+      </span>
+      <span className="lbl" style={{ right: 10 }}>
+        After
+      </span>
+      <div
+        className="handle"
+        style={{ left: `calc(${pos * 100}% - 1.5px)` }}
+        role="slider"
+        tabIndex={0}
+        aria-label="Comparison position"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(pos * 100)}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowLeft') setPos((p) => Math.max(0, p - 0.05))
+          if (e.key === 'ArrowRight') setPos((p) => Math.min(1, p + 0.05))
+        }}
+      />
+    </div>
+  )
+}

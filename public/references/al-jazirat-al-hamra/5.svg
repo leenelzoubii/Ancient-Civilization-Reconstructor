@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 300" role="img" aria-label="Al-Jazirat Al-Hamra reference artifact 5">
+  <rect width="360" height="300" fill="#f6e8d2"/>
+  <circle cx="292" cy="52" r="58" fill="#f0dcae" opacity=".5"/>
+  <ellipse cx="180" cy="262" rx="112" ry="14" fill="#6b4a2f" opacity=".14"/>
+  <g>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="#d9a878"/>
+    <rect x="86" y="52" width="188" height="196" rx="14" fill="none" stroke="#6b4a2f" stroke-width="5"/>
+    <rect x="104" y="70" width="152" height="160" rx="8" fill="#f0dcae" opacity=".55"/>
+    <circle cx="132" cy="92" r="15.581773893907666" fill="#2f6b55"/><circle cx="180" cy="92" r="10.32484077103436" fill="#2f6b55"/><circle cx="228" cy="92" r="13.35156711190939" fill="#2f6b55"/><rect x="118.47810383327305" y="120.47810383327305" width="27.043792333453894" height="27.043792333453894" rx="3" fill="#2f6b55"/><circle cx="180" cy="134" r="9.521741028875113" fill="#2f6b55"/><circle cx="228" cy="134" r="10.47560459934175" fill="#2f6b55"/><rect x="120.97325099259615" y="164.97325099259615" width="22.0534980148077" height="22.0534980148077" rx="3" fill="#2f6b55"/><rect x="166.77719628438354" y="162.77719628438354" width="26.44560743123293" height="26.44560743123293" rx="3" fill="#2f6b55"/><circle cx="228" cy="176" r="8.753893852233887" fill="#2f6b55"/><rect x="119.69117422029376" y="205.69117422029376" width="24.61765155941248" height="24.61765155941248" rx="3" fill="#2f6b55"/><circle cx="180" cy="218" r="13.075895953923464" fill="#2f6b55"/><rect x="212.28575461916625" y="202.28575461916625" width="31.42849076166749" height="31.42849076166749" rx="3" fill="#2f6b55"/>
+    <path d="M86 240 h188" stroke="#6b4a2f" stroke-width="6" opacity=".4"/></g>
+  <rect x="0" y="0" width="360" height="300" fill="url(#v5)" opacity=".35"/>
+  <defs><linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".28"/>
+  </linearGradient></defs>
+</svg>

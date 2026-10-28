@@ -21,6 +21,28 @@ const JUDGE_PROMPT =
   'and is the artifact otherwise unchanged in shape, color and background? ' +
   'Reply ONLY with JSON.'
 
+// The civilizations the client knows about. The model must pick from this
+// list so the browser can map the answer back to its own data.
+const CIV_NAMES = [
+  'Ancient Egypt',
+  'Ancient Rome',
+  'Maya Civilization',
+  'Taj Mahal',
+  'Petra',
+  'Khor Fakkan Portuguese Fort',
+  'Al-Jazirat Al-Hamra Courtyard Complex',
+  'Dhayah Fort at Ras-Al Khaimah, UAE',
+]
+
+const CLASSIFY_PROMPT =
+  'You are an archaeologist identifying an ancient artifact from a photograph. ' +
+  'Choose the civilization it most likely belongs to from this list only: ' +
+  CIV_NAMES.join('; ') +
+  '. Rank the top 3 civilizations by probability (0-100, the three values must ' +
+  'sum to 100 or less). Give exactly 3 short reasons (max 14 words each) that ' +
+  'cite the artifact\'s colour, shape or decoration. Set confidence (0-100) for ' +
+  'the top match. Reply ONLY with JSON.'
+
 const JUDGE_SCHEMA = {
   name: 'restoration_judge',
   strict: true,
@@ -34,6 +56,53 @@ const JUDGE_SCHEMA = {
     required: ['repaired', 'unchanged_elsewhere', 'remaining_damage'],
     additionalProperties: false,
   },
+}
+
+const CLASSIFY_SCHEMA = {
+  name: 'artifact_classification',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      civilizations: {
+        type: 'array',
+        minItems: 3,
+        maxItems: 3,
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', enum: CIV_NAMES },
+            probability: { type: 'number' },
+          },
+          required: ['name', 'probability'],
+          additionalProperties: false,
+        },
+      },
+      reasons: {
+        type: 'array',
+        minItems: 3,
+        maxItems: 3,
+        items: { type: 'string' },
+      },
+      confidence: { type: 'number' },
+    },
+    required: ['civilizations', 'reasons', 'confidence'],
+    additionalProperties: false,
+  },
+}
+
+const MOCK_CLASSIFICATION = {
+  civilizations: [
+    { name: 'Maya Civilization', probability: 78 },
+    { name: 'Ancient Egypt', probability: 14 },
+    { name: 'Ancient Rome', probability: 8 },
+  ],
+  reasons: [
+    'Warm terracotta slip typical of Maya polychrome pottery',
+    'Straight, cylindrical sides like Maya cylinder vases',
+    'Deep red painted bands around the middle of the vessel',
+  ],
+  confidence: 66,
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -63,8 +132,8 @@ export async function POST(request: Request): Promise<Response> {
 
   const mode = payload.mode
   const images = payload.images
-  if (mode !== 'describe' && mode !== 'judge') {
-    return errorResponse(400, 'mode must be "describe" or "judge".')
+  if (mode !== 'describe' && mode !== 'judge' && mode !== 'classify') {
+    return errorResponse(400, 'mode must be "describe", "judge" or "classify".')
   }
   if (
     !Array.isArray(images) ||
@@ -74,7 +143,7 @@ export async function POST(request: Request): Promise<Response> {
   ) {
     return errorResponse(400, 'images must be an array of data URLs.')
   }
-  const expected = mode === 'describe' ? 1 : 2
+  const expected = mode === 'judge' ? 2 : 1
   if (images.length !== expected) {
     return errorResponse(400, `mode "${mode}" requires ${expected} image(s).`)
   }
@@ -88,6 +157,9 @@ export async function POST(request: Request): Promise<Response> {
         text: 'Mock damage description: a thin crack runs across the middle (mock, no OpenAI call).',
       })
     }
+    if (mode === 'classify') {
+      return Response.json({ mock: true, classification: MOCK_CLASSIFICATION })
+    }
     return Response.json({
       mock: true,
       judge: {
@@ -98,8 +170,11 @@ export async function POST(request: Request): Promise<Response> {
     })
   }
 
+  const prompt =
+    mode === 'describe' ? DESCRIBE_PROMPT : mode === 'judge' ? JUDGE_PROMPT : CLASSIFY_PROMPT
+
   const content = [
-    { type: 'text', text: mode === 'describe' ? DESCRIBE_PROMPT : JUDGE_PROMPT },
+    { type: 'text', text: prompt },
     ...images.map(url => ({ type: 'image_url', image_url: { url } })),
   ]
 
@@ -111,6 +186,9 @@ export async function POST(request: Request): Promise<Response> {
   }
   if (mode === 'judge') {
     body.response_format = { type: 'json_schema', json_schema: JUDGE_SCHEMA }
+  }
+  if (mode === 'classify') {
+    body.response_format = { type: 'json_schema', json_schema: CLASSIFY_SCHEMA }
   }
 
   const res = await fetch(CHAT_URL, {
@@ -144,18 +222,19 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ text: contentText })
   }
 
-  // Judge: parse defensively (strip code fences); on failure return
-  // judge: null so the pixel diff alone decides the outcome.
-  let judge: unknown = null
+  // Judge/classify: parse defensively (strip code fences); on failure return
+  // null so the caller can fall back to its local heuristics.
+  let json: unknown = null
   try {
     const cleaned = contentText
       .replace(/^```(?:json)?\s*/i, '')
       .replace(/\s*```\s*$/, '')
-    judge = JSON.parse(cleaned)
+    json = JSON.parse(cleaned)
   } catch {
-    judge = null
+    json = null
   }
-  return Response.json({ judge })
+  if (mode === 'judge') return Response.json({ judge: json })
+  return Response.json({ classification: json })
 }
 
 export function GET(): Response {
