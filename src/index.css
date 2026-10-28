@@ -735,7 +735,14 @@ main#app {
   .animate-on-scroll,
   .animate-fade-in-up,
   .animate-fade-in,
-  .fade-in {
+  .fade-in,
+  .reveal,
+  .reveal-stagger > *,
+  .hero-copy > *,
+  .hero-collage,
+  .home-stack figure,
+  .ai-chip,
+  .scroll-cue span::after {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
@@ -1143,3 +1150,509 @@ main#app {
     grid-template-columns: 1fr;
   }
 }
+
+/* =====================================================================
+   Home rebuild — long animated scroll: what the site is, what it does,
+   the eight worlds and the AI restorer. Uses the existing palette so the
+   dark theme only needs token overrides.
+   ===================================================================== */
+
+/* ---------- Scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Staggered variant: the wrapper stays put and its children rise in turn. */
+.reveal-stagger {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.reveal-stagger.in > * {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-stagger.in > *:nth-child(2) { transition-delay: 0.08s; }
+.reveal-stagger.in > *:nth-child(3) { transition-delay: 0.16s; }
+.reveal-stagger.in > *:nth-child(4) { transition-delay: 0.24s; }
+.reveal-stagger.in > *:nth-child(5) { transition-delay: 0.32s; }
+.reveal-stagger.in > *:nth-child(6) { transition-delay: 0.4s; }
+.reveal-stagger.in > *:nth-child(7) { transition-delay: 0.48s; }
+.reveal-stagger.in > *:nth-child(8) { transition-delay: 0.56s; }
+
+/* ---------- Hero entrance + scroll cue ---------- */
+.hero-copy > * {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.hero-copy > *:nth-child(1) { animation-delay: 0.04s; }
+.hero-copy > *:nth-child(2) { animation-delay: 0.1s; }
+.hero-copy > *:nth-child(3) { animation-delay: 0.16s; }
+.hero-copy > *:nth-child(4) { animation-delay: 0.22s; }
+.hero-copy > *:nth-child(5) { animation-delay: 0.28s; }
+.hero-copy > *:nth-child(6) { animation-delay: 0.34s; }
+
+.hero-collage {
+  animation: fadeIn 0.9s ease 0.18s both;
+}
+
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 34px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #d8ccb2;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.scroll-cue span {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(243, 231, 204, 0.1), rgba(243, 231, 204, 0.6));
+}
+
+.scroll-cue span::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold-2);
+  animation: scrollDot 1.8s ease-in-out infinite;
+}
+
+.scroll-cue:hover {
+  color: #fff;
+}
+
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-18px); opacity: 0.35; }
+}
+
+/* ---------- Shared split layout ---------- */
+.home-band {
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(184, 134, 43, 0.09), transparent 60%),
+    linear-gradient(180deg, transparent, rgba(184, 134, 43, 0.05) 18%, rgba(184, 134, 43, 0.05) 82%, transparent);
+}
+
+.home-split {
+  display: grid;
+  grid-template-columns: 1.02fr 0.98fr;
+  gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+}
+
+.home-split-copy h2 {
+  margin-top: 0;
+}
+
+.home-split-copy > p {
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+
+.home-split-copy > p.lead {
+  color: var(--ink-2);
+}
+
+.home-points {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-points li {
+  display: grid;
+  gap: 2px;
+  padding-left: 15px;
+  border-left: 2px solid var(--gold);
+}
+
+.home-points strong {
+  font-family: var(--display);
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
+.home-points span {
+  font-size: 0.9rem;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+/* ---------- Intro stack ---------- */
+.home-stack {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-height: 360px;
+}
+
+.home-stack figure {
+  position: absolute;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 5px solid var(--paper);
+  background: var(--sand);
+  box-shadow: 0 26px 50px rgba(29, 26, 22, 0.28);
+  animation: float 7s ease-in-out infinite;
+}
+
+.home-stack figure svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home-stack figcaption {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(29, 26, 22, 0.75);
+  color: #fff;
+  font-size: 0.74rem;
+}
+
+.home-stack .hs1 {
+  width: 66%;
+  left: 0;
+  top: 3%;
+  transform: rotate(-5deg);
+  z-index: 2;
+  animation-delay: -1.5s;
+}
+
+.home-stack .hs2 {
+  width: 56%;
+  right: 0;
+  top: 30%;
+  transform: rotate(4deg);
+  z-index: 3;
+  animation-delay: -3.5s;
+}
+
+.home-stack .hs3 {
+  width: 60%;
+  left: 8%;
+  bottom: 0;
+  transform: rotate(-2deg);
+  z-index: 4;
+  animation-delay: -5.5s;
+}
+
+.home-stack-badge {
+  position: absolute;
+  right: 2%;
+  top: 4%;
+  z-index: 5;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--gold-2);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Eight-world preview grid ---------- */
+.civ-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.civ-preview {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.civ-preview:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--accent, var(--gold)) 55%, var(--line));
+}
+
+.civ-preview-art {
+  display: block;
+  aspect-ratio: 400 / 260;
+  background: var(--sand);
+}
+
+.civ-preview-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.civ-preview-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 15px 17px 17px;
+}
+
+.civ-preview-era {
+  color: var(--accent, var(--gold));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.civ-preview-body strong {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.civ-preview-tag {
+  flex: 1;
+  color: var(--ink-3);
+  font-size: 0.83rem;
+  line-height: 1.45;
+}
+
+.civ-preview-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.civ-preview-open svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+
+.civ-preview:hover .civ-preview-open svg {
+  transform: translateX(3px);
+}
+
+/* ---------- AI restorer split ---------- */
+.home-ai-art {
+  display: flex;
+  justify-content: center;
+}
+
+.ai-art-frame {
+  position: relative;
+  width: min(100%, 470px);
+  padding: 26px 24px 20px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(110% 90% at 15% 10%, rgba(255, 253, 248, 0.85), transparent 55%),
+    linear-gradient(145deg, var(--sand), var(--paper));
+  box-shadow: var(--shadow-lg);
+}
+
+.ai-art-frame > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ai-chip {
+  position: absolute;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow);
+  animation: float 6.5s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+.ai-chip-1 {
+  top: 10px;
+  left: 6%;
+  animation-delay: -1s;
+}
+
+.ai-chip-2 {
+  top: 30%;
+  right: -4%;
+  animation-delay: -3s;
+}
+
+.ai-chip-3 {
+  bottom: 12px;
+  left: 14%;
+  animation-delay: -5s;
+}
+
+.ai-steps {
+  display: grid;
+  gap: 16px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ai-step;
+}
+
+.ai-steps li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding-left: 46px;
+  counter-increment: ai-step;
+}
+
+.ai-steps li::before {
+  content: counter(ai-step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--gold-2), var(--gold));
+  color: #fffdf8;
+  font-family: var(--body);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.ai-steps strong {
+  font-family: var(--display);
+  font-size: 1.03rem;
+  color: var(--ink);
+}
+
+.ai-steps span {
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* ---------- UAE section note on the civilizations page ---------- */
+.uae-note {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2, #d8cbb2);
+  background: var(--paper);
+  color: var(--ink-3);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Home responsive ---------- */
+@media (max-width: 1000px) {
+  .civ-preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-split {
+    grid-template-columns: 1fr;
+  }
+
+  .home-stack {
+    max-width: 460px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: 320px;
+  }
+
+  .home-ai-art {
+    order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .civ-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-stack {
+    aspect-ratio: 1 / 1.05;
+    min-height: 0;
+  }
+
+  .ai-chip-2 {
+    right: 2%;
+  }
+
+  .scroll-cue {
+    margin-top: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-stagger > *,
+  .hero-copy > *,
+  .hero-collage,
+  .home-stack figure,
+  .ai-chip,
+  .scroll-cue span::after {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

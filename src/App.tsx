@@ -8,6 +8,7 @@ import VisualScene from './components/VisualScene'
 import Flashcards from './components/Flashcards'
 import WebGLViewer from './components/WebGLViewer'
 import type { ViewerApi } from './components/WebGLViewer'
+import { useInView } from './hooks/useInView'
 
 /* =====================================================================
    Data
@@ -42,9 +43,6 @@ const WEBGL_SCENES = new Set([
 
 /** The five ancient-world sites shown in the main home grid. */
 const ANCIENT_IDS = ['egypt', 'rome', 'maya', 'taj-mahal', 'petra']
-
-/** The three Emirati sites, shown in their own heritage section. */
-const UAE_IDS = ['khorfakkan', 'al-jazirat-al-hamra', 'dhayah-fort']
 
 const getCiv = (id: string) => CIVS.find((c) => c.id === id)
 
@@ -448,6 +446,44 @@ function FeatureBanner() {
    1. Home
    ===================================================================== */
 
+/** Scroll-reveal wrapper: content rises into place the first time it is seen. */
+function Reveal({
+  children,
+  className = '',
+  delay = 0,
+  stagger = false,
+}: {
+  children: ReactNode
+  className?: string
+  delay?: number
+  stagger?: boolean
+}) {
+  const { ref, inView } = useInView()
+  return (
+    <div
+      ref={ref}
+      className={`reveal${stagger ? ' reveal-stagger' : ''}${inView ? ' in' : ''}${
+        className ? ` ${className}` : ''
+      }`}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    >
+      {children}
+    </div>
+  )
+}
+
+/** All eight worlds, in the order they appear on the civilizations page. */
+const HOME_PREVIEW_IDS = [
+  'egypt',
+  'rome',
+  'maya',
+  'taj-mahal',
+  'petra',
+  'khorfakkan',
+  'al-jazirat-al-hamra',
+  'dhayah-fort',
+]
+
 function HomePage() {
   const session = readSession()
   const last = session.lastCiv ? getCiv(session.lastCiv) : undefined
@@ -458,7 +494,7 @@ function HomePage() {
 
       <section className="hero">
         <div className="container hero-inner">
-          <div>
+          <div className="hero-copy">
             <span className="eyebrow">Explore · Learn · Reconstruct</span>
             <h1>
               Step inside the worlds of <em>ancient civilizations</em>
@@ -490,6 +526,16 @@ function HomePage() {
                 <span>Years of history</span>
               </div>
             </div>
+            <button
+              type="button"
+              className="scroll-cue"
+              onClick={() =>
+                document.getElementById('home-what')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            >
+              <span aria-hidden="true" />
+              Scroll to explore
+            </button>
           </div>
 
           <div className="hero-collage" aria-hidden="true">
@@ -530,63 +576,221 @@ function HomePage() {
         </div>
       ) : null}
 
-      <VisualScene onSelectCiv={(id) => go(`#/civ/${id}`)} />
-
-      <section className="section">
-        <div className="container">
-          <FeatureBanner />
-
-          <div className="section-title" style={{ marginTop: 52 }}>
-            <div>
-              <span className="eyebrow">How it works</span>
-              <h2>Learning through reconstruction</h2>
+      <section className="section home-intro" id="home-what">
+        <div className="container home-split">
+          <Reveal className="home-split-copy">
+            <span className="eyebrow">What this is</span>
+            <h2>A digital museum you can walk through — and repair</h2>
+            <p className="lead">
+              Ancient Civilization Reconstructor is a browser-based learning space built for our
+              capstone project. It turns eight civilizations into explorable 3D scenes, readable
+              guides and a hands-on AI repair studio.
+            </p>
+            <p>
+              Nothing is downloaded and nothing is a video: every scene, illustration and reference
+              image was made for this project, and the whole experience runs in a normal browser tab
+              on a laptop, a tablet or a phone.
+            </p>
+            <ul className="home-points">
+              <li>
+                <strong>Walk the sites</strong>
+                <span>Orbit, zoom and move between 46 numbered landmarks.</span>
+              </li>
+              <li>
+                <strong>Read the story</strong>
+                <span>Seven guide sections and a flashcard deck for every civilization.</span>
+              </li>
+              <li>
+                <strong>Repair an artifact</strong>
+                <span>Upload a cracked object and rebuild only the damage.</span>
+              </li>
+            </ul>
+            <div className="hero-actions">
+              <a className="btn btn-gold" href="#/civilizations">
+                Browse civilizations <Ico name="arrowR" />
+              </a>
+              <a className="btn btn-outline" href="#/about">
+                About the project
+              </a>
             </div>
-          </div>
-          <div className="steps-row">
+          </Reveal>
+
+          <Reveal className="home-stack" delay={140}>
+            <figure className="hs1">
+              <Svg html={HERO_ILLUSTRATIONS.egypt('hs1')} />
+              <figcaption>Giza, Egypt</figcaption>
+            </figure>
+            <figure className="hs2">
+              <Svg html={HERO_ILLUSTRATIONS.rome('hs2')} />
+              <figcaption>Rome, Italy</figcaption>
+            </figure>
+            <figure className="hs3">
+              <Svg html={HERO_ILLUSTRATIONS.uae('hs3')} />
+              <figcaption>Al Jahili Fort, UAE</figcaption>
+            </figure>
+            <span className="home-stack-badge">8 worlds · 46 landmarks</span>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section home-band" id="home-do">
+        <div className="container">
+          <Reveal>
+            <div className="section-title">
+              <div>
+                <span className="eyebrow">What you can do</span>
+                <h2>Four ways to explore the past</h2>
+                <p className="section-lead">
+                  Start with a civilization, then move between the 3D scene, the written guide and the
+                  artifact restorer.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal stagger className="steps-row">
             <div className="step-card">
-              <h3>Choose</h3>
+              <h3>Choose a world</h3>
               <p>
-                Select a civilization — Ancient Egypt, Rome, the Maya, the Taj Mahal, Petra or one of
-                three UAE heritage sites.
+                Start with Ancient Egypt, Rome, the Maya, the Taj Mahal, Petra or one of three Emirati
+                heritage sites.
               </p>
             </div>
             <div className="step-card">
               <h3>Explore in 3D</h3>
               <p>
-                Rotate and zoom around a reconstructed city, then jump between its numbered
-                landmarks.
+                Orbit a hand-built scene, fly to its numbered landmarks and switch to a walk-in VR
+                view when you want to stand inside it.
               </p>
             </div>
             <div className="step-card">
-              <h3>Learn</h3>
+              <h3>Learn the details</h3>
               <p>
-                Read about history, architecture, daily life and achievements, with key facts and a
-                flashcard quiz.
+                Seven illustrated sections cover history, architecture, daily life, culture, economy
+                and achievements — with a flashcard quiz at the end.
               </p>
             </div>
             <div className="step-card">
-              <h3>Reconstruct</h3>
+              <h3>Reconstruct an artifact</h3>
               <p>
-                Upload a broken artifact and let the AI estimate how it looked when it was complete.
+                Upload a photo of a broken object, mark the damage and repair it with AI — with the
+                price shown before anything is generated.
               </p>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" id="home-worlds">
         <div className="container">
-          <div className="section-title">
-            <div>
-              <span className="eyebrow">Why it works</span>
-              <h2>History you can walk through</h2>
-              <p className="section-lead">
-                Every part of the site is built to make an ancient place feel understandable — not
-                just readable.
-              </p>
+          <Reveal>
+            <div className="section-title">
+              <div>
+                <span className="eyebrow">The civilizations</span>
+                <h2>Eight worlds, one scroll</h2>
+                <p className="section-lead">
+                  Five ancient civilizations and three Emirati heritage sites — from the pyramids of
+                  Giza to a hilltop fort in Ras Al Khaimah.
+                </p>
+              </div>
+              <a className="btn btn-outline btn-sm" href="#/civilizations">
+                All eight worlds <Ico name="arrowR" />
+              </a>
             </div>
-          </div>
-          <div className="feature-grid">
+          </Reveal>
+          <Reveal stagger className="civ-preview-grid">
+            {HOME_PREVIEW_IDS.map((id) => {
+              const civ = getCiv(id)
+              const art = CIV_ILLUSTRATIONS[id]
+              if (!civ) return null
+              return (
+                <a
+                  className="civ-preview"
+                  key={id}
+                  href={`#/civ/${id}`}
+                  style={{ '--accent': accentOf(id) } as CSSProperties}
+                >
+                  <span className="civ-preview-art" aria-hidden="true">
+                    {art ? <Svg html={art(`pv-${id}`)} /> : null}
+                  </span>
+                  <span className="civ-preview-body">
+                    <span className="civ-preview-era">{civ.era}</span>
+                    <strong>{civ.name}</strong>
+                    <span className="civ-preview-tag">{taglineOf(civ)}.</span>
+                    <span className="civ-preview-open">
+                      Open in 3D <Ico name="arrowR" />
+                    </span>
+                  </span>
+                </a>
+              )
+            })}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section home-band home-ai" id="home-ai">
+        <div className="container home-split home-split-reverse">
+          <Reveal className="home-ai-art">
+            <div className="ai-art-frame">
+              <Svg html={ARTIFACT_ILLUSTRATION()} />
+              <span className="ai-chip ai-chip-1">Cracks only</span>
+              <span className="ai-chip ai-chip-2">Price first</span>
+              <span className="ai-chip ai-chip-3">Manual + automatic</span>
+            </div>
+          </Reveal>
+          <Reveal className="home-split-copy" delay={120}>
+            <span className="eyebrow">The AI restorer</span>
+            <h2>Repair the cracks — keep the artifact</h2>
+            <p className="lead">
+              The restorer is built to repair damage, not to invent a new object. You choose what
+              gets rebuilt, and every other pixel of your photo stays exactly as it is.
+            </p>
+            <ol className="ai-steps">
+              <li>
+                <strong>Upload a photo</strong>
+                <span>
+                  A phone photo is enough. The image is resized in your browser before anything is
+                  sent.
+                </span>
+              </li>
+              <li>
+                <strong>Mark the damage</strong>
+                <span>
+                  Paint the cracks yourself, or let the local detector find thin cracks and small
+                  chips and show them in red.
+                </span>
+              </li>
+              <li>
+                <strong>Confirm the price</strong>
+                <span>
+                  You see the estimated cost and the exact repair area before a single pixel is
+                  generated.
+                </span>
+              </li>
+            </ol>
+            <div className="hero-actions">
+              <a className="btn btn-gold" href="#/reconstruct">
+                <Ico name="sparkle" /> Reconstruct an artifact
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section" id="home-why">
+        <div className="container">
+          <Reveal>
+            <div className="section-title">
+              <div>
+                <span className="eyebrow">Why it works</span>
+                <h2>History you can walk through</h2>
+                <p className="section-lead">
+                  Every part of the site is built to make an ancient place feel understandable — not
+                  just readable.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal stagger className="feature-grid">
             <article className="feature-card">
               <span className="feature-ico" aria-hidden="true">3D</span>
               <h3>Numbered landmarks</h3>
@@ -619,9 +823,9 @@ function HomePage() {
                 life to economy and achievements.
               </p>
             </article>
-          </div>
+          </Reveal>
 
-          <div className="stat-band">
+          <Reveal stagger className="stat-band">
             <div>
               <strong>8</strong>
               <span>Civilizations</span>
@@ -638,7 +842,7 @@ function HomePage() {
               <strong>4,800</strong>
               <span>Years of history</span>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -674,61 +878,36 @@ function HomePage() {
 
 function CivilizationsPage() {
   return (
-    <div className="container">
-      <div className="page-head">
-        <span className="eyebrow">Civilizations</span>
-        <h1>Select a Civilization</h1>
-        <p className="lead">
-          Each civilization includes an interactive 3D reconstruction and a guide to its history,
-          architecture, daily life and achievements.
-        </p>
-      </div>
-      <div className="section-title" style={{ marginTop: 8 }}>
-        <div>
-          <span className="eyebrow">Ancient world</span>
-          <h2>Five ancient sites</h2>
-        </div>
-      </div>
-      <div className="civ-grid">
-        {CIVS.filter((civ) => ANCIENT_IDS.includes(civ.id)).map((civ) => (
-          <CivCard key={civ.id} civ={civ} detailed />
-        ))}
-      </div>
-
-      {/* Ras Al Khaimah spotlight — one card, easy to remove. */}
-      <div className="section-title rak-title" style={{ marginTop: 52 }}>
-        <div>
-          <span className="eyebrow">Ras Al Khaimah</span>
-          <h2>Featured Emirati heritage</h2>
-          <p className="section-lead">
-            Dhayah Fort is the emirate&rsquo;s last hilltop stronghold — climb it in 3D and walk
-            through its towers.
+    <div>
+      <div className="container">
+        <div className="page-head">
+          <span className="eyebrow">Civilizations</span>
+          <h1>Select a Civilization</h1>
+          <p className="lead">
+            Each civilization includes an interactive 3D reconstruction and a guide to its history,
+            architecture, daily life and achievements.
           </p>
         </div>
-      </div>
-      <div className="civ-grid rak-grid">
-        {CIVS.filter((civ) => civ.id === 'dhayah-fort').map((civ) => (
-          <CivCard key={civ.id} civ={civ} detailed spotlight />
-        ))}
-      </div>
-
-      <div className="section-title" style={{ marginTop: 52 }}>
-        <div>
-          <span className="eyebrow">UAE heritage</span>
-          <h2>Emirati sites</h2>
-          <p className="section-lead">
-            A Portuguese fort and a pearl-diving village on the UAE&rsquo;s east coast.
-          </p>
+        <div className="section-title" style={{ marginTop: 8 }}>
+          <div>
+            <span className="eyebrow">Ancient world</span>
+            <h2>Five ancient sites</h2>
+          </div>
+        </div>
+        <div className="civ-grid">
+          {CIVS.filter((civ) => ANCIENT_IDS.includes(civ.id)).map((civ) => (
+            <CivCard key={civ.id} civ={civ} detailed />
+          ))}
         </div>
       </div>
-      <div className="civ-grid">
-        {CIVS.filter((civ) => UAE_IDS.includes(civ.id) && civ.id !== 'dhayah-fort').map((civ) => (
-          <CivCard key={civ.id} civ={civ} detailed />
-        ))}
-      </div>
 
-      <FeatureBanner />
-      <div style={{ height: 56 }} />
+      {/* Our own UAE heritage: the desert panorama, camels and the three Emirati sites. */}
+      <VisualScene onSelectCiv={(id) => go(`#/civ/${id}`)} />
+
+      <div className="container">
+        <FeatureBanner />
+        <div style={{ height: 56 }} />
+      </div>
     </div>
   )
 }

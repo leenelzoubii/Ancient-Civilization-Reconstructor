@@ -2,11 +2,12 @@ import type { CSSProperties } from 'react'
 import { CIV_ILLUSTRATIONS } from '../illustrations'
 
 /* =====================================================================
-   The UAE Heritage — our extra section on the home page.
+   The UAE Heritage — our own section on the civilizations page.
 
    A desert panorama (sky, sun, clouds, dunes, camels and palms) followed
    by the three Emirati sites, presented with the same `.civ-card` grid the
-   supervisor's site uses for the ancient civilizations.
+   supervisor's site uses for the ancient civilizations. Dhayah Fort keeps
+   its Ras Al Khaimah spotlight from the previous revision.
    ===================================================================== */
 
 const UAE_SITES = [
@@ -178,12 +179,9 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
               palm groves and watchtowers. Three of those places are reconstructed in 3D below.
             </p>
           </div>
-          <a className="btn btn-outline btn-sm" href="#/civilizations">
-            All eight sites
-          </a>
+          <span className="uae-note">3 Emirati sites · desert, coast &amp; forts</span>
         </div>
       </div>
-
       <div className="uae-panorama" aria-hidden="true">
         <div className="uae-sky" />
         <Sun />
@@ -220,10 +218,13 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
             const art = CIV_ILLUSTRATIONS[site.id]
             return (
               <article
-                className="civ-card"
+                className={`civ-card${site.id === 'dhayah-fort' ? ' civ-card-spotlight' : ''}`}
                 key={site.id}
                 style={{ '--accent': site.accent } as CSSProperties}
               >
+                {site.id === 'dhayah-fort' ? (
+                  <span className="badge badge-rak">Ras Al Khaimah</span>
+                ) : null}
                 <div className="art">{art ? <span dangerouslySetInnerHTML={{ __html: art('uae') }} /> : null}</div>
                 <div className="body">
                   <span className="era">{site.era}</span>
