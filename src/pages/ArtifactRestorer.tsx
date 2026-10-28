@@ -14,6 +14,8 @@ import { predictCivilization } from '../services/predictService'
 import type { Prediction } from '../services/predictService'
 import { analyzeArtifact } from '../services/analysis'
 import type { ArtifactAnalysis } from '../services/analysis'
+import { detectDamage } from '../services/damage'
+import type { DetectedDamage } from '../services/damage'
 import ReconstructionResult from '../components/ReconstructionResult'
 
 type Mode = 'manual' | 'auto'
@@ -57,9 +59,12 @@ export default function ArtifactRestorer() {
   const [pendingMask, setPendingMask] = useState<string | null>(null)
   const [lastFraction, setLastFraction] = useState(0)
   const [spend, setSpend] = useState(getSessionSpend)
+  const [detecting, setDetecting] = useState(false)
+  const [autoDamage, setAutoDamage] = useState<DetectedDamage | null>(null)
   const inFlightRef = useRef(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const autoCanvasRef = useRef<HTMLCanvasElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -213,17 +218,39 @@ export default function ArtifactRestorer() {
     }, 'image/png')
   }, [stopCamera, handleFile])
 
+  const drawOverlay = useCallback((canvas: HTMLCanvasElement | null) => {
+    const mask = maskRef.current
+    if (!canvas || !mask) return
+    const ctx = canvas.getContext('2d')!
+    const { scale, offX, offY } = imgMapRef.current
+    ctx.save()
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.drawImage(mask, offX, offY, mask.width * scale, mask.height * scale)
+    ctx.globalCompositeOperation = 'source-in'
+    ctx.fillStyle = BRUSH_COLOR
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.restore()
+  }, [])
+
   const initCanvas = useCallback(() => {
-    if (!imageRef.current || !canvasRef.current) return
+    if (!imageRef.current) return
     const img = imageRef.current
-    const canvas = canvasRef.current
     const cw = img.clientWidth
     const ch = img.clientHeight
     if (!cw || !ch) return
-    canvas.width = cw
-    canvas.height = ch
-    const ctx = canvas.getContext('2d')!
-    ctx.clearRect(0, 0, cw, ch)
+    const canvas = canvasRef.current
+    if (canvas) {
+      canvas.width = cw
+      canvas.height = ch
+      canvas.getContext('2d')!.clearRect(0, 0, cw, ch)
+    }
+    const autoCanvas = autoCanvasRef.current
+    if (autoCanvas) {
+      autoCanvas.width = cw
+      autoCanvas.height = ch
+      autoCanvas.getContext('2d')!.clearRect(0, 0, cw, ch)
+    }
     const nw = img.naturalWidth
     const nh = img.naturalHeight
     if (!nw || !nh) return
@@ -239,12 +266,8 @@ export default function ArtifactRestorer() {
     // user already painted instead of wiping it, and redraw the overlay.
     const existing = maskRef.current
     if (existing && existing.width === nw && existing.height === nh) {
-      ctx.save()
-      ctx.drawImage(existing, offX, offY, nw * scale, nh * scale)
-      ctx.globalCompositeOperation = 'source-in'
-      ctx.fillStyle = BRUSH_COLOR
-      ctx.fillRect(0, 0, cw, ch)
-      ctx.restore()
+      drawOverlay(canvas)
+      drawOverlay(autoCanvas)
       return
     }
 
@@ -257,13 +280,13 @@ export default function ArtifactRestorer() {
     undoRef.current = []
     setPainted(false)
     setCanUndo(false)
-  }, [])
+  }, [drawOverlay])
 
   useEffect(() => {
-    if (step === 'preview' && mode === 'manual') {
+    if (step === 'preview') {
       // Runs on step change AND when the brush canvas mounts (e.g. the user
       // switches Auto → Manual after uploading), otherwise the mask canvas
-      // would never exist and painting would be a no-op.
+      // would never exist and painting / detection would be a no-op.
       const timer = setTimeout(initCanvas, 200)
       return () => clearTimeout(timer)
     }
@@ -290,45 +313,55 @@ export default function ArtifactRestorer() {
     return false
   }, [])
 
-  /** Rebuilds the red overlay from the mask (after undo / clear). */
+  /** Rebuilds the red overlay from the mask (after undo / clear / detection). */
   const syncOverlay = useCallback(() => {
-    const canvas = canvasRef.current
-    const mask = maskRef.current
-    if (!canvas || !mask) return
-    const ctx = canvas.getContext('2d')!
-    const { scale, offX, offY } = imgMapRef.current
-    ctx.save()
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.drawImage(mask, offX, offY, mask.width * scale, mask.height * scale)
-    ctx.globalCompositeOperation = 'source-in'
-    ctx.fillStyle = BRUSH_COLOR
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.restore()
-  }, [])
+    drawOverlay(canvasRef.current)
+    drawOverlay(autoCanvasRef.current)
+  }, [drawOverlay])
 
-  // Auto mode: mark the whole photograph as damaged. The mask must be the
-  // image's exact size, and coverage is the ALPHA channel (opaque = damage),
-  // so we fill an opaque canvas at naturalWidth x naturalHeight.
-  const getFullImageMask = useCallback(async (): Promise<string | null> => {
-    if (!originalBase64) return null
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const i = new Image()
-      i.onload = () => resolve(i)
-      i.onerror = () => reject(new Error('Could not read the image.'))
-      i.src = `data:image/png;base64,${originalBase64}`
-    })
-    const w = img.naturalWidth || img.width
-    const h = img.naturalHeight || img.height
-    if (!w || !h) return null
-    const mask = document.createElement('canvas')
-    mask.width = w
-    mask.height = h
-    const ctx = mask.getContext('2d')!
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, w, h) // opaque alpha = 100% coverage
-    return mask.toDataURL('image/png')
-  }, [originalBase64])
+  /**
+   * Auto mode: run the local crack detector and copy the result into the mask
+   * canvas. Only the detected pixels (plus a small feather) are sent to the
+   * model, so the rest of the photo cannot be redrawn.
+   */
+  const applyDetectedMask = useCallback(
+    (detected: DetectedDamage) => {
+      const mask = maskRef.current
+      if (!mask) return
+      const ctx = mask.getContext('2d')!
+      ctx.clearRect(0, 0, mask.width, mask.height)
+      ctx.drawImage(detected.mask, 0, 0, mask.width, mask.height)
+      paintedRef.current = detected.found
+      setPainted(detected.found)
+      syncOverlay()
+    },
+    [syncOverlay]
+  )
+
+  // Detect damage as soon as the auto preview opens, so the red overlay and
+  // the coverage figure are visible before the user confirms anything.
+  useEffect(() => {
+    if (step !== 'preview' || mode !== 'auto' || !originalImage) return
+    let alive = true
+    setDetecting(true)
+    setAutoDamage(null)
+    const timer = window.setTimeout(() => {
+      detectDamage(originalImage)
+        .then((detected) => {
+          if (!alive) return
+          setAutoDamage(detected)
+          if (detected.found) applyDetectedMask(detected)
+          setDetecting(false)
+        })
+        .catch(() => {
+          if (alive) setDetecting(false)
+        })
+    }, 300)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
+  }, [step, mode, originalImage, applyDetectedMask])
 
   // Step 1: pre-flight + confirmation. Makes NO API call.
   const handleRestore = useCallback(async () => {
@@ -339,18 +372,32 @@ export default function ArtifactRestorer() {
     let mask: string | null
     if (mode === 'auto') {
       try {
-        mask = await getFullImageMask()
-      } catch {
-        mask = null
+        let detected = autoDamage
+        if (!detected) {
+          detected = await detectDamage(
+            originalImage ?? `data:image/png;base64,${originalBase64}`
+          )
+          setAutoDamage(detected)
+          if (detected.found) applyDetectedMask(detected)
+        }
+        if (!detected.found) {
+          setError(
+            'No cracks or damage were detected in this photo. Switch to Manual and paint the damaged areas, or try a sharper, well-lit photo.'
+          )
+          return
+        }
+        mask = detected.mask.toDataURL('image/png')
+        const pre = await preflightMask(originalBase64, mask)
+        setPendingMask(mask)
+        setLastFraction(pre.analysis.fraction)
+        setLargeAck(false)
+        setConfirming({
+          large: pre.analysis.fraction > LARGE_MASK_FRACTION,
+          fraction: pre.analysis.fraction,
+        })
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Automatic detection failed. Try Manual mode.')
       }
-      if (!mask) {
-        setError('Unable to prepare auto-restore mask. Try another photo.')
-        return
-      }
-      setPendingMask(mask)
-      setLastFraction(1) // whole photograph
-      setLargeAck(false)
-      setConfirming({ large: true, fraction: 1 })
     } else {
       mask = getMaskDataUrl()
       if (!mask) {
@@ -370,7 +417,7 @@ export default function ArtifactRestorer() {
         setError(err instanceof Error ? err.message : 'Mask check failed.')
       }
     }
-  }, [originalBase64, mode, getMaskDataUrl, getFullImageMask])
+  }, [originalBase64, originalImage, mode, getMaskDataUrl, autoDamage, applyDetectedMask])
 
   // Step 2: the single paid call (or $0 mock), then prediction + analysis.
   const doRestore = useCallback(async () => {
@@ -403,7 +450,10 @@ export default function ArtifactRestorer() {
             restoredUrl,
             mode,
             civId: pred?.civId ?? 'maya',
-            paintedMask: mode === 'manual' ? maskRef.current : null,
+            // Both modes now have a real mask canvas: manual = brush,
+            // auto = locally detected cracks. The analysis must measure the
+            // area that was actually repaired, not a symmetry guess.
+            paintedMask: maskRef.current,
           })
           setAnalysis(ana)
         } catch {
@@ -449,19 +499,22 @@ export default function ArtifactRestorer() {
             ? 'This run is free (mock mode — no OpenAI call). Continue?'
             : `This will use ${estimatedEditCostLabel()} of OpenAI credit. Continue?`}
         </p>
-        <p className="muted" style={{ margin: '0 0 10px', fontSize: '.86rem' }}>
-          Mode: {mode === 'auto' ? 'Auto (AI detects & fixes cracks)' : 'Manual (brush-selected)'} ·{' '}
+        <p className="muted" style={{ margin: '0 0 4px', fontSize: '.86rem' }}>
+          Mode: {mode === 'auto' ? 'Auto (detected cracks)' : 'Manual (brush-selected)'} ·{' '}
           {mode === 'auto'
-            ? 'Coverage: the whole photograph.'
+            ? `Detected damage: ${(confirming.fraction * 100).toFixed(1)}% of the image.`
             : `Painted area: ${(confirming.fraction * 100).toFixed(1)}% of the image.`}
+        </p>
+        <p className="muted" style={{ margin: '0 0 10px', fontSize: '.82rem' }}>
+          Only the marked areas are rebuilt. Every other pixel of your photo stays exactly as it
+          is — no new object, no restyling, no crop.
         </p>
 
         {confirming.large && (
           <div style={{ marginBottom: 12 }}>
             <p style={{ margin: '0 0 8px', fontSize: '.86rem', color: 'var(--danger)' }}>
-              {mode === 'auto'
-                ? 'The whole photo will be redrawn, so results may look invented and this uses paid credit.'
-                : 'Large painted area. Results may look invented and this uses paid credit.'}
+              Large repair area. A thinner mask gives a more faithful repair, so check the red
+              overlay before continuing.
             </p>
             <label className="switch">
               <input
@@ -821,11 +874,15 @@ export default function ArtifactRestorer() {
 
           {(step === 'preview' || step === 'restoring') && originalImage && (
             <section className="panel">
-              <h3>{mode === 'auto' ? 'Ready for automatic restoration' : 'Paint over the damage'}</h3>
+              <h3>{mode === 'auto' ? 'Automatic detection' : 'Paint over the damage'}</h3>
               <p className="sub">
                 {mode === 'auto'
-                  ? 'No brushing needed. The AI studies the whole photograph, detects cracks and imperfections, and rebuilds them.'
-                  : 'Paint thinly along the cracks, not over the whole object. Use a mouse, a finger or a pen — the red overlay shows exactly what the AI will rebuild.'}
+                  ? detecting
+                    ? 'Scanning the photo for cracks, chips and imperfections…'
+                    : autoDamage?.found
+                      ? `Detected damage on ${(autoDamage.fraction * 100).toFixed(1)}% of the photo — shown in red. Only those pixels are rebuilt; the rest of your photo is kept identical.`
+                      : 'No cracks or damage were detected. Switch to Manual and paint the areas you want repaired.'
+                  : 'Paint thinly along the cracks, not over the whole object. Use a mouse, a finger or a pen — the red overlay shows exactly what the AI will rebuild. Everything outside the red stays identical.'}
               </p>
 
               <div className="result-card" style={{ padding: 10 }}>
@@ -837,6 +894,9 @@ export default function ArtifactRestorer() {
                     className="brush-image"
                     onLoad={initCanvas}
                   />
+                  {mode === 'auto' && (
+                    <canvas ref={autoCanvasRef} className="brush-canvas auto-mask" aria-hidden="true" />
+                  )}
                   {mode === 'manual' && (
                     <>
                       <canvas

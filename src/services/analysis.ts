@@ -379,10 +379,9 @@ export async function analyzeArtifact(opts: AnalyzeOptions): Promise<ArtifactAna
   const axis = findAxis(mask, width, height, bb)
   const symmetry = symmetryScore(mask, width, bb, axis)
 
-  const damage =
-    opts.mode === 'manual' && opts.paintedMask
-      ? paintedDamage(opts.paintedMask, width, height)
-      : autoDamage(px, mask, axis)
+  const damage = opts.paintedMask
+    ? paintedDamage(opts.paintedMask, width, height)
+    : autoDamage(px, mask, axis)
 
   let objectCount = 0
   let damaged = 0

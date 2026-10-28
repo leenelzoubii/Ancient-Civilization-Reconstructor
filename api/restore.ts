@@ -128,31 +128,59 @@ export async function POST(request: Request): Promise<Response> {
     )
   }
 
-  const outbound = new FormData()
-  outbound.append('model', IMAGE_MODEL)
-  outbound.append('prompt', prompt)
-  outbound.append('size', 'auto')
-  outbound.append('quality', IMAGE_QUALITY)
-  // The model returns a ~1024px image. As PNG that is a 4-5MB base64 body,
-  // which can exceed Vercel's 4.5MB response limit and arrive truncated (the
-  // browser then shows no image at all). JPEG at 85 keeps the body ~300KB.
-  outbound.append('background', 'opaque')
-  outbound.append('output_format', 'jpeg')
-  outbound.append('output_compression', '85')
-  outbound.append('image[]', image, 'image.png')
-  if (mask instanceof Blob && mask.size > 0) {
-    outbound.append('mask', mask, 'mask.png')
+  // Extra guard rail appended on the server: even if a client sends a vague
+  // prompt, the model is told this is a pixel-faithful repair, not a redraw.
+  const STRICT_REPAIR_SUFFIX =
+    '\n\nSTRICT REQUIREMENTS: This is an image repair, not image generation. ' +
+    'Preserve the original photograph exactly — same object, same position, same framing, ' +
+    'same crop, same colours, same lighting and same background. Only fill the transparent ' +
+    'mask region. Do not replace, restyle, redraw, zoom, rotate or add anything. ' +
+    'Every unmasked detail must remain identical. The output must be the same photo with ' +
+    'only the damage repaired, never a new or different artifact.'
+
+  const buildOutbound = (withFidelity: boolean) => {
+    const outbound = new FormData()
+    outbound.append('model', IMAGE_MODEL)
+    outbound.append('prompt', `${prompt}${STRICT_REPAIR_SUFFIX}`)
+    outbound.append('size', 'auto')
+    outbound.append('quality', IMAGE_QUALITY)
+    // High input fidelity keeps the original artifact's texture, shape and
+    // colours instead of letting the model invent a new object.
+    if (withFidelity) outbound.append('input_fidelity', 'high')
+    // The model returns a ~1024px image. As PNG that is a 4-5MB base64 body,
+    // which can exceed Vercel's 4.5MB response limit and arrive truncated (the
+    // browser then shows no image at all). JPEG at 85 keeps the body ~300KB.
+    outbound.append('background', 'opaque')
+    outbound.append('output_format', 'jpeg')
+    outbound.append('output_compression', '85')
+    outbound.append('image[]', image, 'image.png')
+    if (mask instanceof Blob && mask.size > 0) {
+      outbound.append('mask', mask, 'mask.png')
+    }
+    return outbound
   }
 
-  const res = await fetch(OPENAI_EDITS_URL, {
+  let res = await fetch(OPENAI_EDITS_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${key ?? ''}` },
-    body: outbound,
+    body: buildOutbound(true),
   })
+  let body = await res.text()
+
+  // Older image models reject `input_fidelity`. That request is not billed,
+  // so retry once without it rather than failing the whole restore.
+  if (!res.ok && res.status === 400 && /input_fidelity/i.test(body)) {
+    console.log('[restore] input_fidelity unsupported, retrying without it')
+    res = await fetch(OPENAI_EDITS_URL, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key ?? ''}` },
+      body: buildOutbound(false),
+    })
+    body = await res.text()
+  }
 
   // Pass OpenAI's status and body through unchanged so the client can
   // surface real errors (billing, rate limits, moderation, org verification).
-  const body = await res.text()
   if (res.ok) {
     // 2xx = actually billed. Failed requests cost nothing and don't count.
     recordBilledCall()

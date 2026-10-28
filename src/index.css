@@ -1080,6 +1080,12 @@ main#app {
   touch-action: none;
 }
 
+/* Auto mode: the same red overlay, but read-only. */
+.auto-mask {
+  pointer-events: none;
+  cursor: default;
+}
+
 .brush-cursor {
   position: absolute;
   left: 0;

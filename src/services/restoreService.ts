@@ -99,12 +99,16 @@ const MASK_FEATHER_PX = 3
 const JUDGE_MAX_SIDE = 768
 
 const EDIT_PROMPT_MASK =
-  'This is a photo of an ancient terracotta/stone artifact with thin ' +
-  'cracks. Fill ONLY the transparent masked areas, which follow the ' +
-  'cracks, so the surface looks continuous and undamaged. Match the ' +
-  'surrounding clay/stone color, grain, texture and lighting exactly. ' +
-  'Keep the carved features, shape, colors and background identical. Do ' +
-  'not smooth, blur, flatten or paint over details. Do not add anything new.'
+  'IMAGE REPAIR ONLY — this is not a generation, restyling or replacement task. ' +
+  'The transparent area of the mask marks thin cracks, chips and small missing pieces. ' +
+  'Fill ONLY those transparent pixels so the surface looks continuous and undamaged. ' +
+  'Use the exact surrounding clay/stone colour, grain, speckles, texture and lighting, and ' +
+  'continue existing patterns and contours across the gap. ' +
+  'Keep the artifact, its shape, carved details, framing, crop, colours, lighting and ' +
+  'background pixel-identical to the input. Do not replace, redraw, rotate, zoom, crop or ' +
+  'move anything. Do not add or remove objects, hands, shadows or decorations. ' +
+  'If you are unsure, copy the nearest surrounding texture instead of inventing detail. ' +
+  'The result must look like the same photograph with only the damaged spots repaired.'
 
 export type JudgeResult = {
   repaired: boolean | null
@@ -816,7 +820,23 @@ async function blendByCoverage(
   ctx.drawImage(before, 0, 0, w, h)
   const beforeData = ctx.getImageData(0, 0, w, h)
   ctx.clearRect(0, 0, w, h)
-  ctx.drawImage(after, 0, 0, w, h)
+  // The edit model can return a slightly different aspect ratio; centre-crop
+  // it to the photo's aspect instead of stretching the repaired pixels.
+  const target = w / h
+  const aw = after.naturalWidth
+  const ah = after.naturalHeight
+  let sx = 0
+  let sy = 0
+  let sw = aw
+  let sh = ah
+  if (aw / ah > target) {
+    sw = Math.round(ah * target)
+    sx = Math.round((aw - sw) / 2)
+  } else if (aw / ah < target) {
+    sh = Math.round(aw / target)
+    sy = Math.round((ah - sh) / 2)
+  }
+  ctx.drawImage(after, sx, sy, sw, sh, 0, 0, w, h)
   const afterData = ctx.getImageData(0, 0, w, h)
 
   const out = ctx.createImageData(w, h)
