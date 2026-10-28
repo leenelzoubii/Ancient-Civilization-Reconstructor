@@ -119,6 +119,8 @@ const ICONS = {
   vr: '<svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4l-2-3h-2l-2 3H5a2 2 0 0 1-2-2z"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/></svg>',
   sparkle: '<svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 3v4M17 5h4"/></svg>',
   cube: '<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg>',
+  sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
   bigArrow:
     '<svg viewBox="0 0 48 48"><path d="M8 24h30M28 14l10 10-10 10"/></svg>',
 } as const
@@ -167,6 +169,19 @@ function markVisited(id: string) {
 }
 
 /* =====================================================================
+   Theme: light is the supervisor's palette, dark keeps the same warm
+   brown / cream / gold language with inverted surfaces.
+   ===================================================================== */
+
+type Theme = 'light' | 'dark'
+
+function readTheme(): Theme {
+  const current = document.documentElement.dataset.theme
+  if (current === 'dark' || current === 'light') return current
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+/* =====================================================================
    Hash router
    ===================================================================== */
 
@@ -194,7 +209,15 @@ const go = (href: string) => {
    Shared chrome
    ===================================================================== */
 
-function SiteHeader({ active }: { active: 'home' | 'civilizations' | 'reconstruct' | 'about' }) {
+function SiteHeader({
+  active,
+  theme,
+  onToggleTheme,
+}: {
+  active: 'home' | 'civilizations' | 'reconstruct' | 'about'
+  theme: Theme
+  onToggleTheme: () => void
+}) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
 
@@ -216,6 +239,17 @@ function SiteHeader({ active }: { active: 'home' | 'civilizations' | 'reconstruc
             <strong>Reconstructor</strong>
           </span>
         </a>
+
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={onToggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-pressed={theme === 'dark'}
+        >
+          <Ico name={theme === 'dark' ? 'sun' : 'moon'} />
+        </button>
 
         <button
           className="nav-toggle"
@@ -1499,6 +1533,21 @@ function InfoPage({ civ, section }: { civ: Civ; section: string }) {
 
 export default function App() {
   const path = useHashRoute()
+  const [theme, setTheme] = useState<Theme>(readTheme)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try {
+      localStorage.setItem('acr.theme', theme)
+    } catch {
+      /* storage disabled — the theme still applies for this visit */
+    }
+  }, [theme])
+
+  const toggleTheme = useCallback(
+    () => setTheme((current) => (current === 'dark' ? 'light' : 'dark')),
+    []
+  )
 
   const route = (() => {
     if (/^\/?$/.test(path)) return { name: 'home' as const }
@@ -1699,7 +1748,11 @@ export default function App() {
         Skip to content
       </a>
 
-      <SiteHeader active={activeNav as 'home' | 'civilizations' | 'reconstruct' | 'about'} />
+      <SiteHeader
+        active={activeNav as 'home' | 'civilizations' | 'reconstruct' | 'about'}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
 
       <main id="app" tabIndex={-1} aria-live="polite">
         <div key={path} className="fade-in">
