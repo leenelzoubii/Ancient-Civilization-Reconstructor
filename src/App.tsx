@@ -5,6 +5,7 @@ import { CIV_ILLUSTRATIONS, HERO_ILLUSTRATIONS, ARTIFACT_ILLUSTRATION } from './
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
 import VisualScene from './components/VisualScene'
+import CivThumb from './components/CivThumb'
 import Flashcards from './components/Flashcards'
 import WebGLViewer from './components/WebGLViewer'
 import type { ViewerApi } from './components/WebGLViewer'
@@ -362,7 +363,6 @@ function CivCard({
   spotlight?: boolean
 }) {
   const visited = readSession().visited.includes(civ.id)
-  const art = CIV_ILLUSTRATIONS[civ.id]
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, gx: 50, gy: 40 })
 
   return (
@@ -399,7 +399,7 @@ function CivCard({
             } as CSSProperties
           }
         >
-          {art ? <Svg html={art(`${civ.id}${detailed ? 'd' : 'c'}`)} /> : null}
+          <CivThumb id={civ.id} name={civ.name} era={civ.era} />
           <span className="art-glare" aria-hidden="true" />
         </div>
       </div>

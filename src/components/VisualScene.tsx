@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { CIV_ILLUSTRATIONS } from '../illustrations'
+import CivThumb from './CivThumb'
 
 /* =====================================================================
    The UAE Heritage — our own section on the civilizations page.
@@ -215,7 +215,6 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
       <div className="container">
         <div className="civ-grid uae-sites">
           {UAE_SITES.map((site) => {
-            const art = CIV_ILLUSTRATIONS[site.id]
             return (
               <article
                 className={`civ-card${site.id === 'dhayah-fort' ? ' civ-card-spotlight' : ''}`}
@@ -225,7 +224,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
                 {site.id === 'dhayah-fort' ? (
                   <span className="badge badge-rak">Ras Al Khaimah</span>
                 ) : null}
-                <div className="art">{art ? <span dangerouslySetInnerHTML={{ __html: art('uae') }} /> : null}</div>
+                <div className="art"><CivThumb id={site.id} name={site.name} era={site.era} /></div>
                 <div className="body">
                   <span className="era">{site.era}</span>
                   <h3>{site.name}</h3>
