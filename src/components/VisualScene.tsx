@@ -14,6 +14,7 @@ const UAE_SITES = [
   {
     id: 'khorfakkan',
     name: 'Khor Fakkan Fort',
+    civilization: 'Emirati coastal civilization',
     era: '16th century · East coast',
     accent: '#23466b',
     text: 'A Portuguese-era fort of coral stone and round bastions, built to watch the trade routes through the Gulf of Oman.',
@@ -21,6 +22,7 @@ const UAE_SITES = [
   {
     id: 'al-jazirat-al-hamra',
     name: 'Al-Jazirat Al-Hamra',
+    civilization: 'Emirati pearl-diving civilization',
     era: 'Pearl-diving village · Ras Al Khaimah',
     accent: '#a4502f',
     text: 'Courtyard houses and barjeel wind towers in a red-soil village that lived from pearling, fishing and the sea.',
@@ -28,6 +30,7 @@ const UAE_SITES = [
   {
     id: 'dhayah-fort',
     name: 'Dhayah Fort',
+    civilization: 'Emirati civilization',
     era: '18th century · Ras Al Khaimah',
     accent: '#b8862b',
     text: "The UAE's only surviving hilltop fort, guarding the palm groves and coast from a rocky summit.",
@@ -226,7 +229,7 @@ export default function VisualScene({ onSelectCiv }: { onSelectCiv: (id: string)
                 ) : null}
                 <div className="art"><CivThumb id={site.id} name={site.name} era={site.era} /></div>
                 <div className="body">
-                  <span className="era">{site.era}</span>
+                  <span className="era">{site.civilization} · {site.era}</span>
                   <h3>{site.name}</h3>
                   <p>{site.text}</p>
                   <div className="actions">

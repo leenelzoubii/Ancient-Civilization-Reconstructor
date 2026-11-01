@@ -3,6 +3,7 @@
     {
       "id": "taj-mahal",
       "name": "Taj Mahal",
+      "civilization": "Mughal civilization",
       "tags": [
         "mughal",
         "agra",
@@ -26,6 +27,7 @@
     {
       "id": "egypt",
       "name": "Ancient Egypt",
+      "civilization": "Ancient Egyptian civilization",
       "tags": [
         "pyramids",
         "pharaohs",
@@ -49,6 +51,7 @@
     {
       "id": "rome",
       "name": "Ancient Rome",
+      "civilization": "Roman civilization",
       "tags": [
         "colosseum",
         "roman-law",
@@ -72,6 +75,7 @@
     {
       "id": "maya",
       "name": "Maya Civilization",
+      "civilization": "Maya civilization",
       "tags": [
         "calendar",
         "mathematics",
@@ -95,6 +99,7 @@
     {
       "id": "khorfakkan",
       "name": "Khor Fakkan Portuguese Fort",
+      "civilization": "Emirati coastal civilization",
       "tags": [
         "fort",
         "trade",
@@ -118,6 +123,7 @@
     {
       "id": "petra",
       "name": "Petra",
+      "civilization": "Nabataean civilization",
       "tags": [
         "rock-cut",
         "nabatean",
@@ -141,6 +147,7 @@
     {
       "id": "al-jazirat-al-hamra",
       "name": "Al-Jazirat Al-Hamra Courtyard Complex",
+      "civilization": "Emirati pearl-diving civilization",
       "tags": [
         "pearl-diving",
         "wind-towers",
@@ -164,6 +171,7 @@
     {
       "id": "dhayah-fort",
       "name": "Dhayah Fort at Ras-Al Khaimah, UAE",
+      "civilization": "Emirati civilization",
       "tags": [
         "hilltop",
         "al-qasimi",

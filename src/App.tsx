@@ -96,6 +96,7 @@ const sectionBody = (civ: Civ, section: Section): string => {
 }
 
 const factsOf = (civ: Civ) => [
+  `Civilization: ${civ.civilization}`,
   `Period: ${civ.era}`,
   `Region: ${civ.region}`,
   `Major cities: ${civ.capitals}`,
@@ -224,7 +225,7 @@ function SiteHeader({
 
   const results = query.trim()
     ? CIVS.filter((civ) => {
-        const haystack = `${civ.name} ${civ.era} ${civ.region} ${civ.tags.join(' ')}`.toLowerCase()
+        const haystack = `${civ.name} ${civ.civilization} ${civ.era} ${civ.region} ${civ.tags.join(' ')}`.toLowerCase()
         return haystack.includes(query.trim().toLowerCase())
       }).slice(0, 6)
     : []
@@ -310,7 +311,7 @@ function SiteHeader({
                   results.map((civ) => (
                     <a key={civ.id} href={`#/civ/${civ.id}/info/overview`} onClick={() => { setQuery(''); setOpen(false) }}>
                       {civ.name}
-                      <small>{civ.era}</small>
+                      <small>{civ.civilization} · {civ.era}</small>
                     </a>
                   ))
                 )}
@@ -405,7 +406,7 @@ function CivCard({
       </div>
       <div className="body">
         <span className="era">
-          {civ.name} · {civ.era}
+          {civ.civilization} · {civ.era}
         </span>
         <h3>{civ.name}</h3>
         <p>{taglineOf(civ)}.</p>
@@ -1206,7 +1207,7 @@ function CivPage({ civ }: { civ: Civ }) {
         <a className="back" href="#/civilizations">
           ← Back to civilizations
         </a>
-        <span className="eyebrow">{civ.era}</span>
+        <span className="eyebrow">{civ.civilization} · {civ.era}</span>
         <h1 style={{ margin: 0 }}>{civ.name}</h1>
       </div>
 
@@ -1494,7 +1495,7 @@ function InfoPage({ civ, section }: { civ: Civ; section: string }) {
           ← Back to 3D reconstruction
         </a>
         <span className="eyebrow">
-          {civ.name} · {civ.era}
+          {civ.civilization} · {civ.name} · {civ.era}
         </span>
         <h1 style={{ margin: 0 }}>{title}</h1>
       </div>
