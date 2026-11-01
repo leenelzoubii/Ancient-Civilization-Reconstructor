@@ -444,6 +444,12 @@ input[type=range] { width: 100%; accent-color: var(--ink); }
 .vr-note { font-size: .84rem; background: #fff8ea; border: 1px solid #ecd9ae; border-radius: 10px; padding: 10px 12px; margin: 14px 0 0; color: var(--ink-2); }
 .viewer.immersive { position: fixed !important; inset: 0; z-index: 1000; height: 100vh !important; height: 100dvh !important; min-height: 0; border-radius: 0; background: #000 !important; cursor: grab; }
 .viewer.immersive .marker-layer, .viewer.immersive .viewer-ui, .viewer.immersive .viewer-hint, .viewer.immersive .viewer-title { display: none; }
+/* Walk-in sessions must fill the viewport even when the Fullscreen API is
+   unavailable. A transformed ancestor (the page `.fade-in` wrapper) becomes
+   the containing block for `position: fixed`, which otherwise keeps the
+   viewer inside the page and pushes the VR controls below the fold. */
+body.vr-active { overflow: hidden; }
+body.vr-active .fade-in { transform: none !important; animation: none !important; }
 .vr-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
 .vr-overlay button { pointer-events: auto; }
 .vr-exit { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); border: 0; border-radius: 999px; padding: 8px 16px; background: rgba(29, 26, 22, .8); color: #fff; font-weight: 600; cursor: pointer; }

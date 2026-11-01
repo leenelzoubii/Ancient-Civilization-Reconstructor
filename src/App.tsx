@@ -1300,7 +1300,7 @@ function CivPage({ civ }: { civ: Civ }) {
                 <button
                   className="nav-arrow"
                   aria-label="Previous landmark"
-                  onClick={() => goPoi.current(poi - 1)}
+                  onClick={() => goPoi.current(poi < 0 ? pois.length - 1 : poi - 1)}
                 >
                   <Ico name="arrowL" />
                 </button>

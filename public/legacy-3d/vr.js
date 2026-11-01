@@ -233,6 +233,7 @@
       v.immersive = this;
       v.orbit.disabled = true;
       host.classList.add('immersive', 'immersive-' + this.mode);
+      document.body.classList.add('vr-active');
       this.overlay = document.createElement('div');
       this.overlay.className = 'vr-overlay';
       this.overlay.innerHTML = `
@@ -261,14 +262,22 @@
 
       // pointer: drag to look, tap to advance (stereo)
       let start = null, last = null;
-      this.pd = (e) => { start = last = [e.clientX, e.clientY]; host.setPointerCapture && host.setPointerCapture(e.pointerId); };
+      this.pd = (e) => {
+        // Never capture the pointer for presses that start on the overlay:
+        // pointer capture retargets pointerup (and therefore click) to the
+        // host, which silently swallows every Previous / Next / Exit press.
+        if (e.target.closest && e.target.closest('.vr-overlay')) return;
+        start = last = [e.clientX, e.clientY];
+        host.setPointerCapture && host.setPointerCapture(e.pointerId);
+      };
       this.pm = (e) => {
         if (!last) return;
         if (!this.gyro) { this.yaw += (e.clientX - last[0]) * 0.004; this.pitch = Math.max(-1.3, Math.min(1.3, this.pitch + (e.clientY - last[1]) * 0.004)); }
         last = [e.clientX, e.clientY];
       };
       this.pu = (e) => {
-        if (start && Math.hypot(e.clientX - start[0], e.clientY - start[1]) < 8 && this.mode === 'stereo' && !e.target.closest('button')) this.go(this.index + 1);
+        if (!start) return;
+        if (Math.hypot(e.clientX - start[0], e.clientY - start[1]) < 8 && this.mode === 'stereo' && !(e.target.closest && e.target.closest('button'))) this.go(this.index + 1);
         start = last = null;
       };
       host.addEventListener('pointerdown', this.pd);
@@ -276,7 +285,8 @@
       host.addEventListener('pointerup', this.pu);
       this.kd = (e) => {
         const k = e.key.toLowerCase();
-        if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown'].includes(k)) { this.keys.add(k); e.preventDefault(); }
+        if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault();
+        if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown'].includes(k)) this.keys.add(k);
         if (k === 'arrowright') this.go(this.index + 1);
         if (k === 'arrowleft') this.go(this.index - 1);
         if (k === 'i') this.panelOn = !this.panelOn;
@@ -411,6 +421,7 @@
       const v = this.viewer, host = v.container;
       if (this.overlay) this.overlay.remove();
       host.classList.remove('immersive', 'immersive-' + this.mode);
+      document.body.classList.remove('vr-active');
       if (this.pd) { host.removeEventListener('pointerdown', this.pd); host.removeEventListener('pointermove', this.pm); host.removeEventListener('pointerup', this.pu); }
       if (this.kd) { window.removeEventListener('keydown', this.kd); window.removeEventListener('keyup', this.ku); }
       if (this.ori) window.removeEventListener('deviceorientation', this.ori);
