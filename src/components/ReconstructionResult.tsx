@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import civilizations from '../../data/civilizations.json'
 import { CIV_ILLUSTRATIONS } from '../illustrations'
+import { civThumbFor } from '../components/CivThumb'
 import type { ArtifactAnalysis } from '../services/analysis'
 import type { Prediction } from '../services/predictService'
 import type { RestoreResult } from '../services/restoreService'
@@ -261,6 +262,7 @@ export default function ReconstructionResult({
 
 function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ }) {
   const art = CIV_ILLUSTRATIONS[civ.id]
+  const photo = civThumbFor(civ.id)
   const pct = Math.round(prediction.probability * 100)
   const accent = CIV_ACCENTS[civ.id] ?? '#b8862b'
   const refs = referenceImages(civ.id)
@@ -270,7 +272,13 @@ function PredictionCard({ prediction, civ }: { prediction: Prediction; civ: Civ 
 
   return (
     <section className="prediction" style={{ '--accent': accent } as CSSProperties}>
-      <div className="pred-art" dangerouslySetInnerHTML={{ __html: art ? art('pr') : '' }} />
+      {photo ? (
+        <div className="pred-art">
+          <img className="pred-art-img" src={photo} alt="" />
+        </div>
+      ) : (
+        <div className="pred-art" dangerouslySetInnerHTML={{ __html: art ? art('pr') : '' }} />
+      )}
       <div className="pred-body">
         <span className="eyebrow">Optional context</span>
         <h2>
