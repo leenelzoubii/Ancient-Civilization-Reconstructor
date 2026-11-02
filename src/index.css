@@ -1375,6 +1375,12 @@ main#app {
   opacity: 0.72;
 }
 
+/* No photograph yet: the card is a hint, not an action. */
+.example-card.example-card-waiting {
+  cursor: default;
+  opacity: 1;
+}
+
 .example-card[aria-busy='true'] {
   opacity: 1;
   border-color: var(--gold);
@@ -1382,16 +1388,41 @@ main#app {
 
 .example-art {
   display: block;
+  width: 100%;
   aspect-ratio: 9 / 7;
   border-radius: 10px;
   overflow: hidden;
   background: var(--sand);
+  object-fit: cover;
 }
 
-.example-art svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* Placeholder shown until the photograph for that example has been added. */
+.example-art-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.example-art-mark {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--gold);
+}
+
+.example-art-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-theme='dark'] .example-art-empty {
+  background: linear-gradient(160deg, #2a231a, #1b1712);
 }
 
 .example-meta {
@@ -1415,6 +1446,13 @@ main#app {
   font-size: 0.78rem;
   line-height: 1.4;
   color: var(--ink-2);
+}
+
+.example-credit {
+  font-size: 0.7rem;
+  line-height: 1.35;
+  color: var(--ink-3);
+  font-style: italic;
 }
 
 .example-cta {

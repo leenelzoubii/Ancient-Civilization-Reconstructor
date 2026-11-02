@@ -24,7 +24,7 @@ import {
   saveHistory,
 } from '../services/history'
 import type { HistoryEntry } from '../services/history'
-import { EXAMPLE_ARTIFACTS, exampleToFile } from '../examples'
+import { EXAMPLE_ARTIFACTS, examplePhotoFor, exampleToFile } from '../examples'
 import type { ExampleArtifact } from '../examples'
 import ReconstructionResult from '../components/ReconstructionResult'
 
@@ -1019,34 +1019,59 @@ export default function ArtifactRestorer() {
                 <div className="example-head">
                   <strong>No photo handy? Try an example</strong>
                   <span className="hint">
-                    Bundled damaged artifacts · automatic detection switches on
+                    Real damaged artifacts · automatic detection switches on
                   </span>
                 </div>
                 <div className="example-grid">
-                  {EXAMPLE_ARTIFACTS.map((example) => (
-                    <button
-                      key={example.id}
-                      type="button"
-                      className="example-card"
-                      onClick={() => void loadExample(example)}
-                      disabled={exampleLoading !== null}
-                      aria-busy={exampleLoading === example.id}
-                    >
-                      <span
-                        className="example-art"
-                        aria-hidden="true"
-                        dangerouslySetInnerHTML={{ __html: example.svg }}
-                      />
-                      <span className="example-meta">
-                        <strong>{example.name}</strong>
-                        <span className="example-origin">{example.origin}</span>
-                        <span className="example-note">{example.note}</span>
-                      </span>
-                      <span className="example-cta">
-                        {exampleLoading === example.id ? 'Opening…' : 'Try this example'}
-                      </span>
-                    </button>
-                  ))}
+                  {EXAMPLE_ARTIFACTS.map((example) => {
+                    const photo = examplePhotoFor(example.id)
+                    return (
+                      <button
+                        key={example.id}
+                        type="button"
+                        className={`example-card${photo ? '' : ' example-card-waiting'}`}
+                        onClick={() => void loadExample(example)}
+                        disabled={!photo || exampleLoading !== null}
+                        aria-busy={exampleLoading === example.id}
+                      >
+                        {photo ? (
+                          <img
+                            className="example-art"
+                            src={photo}
+                            alt={`${example.name} — ${example.civilization}`}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span
+                            className="example-art example-art-empty"
+                            role="img"
+                            aria-label={`${example.name}: photograph coming soon`}
+                          >
+                            <span className="example-art-mark" aria-hidden="true">
+                              ◈
+                            </span>
+                            <span className="example-art-text">Photo coming soon</span>
+                          </span>
+                        )}
+                        <span className="example-meta">
+                          <strong>{example.name}</strong>
+                          <span className="example-origin">{example.civilization}</span>
+                          <span className="example-note">{example.note}</span>
+                          {example.credit ? (
+                            <span className="example-credit">{example.credit}</span>
+                          ) : null}
+                        </span>
+                        <span className="example-cta">
+                          {!photo
+                            ? 'Waiting for a photo'
+                            : exampleLoading === example.id
+                              ? 'Opening…'
+                              : 'Try this example'}
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </section>
