@@ -5,7 +5,8 @@ import { CIV_ILLUSTRATIONS, HERO_ILLUSTRATIONS, ARTIFACT_ILLUSTRATION } from './
 import ArtifactRestorer from './pages/ArtifactRestorer'
 import AboutPage from './pages/AboutPage'
 import VisualScene from './components/VisualScene'
-import CivThumb from './components/CivThumb'
+import CivThumb, { civThumbFor } from './components/CivThumb'
+import globePhoto from './assets/globe.jpg'
 import Flashcards from './components/Flashcards'
 import WebGLViewer from './components/WebGLViewer'
 import type { ViewerApi } from './components/WebGLViewer'
@@ -507,85 +508,22 @@ function Reveal({
   )
 }
 
-/** Stylized slowly spinning globe with a pin for every destination. */
+/** The five photographs floating in the home collage, with their drawn fallbacks. */
+const HOME_COLLAGE = [
+  { cls: 'hc-1', id: 'egypt', caption: 'Giza, Egypt', art: HERO_ILLUSTRATIONS.egypt },
+  { cls: 'hc-2', id: 'rome', caption: 'Rome, Italy', art: HERO_ILLUSTRATIONS.rome },
+  { cls: 'hc-3', id: 'dhayah-fort', caption: 'Dhayah Fort, UAE', art: HERO_ILLUSTRATIONS.uae },
+  { cls: 'hc-4', id: 'taj-mahal', caption: 'Taj Mahal, India', art: HERO_ILLUSTRATIONS.taj },
+  { cls: 'hc-5', id: 'petra', caption: 'Petra, Jordan', art: HERO_ILLUSTRATIONS.petra },
+] as const
+
+/** Real Earth photograph with a floating pin for every destination. */
 function GlobeHero() {
   return (
     <div className="hero-globe" aria-hidden="true">
       <span className="globe-halo" />
       <div className="globe-sphere">
-        <svg viewBox="0 0 400 400" className="globe-svg" role="presentation">
-          <defs>
-            <radialGradient id="globeOcean" cx="34%" cy="26%" r="82%">
-              <stop offset="0" stopColor="#73c4c4" />
-              <stop offset="0.45" stopColor="#2f8491" />
-              <stop offset="0.78" stopColor="#175469" />
-              <stop offset="1" stopColor="#0a2b3d" />
-            </radialGradient>
-            <radialGradient id="globeShade" cx="32%" cy="24%" r="78%">
-              <stop offset="0" stopColor="#ffffff" stopOpacity="0.34" />
-              <stop offset="0.46" stopColor="#ffffff" stopOpacity="0" />
-              <stop offset="0.82" stopColor="#03141f" stopOpacity="0.28" />
-              <stop offset="1" stopColor="#03141f" stopOpacity="0.62" />
-            </radialGradient>
-            <clipPath id="globeClip">
-              <circle cx="200" cy="200" r="174" />
-            </clipPath>
-            <g id="globeLandShapes">
-              <path
-                d="M42 132 q28-30 62-22 q26 6 34 26 q10 24-6 44 q-18 22-42 18 q-26-4-38-24 q-14-24-10-42z"
-                fill="#8fbd73"
-              />
-              <path
-                d="M112 218 q20-18 44-10 q20 8 24 30 q4 24-12 40 q-18 18-40 8 q-22-10-24-34 q-2-20 8-34z"
-                fill="#7caf65"
-              />
-              <path
-                d="M178 116 q30-22 66-12 q28 8 34 34 q6 28-12 48 q-18 20-46 14 q-30-6-42-30 q-12-28 0-54z"
-                fill="#94c07a"
-              />
-              <path
-                d="M258 198 q26-16 52-6 q24 10 26 34 q2 24-16 38 q-20 14-44 4 q-22-10-24-34 q-2-22 6-36z"
-                fill="#83b56b"
-              />
-              <path
-                d="M316 274 q18-12 36-4 q16 8 16 24 q0 18-16 24 q-18 6-32-6 q-12-12-10-26 q2-8 6-12z"
-                fill="#8fbd73"
-              />
-              <path
-                d="M170 76 q16-12 34-4 q14 8 12 22 q-2 14-16 18 q-16 4-28-6 q-10-10-8-20 q2-6 6-10z"
-                fill="#a6cd88"
-              />
-              <circle cx="86" cy="266" r="9" fill="#8fbd73" />
-              <circle cx="292" cy="120" r="6" fill="#a6cd88" />
-              <circle cx="242" cy="330" r="7" fill="#83b56b" />
-            </g>
-          </defs>
-          <circle cx="200" cy="200" r="174" fill="url(#globeOcean)" />
-          <g clipPath="url(#globeClip)">
-            <g className="globe-land-track">
-              <use href="#globeLandShapes" />
-              <use href="#globeLandShapes" x="400" />
-            </g>
-            <g className="globe-grid" fill="none" stroke="#e2f5ee" strokeOpacity="0.16">
-              <ellipse cx="200" cy="200" rx="174" ry="58" />
-              <ellipse cx="200" cy="200" rx="174" ry="116" />
-              <ellipse cx="200" cy="200" rx="58" ry="174" />
-              <ellipse cx="200" cy="200" rx="116" ry="174" />
-              <line x1="200" y1="26" x2="200" y2="374" />
-              <line x1="26" y1="200" x2="374" y2="200" />
-            </g>
-          </g>
-          <circle cx="200" cy="200" r="174" fill="url(#globeShade)" />
-          <circle
-            cx="200"
-            cy="200"
-            r="174"
-            fill="none"
-            stroke="#f6e7c2"
-            strokeOpacity="0.55"
-            strokeWidth="1.6"
-          />
-        </svg>
+        <img className="globe-img" src={globePhoto} alt="" />
       </div>
 
       <div className="globe-pins">
@@ -732,26 +670,19 @@ function HomePage() {
           </Reveal>
 
           <Reveal className="home-collage" delay={140}>
-            <figure className="hc hc-1">
-              <Svg html={HERO_ILLUSTRATIONS.egypt('hs1')} />
-              <figcaption>Giza, Egypt</figcaption>
-            </figure>
-            <figure className="hc hc-2">
-              <Svg html={HERO_ILLUSTRATIONS.rome('hs2')} />
-              <figcaption>Rome, Italy</figcaption>
-            </figure>
-            <figure className="hc hc-3">
-              <Svg html={HERO_ILLUSTRATIONS.uae('hs3')} />
-              <figcaption>Al Jahili Fort, UAE</figcaption>
-            </figure>
-            <figure className="hc hc-4">
-              <Svg html={HERO_ILLUSTRATIONS.taj('hs4')} />
-              <figcaption>Taj Mahal, India</figcaption>
-            </figure>
-            <figure className="hc hc-5">
-              <Svg html={HERO_ILLUSTRATIONS.petra('hs5')} />
-              <figcaption>Petra, Jordan</figcaption>
-            </figure>
+            {HOME_COLLAGE.map((item) => {
+              const photo = civThumbFor(item.id)
+              return (
+                <figure key={item.id} className={`hc ${item.cls}`}>
+                  {photo ? (
+                    <img className="hc-photo" src={photo} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <Svg html={item.art(item.cls)} />
+                  )}
+                  <figcaption>{item.caption}</figcaption>
+                </figure>
+              )
+            })}
             <span className="home-collage-badge">8 worlds · 46 landmarks</span>
           </Reveal>
         </div>

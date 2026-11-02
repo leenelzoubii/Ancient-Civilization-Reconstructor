@@ -740,7 +740,6 @@ main#app {
   .reveal-stagger > *,
   .hero-copy > *,
   .hero-globe,
-  .globe-land-track,
   .globe-pin,
   .home-collage .hc,
   .ai-chip,
@@ -858,31 +857,19 @@ main#app {
   position: absolute;
   inset: 9%;
   border-radius: 50%;
-  filter: drop-shadow(0 30px 42px rgba(0, 0, 0, 0.46));
+  overflow: hidden;
+  box-shadow: 0 30px 42px rgba(0, 0, 0, 0.46);
   z-index: 1;
 }
 
-.globe-svg {
+/* The photograph is cropped to the globe itself, so scaling it slightly pushes
+   the photo's edge past the circular clip and no background colour shows. */
+.globe-img {
   display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
-}
-
-.globe-land-track {
-  transform-box: view-box;
-  transform-origin: 0 0;
-  animation: globeSpin 90s linear infinite;
-  will-change: transform;
-}
-
-@keyframes globeSpin {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-400px);
-  }
+  object-fit: cover;
+  transform: scale(1.05);
 }
 
 .globe-pins {
@@ -1972,6 +1959,13 @@ main#app {
   height: 100%;
 }
 
+.home-collage .hc img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .home-collage .hc figcaption {
   position: absolute;
   left: 10px;
@@ -2342,7 +2336,6 @@ main#app {
   .reveal-stagger > *,
   .hero-copy > *,
   .hero-globe,
-  .globe-land-track,
   .globe-pin,
   .home-collage .hc,
   .ai-chip,
